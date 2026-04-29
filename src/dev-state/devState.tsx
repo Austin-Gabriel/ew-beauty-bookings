@@ -27,9 +27,10 @@ export type AuthState =
  */
 export type OnboardingProgress =
   | "none"
-  | "phone-no-name"
-  | "phone-name-no-address"
-  | "phone-name-address-no-payment"
+  | "after-identifier"
+  | "after-verification"
+  | "after-name"
+  | "after-address"
   | "complete";
 
 export type DevState = {

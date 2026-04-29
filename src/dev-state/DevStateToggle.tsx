@@ -125,9 +125,10 @@ export function DevStateToggle() {
                   value={state.onboardingProgress}
                   options={[
                     { value: "none", label: "Nothing yet" },
-                    { value: "phone-no-name", label: "Phone, no name" },
-                    { value: "phone-name-no-address", label: "+ name, no address" },
-                    { value: "phone-name-address-no-payment", label: "+ name + address" },
+                    { value: "after-identifier", label: "After identifier (needs OTP)" },
+                    { value: "after-verification", label: "After verification (needs address)" },
+                    { value: "after-name", label: "After name (needs address)" },
+                    { value: "after-address", label: "After address (ready to review)" },
                     { value: "complete", label: "Fully complete" },
                   ]}
                   onChange={(v) => set("onboardingProgress", v)}
