@@ -151,7 +151,7 @@ export function DiscoverPage() {
         <button
           type="button"
           aria-label="Favourites"
-          onClick={() => navigate({ to: "/discover", search: { fav: 1 } as never }).catch(() => {})}
+          onClick={() => setNeighborhoodOpen(true)}
           className="grid h-9 w-9 place-items-center rounded-full border transition-colors"
           style={{ borderColor: borderCol, color: text, backgroundColor: subtle }}
         >
