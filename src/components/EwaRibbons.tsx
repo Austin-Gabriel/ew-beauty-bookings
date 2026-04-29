@@ -31,49 +31,43 @@ export function EwaRibbons({ className }: { className?: string }) {
 
       {/* Ribbon A — top sweep */}
       <svg
-        className="absolute -left-[80%] top-[14%] w-[260%] animate-[ewaRibbonA_24s_ease-in-out_infinite]"
+        className="absolute -left-[80%] top-[10%] h-[26vh] w-[260%] animate-[ewaRibbonA_24s_ease-in-out_infinite]"
         viewBox="0 0 1200 260"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
       >
         <path
           d="M0,140 C200,40 400,240 600,140 C800,40 1000,240 1200,140"
-          stroke="#FF823F"
-          strokeOpacity="0.22"
-          strokeWidth="70"
-          strokeLinecap="round"
-          fill="none"
+          stroke="#FF823F" strokeOpacity="0.22" strokeWidth="70"
+          strokeLinecap="round" fill="none"
         />
       </svg>
 
       {/* Ribbon B — middle sweep, opposite phase */}
       <svg
-        className="absolute -left-[80%] top-[42%] w-[260%] animate-[ewaRibbonB_30s_ease-in-out_infinite]"
+        className="absolute -left-[80%] top-[40%] h-[24vh] w-[260%] animate-[ewaRibbonB_30s_ease-in-out_infinite]"
         viewBox="0 0 1200 260"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
       >
         <path
           d="M0,130 C200,220 400,40 600,130 C800,220 1000,40 1200,130"
-          stroke="#FF823F"
-          strokeOpacity="0.16"
-          strokeWidth="56"
-          strokeLinecap="round"
-          fill="none"
+          stroke="#FF823F" strokeOpacity="0.16" strokeWidth="56"
+          strokeLinecap="round" fill="none"
         />
       </svg>
 
       {/* Ribbon C — lower sweep, broader */}
       <svg
-        className="absolute -left-[80%] bottom-[6%] w-[260%] animate-[ewaRibbonC_36s_ease-in-out_infinite]"
+        className="absolute -left-[80%] bottom-[4%] h-[28vh] w-[260%] animate-[ewaRibbonC_36s_ease-in-out_infinite]"
         viewBox="0 0 1200 280"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
       >
         <path
-          d="M0,150 C200,40 400,240 600,140 C800,40 1000,240 1200,140"
-          stroke="#FF823F"
-          strokeOpacity="0.20"
-          strokeWidth="84"
-          strokeLinecap="round"
-          fill="none"
+          d="M0,160 C200,40 400,260 600,150 C800,40 1000,250 1200,140"
+          stroke="#FF823F" strokeOpacity="0.20" strokeWidth="84"
+          strokeLinecap="round" fill="none"
         />
       </svg>
 
