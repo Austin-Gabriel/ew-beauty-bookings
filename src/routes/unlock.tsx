@@ -9,14 +9,10 @@ export const Route = createFileRoute("/unlock")({
 
 function UnlockPage() {
   const navigate = useNavigate();
-  const [_, setUsedFallback] = useState(false);
   return (
     <BiometricPrompt
       onSuccess={() => navigate({ to: "/discover" })}
-      onFallback={() => {
-        setUsedFallback(true);
-        navigate({ to: "/signin" });
-      }}
+      onFallback={() => navigate({ to: "/signin" })}
     />
   );
 }
