@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { AuthShell, useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { EwaLockup } from "@/components/ewa-logo";
 import { PrimaryButton, SecondaryButton } from "@/auth/auth-buttons";
