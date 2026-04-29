@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { EwaLockup } from "@/components/EwaLogo";
+import { EwaMark } from "@/components/EwaLogo";
 import { EwaRibbons } from "@/components/EwaRibbons";
 
 /**
@@ -13,9 +13,9 @@ export function Welcome() {
       <EwaRibbons />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[420px] flex-col px-6 pt-10 pb-8">
-        {/* Top: official lockup, small */}
+        {/* Top: brand mark only — guaranteed legible on either surface */}
         <header className="flex items-center justify-between">
-          <EwaLockup height={28} />
+          <EwaMark size={30} className="text-foreground" />
           <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
             For customers
           </span>
