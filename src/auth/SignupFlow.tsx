@@ -4,7 +4,6 @@ import {
   StepVerify,
   StepName,
   StepAddress,
-  StepPayment,
   StepDone,
 } from "./signupSteps";
 
@@ -30,7 +29,6 @@ function Switcher() {
       {step === "verify" && <StepVerify />}
       {step === "name" && <StepName />}
       {step === "address" && <StepAddress />}
-      {step === "payment" && <StepPayment />}
       {step === "done" && <StepDone />}
     </div>
   );
