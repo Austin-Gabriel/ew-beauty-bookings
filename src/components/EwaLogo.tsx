@@ -1,12 +1,12 @@
-import wordmarkDarkSrc from "@/assets/ewa-wordmark.png"; // white wordmark on transparent
+import lockupLight from "@/assets/ewa-lockup.png"; // midnight wordmark, transparent — use on cream
+import lockupDark from "@/assets/ewa-wordmark.png"; // cream wordmark, transparent  — use on midnight
 import { useDevState } from "@/dev-state/devState";
 
 /**
- * Pure SVG mark — orange donut + inner dot + accent "à" tail.
- * Use this in tight spaces (top corners, nav, avatars).
- *
- * The inner dot uses currentColor so it reads correctly on either surface
- * — pass `text-foreground` (or any color class) to control it.
+ * Pure SVG mark — the donut + inner dot + accent "à" tail.
+ * Use in tight spaces (top corners, nav, avatars). The inner dot uses
+ * currentColor so it adapts to the surface — pass `text-foreground` (or
+ * any color class) to control it.
  */
 export function EwaMark({ size = 32, className }: { size?: number; className?: string }) {
   return (
@@ -25,49 +25,38 @@ export function EwaMark({ size = 32, className }: { size?: number; className?: s
 }
 
 /**
- * Full lockup — donut mark + "ewà" wordmark. Editorial moments only
- * (splash, welcome, marketing). The wordmark uses Fraunces so it can be
- * tinted via currentColor — guaranteed to read on cream OR midnight without
- * a clipping background.
+ * Full official lockup — uses the EXACT brand artwork (donut + serif "ewà").
+ * Editorial moments only: splash, welcome, marketing.
  *
- * On dark mode we additionally overlay the official artwork so the brand's
- * exact letterform shows up — but only when the artwork has a transparent
- * background that won't break the surface.
+ * Picks the correct artwork variant for the current theme automatically so
+ * the wordmark stays legible on both cream and midnight surfaces.
  */
 export function EwaLockup({
-  size = 56,
+  height = 56,
   className,
   variant = "auto",
 }: {
-  size?: number;
+  /** Rendered height in px. Width auto-scales. */
+  height?: number;
   className?: string;
-  /** Force one of the two artworks. "auto" follows current theme. */
+  /** Force a variant. "auto" follows current theme. */
   variant?: "auto" | "light" | "dark";
 }) {
   const { resolvedTheme } = useDevState();
-  const useDarkArt = (variant === "auto" ? resolvedTheme : variant) === "dark";
-
+  // Fall back to the html class set by the pre-hydration script so we pick
+  // the correct artwork on first paint, before React state hydrates.
+  const domDark =
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const useDark =
+    variant === "auto" ? resolvedTheme === "dark" || domDark : variant === "dark";
+  const src = useDark ? lockupDark : lockupLight;
   return (
-    <div className={`flex items-center gap-3 ${className ?? ""}`}>
-      <EwaMark size={size * 0.78} className="text-foreground" />
-      {useDarkArt ? (
-        // Official wordmark artwork — transparent PNG, white letterforms.
-        <img
-          src={wordmarkDarkSrc}
-          alt="Ewà"
-          style={{ height: size * 0.7, marginLeft: -size * 0.6 }}
-          className="w-auto select-none object-contain"
-          draggable={false}
-        />
-      ) : (
-        // Fraunces wordmark — themable, no clipping background.
-        <span
-          className="font-display leading-none tracking-tight text-foreground"
-          style={{ fontSize: size * 0.95, fontWeight: 500 }}
-        >
-          ewà
-        </span>
-      )}
-    </div>
+    <img
+      src={src}
+      alt="Ewà"
+      style={{ height }}
+      className={`w-auto select-none object-contain ${className ?? ""}`}
+      draggable={false}
+    />
   );
 }

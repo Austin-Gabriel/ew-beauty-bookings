@@ -36,17 +36,25 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function readInitialState(): DevState {
+  if (typeof window === "undefined") return DEFAULTS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+  } catch {}
+  return DEFAULTS;
+}
+
 export function DevStateProvider({ children }: { children: ReactNode }) {
+  // SSR renders defaults; client hydrates from localStorage immediately.
   const [state, setState] = useState<DevState>(DEFAULTS);
   const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
+  const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from localStorage post-mount (SSR-safe)
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...DEFAULTS, ...JSON.parse(raw) });
-    } catch {}
+    setState(readInitialState());
     setSystemTheme(getSystemTheme());
+    setHydrated(true);
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? "dark" : "light");
@@ -56,15 +64,16 @@ export function DevStateProvider({ children }: { children: ReactNode }) {
 
   const resolvedTheme = state.themeMode === "system" ? systemTheme : state.themeMode;
 
-  // Persist + apply theme class
+  // Persist + apply theme class once we've read localStorage
   useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {}
     const root = document.documentElement;
     root.classList.toggle("dark", resolvedTheme === "dark");
     root.style.colorScheme = resolvedTheme;
-  }, [state, resolvedTheme]);
+  }, [state, resolvedTheme, hydrated]);
 
   const value: Ctx = useMemo(
     () => ({
