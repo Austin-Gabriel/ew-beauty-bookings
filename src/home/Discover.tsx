@@ -986,6 +986,73 @@ function Sheet({
   );
 }
 
+function SheetSubhead({ children, text }: { children: React.ReactNode; text: string }) {
+  return (
+    <p
+      style={{
+        fontFamily: SANS_STACK,
+        fontSize: 14,
+        lineHeight: 1.5,
+        color: text,
+        opacity: 0.7,
+        marginTop: 0,
+        marginBottom: 20,
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function SheetComingSoon({ text, label, hint }: { text: string; label: string; hint: string }) {
+  return (
+    <div
+      className="rounded-2xl border px-4 py-5"
+      style={{
+        borderColor: "rgba(255,130,63,0.35)",
+        backgroundColor: "rgba(255,130,63,0.08)",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 10,
+          letterSpacing: "1.6px",
+          textTransform: "uppercase",
+          color: "#FF823F",
+          fontWeight: 600,
+        }}
+      >
+        Coming soon
+      </div>
+      <div
+        style={{
+          fontFamily: FRAUNCES,
+          fontWeight: 400,
+          fontSize: 20,
+          lineHeight: 1.15,
+          color: text,
+          marginTop: 6,
+        }}
+      >
+        {label}
+      </div>
+      <p
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 13,
+          lineHeight: 1.5,
+          color: text,
+          opacity: 0.65,
+          marginTop: 8,
+        }}
+      >
+        {hint}
+      </p>
+    </div>
+  );
+}
+
 /* ───────────────────────── Density / availability shaping ───────────────────────── */
 
 function shapePool(
