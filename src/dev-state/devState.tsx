@@ -9,14 +9,41 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 export type ThemeMode = "system" | "light" | "dark";
 export type UserState = "new" | "returning";
 
+/**
+ * AuthState — what the splash router and protected routes should believe
+ * about the current "user" so we can flip between flows without real auth.
+ */
+export type AuthState =
+  | "signed-out"
+  | "mid-signup"
+  | "signed-in-no-session"
+  | "signed-in"
+  | "biometric-enrolled";
+
+/**
+ * OnboardingProgress — how far through signup the dev "user" has gotten.
+ * Used by the signup flow to deep-link to the next missing step when the
+ * auth state is "mid-signup".
+ */
+export type OnboardingProgress =
+  | "none"
+  | "phone-no-name"
+  | "phone-name-no-address"
+  | "phone-name-address-no-payment"
+  | "complete";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
+  authState: AuthState;
+  onboardingProgress: OnboardingProgress;
 };
 
 const DEFAULTS: DevState = {
   themeMode: "system",
   userState: "new",
+  authState: "signed-out",
+  onboardingProgress: "none",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";

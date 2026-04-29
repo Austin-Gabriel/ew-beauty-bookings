@@ -29,14 +29,34 @@ function SplashBody() {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    const dest = state.userState === "returning" ? "/discover" : "/welcome";
+    // Auth state takes priority. userState is the legacy "new vs returning"
+    // toggle and is honored only when authState is "signed-out".
+    let dest: "/welcome" | "/discover" | "/signin" | "/signup" | "/unlock" =
+      state.userState === "returning" ? "/discover" : "/welcome";
+    switch (state.authState) {
+      case "signed-out":
+        dest = state.userState === "returning" ? "/signin" : "/welcome";
+        break;
+      case "mid-signup":
+        dest = "/signup";
+        break;
+      case "signed-in-no-session":
+        dest = "/signin";
+        break;
+      case "signed-in":
+        dest = "/discover";
+        break;
+      case "biometric-enrolled":
+        dest = "/unlock";
+        break;
+    }
     const t1 = window.setTimeout(() => setLeaving(true), 1700);
     const t2 = window.setTimeout(() => navigate({ to: dest }), 2200);
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
-  }, [navigate, state.userState]);
+  }, [navigate, state.userState, state.authState]);
 
   return (
     <div

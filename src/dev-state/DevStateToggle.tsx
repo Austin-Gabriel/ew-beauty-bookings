@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { useDevState, type ThemeMode, type UserState } from "./devState";
+import {
+  useDevState,
+  type ThemeMode,
+  type UserState,
+  type AuthState,
+  type OnboardingProgress,
+} from "./devState";
 
 /**
  * Floating dev-only panel — quiet, functional, dismissable.
@@ -16,7 +22,6 @@ export function DevStateToggle() {
 
   return (
     <>
-      {/* Floating launcher */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open dev state panel"
@@ -26,7 +31,6 @@ export function DevStateToggle() {
         dev
       </button>
 
-      {/* Backdrop + sheet */}
       {open && (
         <div className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center">
           <button
@@ -37,7 +41,7 @@ export function DevStateToggle() {
           <div
             role="dialog"
             aria-label="Dev state"
-            className="relative w-full max-w-[420px] rounded-t-3xl border border-hairline bg-popover p-5 text-popover-foreground shadow-2xl sm:rounded-3xl"
+            className="relative max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border border-hairline bg-popover p-5 text-popover-foreground shadow-2xl sm:rounded-3xl"
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-foreground/15 sm:hidden" />
 
@@ -65,7 +69,7 @@ export function DevStateToggle() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <Field
                 label="Theme override"
                 hint={state.themeMode === "system" ? `System (${resolvedTheme})` : undefined}
@@ -86,7 +90,7 @@ export function DevStateToggle() {
                 hint={
                   state.userState === "new"
                     ? "Splash → Welcome"
-                    : "Splash → Discover"
+                    : "Splash → Discover/Sign in"
                 }
               >
                 <Segmented<UserState>
@@ -96,6 +100,37 @@ export function DevStateToggle() {
                     { value: "returning", label: "Returning" },
                   ]}
                   onChange={(v) => set("userState", v)}
+                />
+              </Field>
+
+              <Field label="Auth state" hint={authStateHint(state.authState)}>
+                <Stacked<AuthState>
+                  value={state.authState}
+                  options={[
+                    { value: "signed-out", label: "Signed out" },
+                    { value: "mid-signup", label: "Mid signup" },
+                    { value: "signed-in-no-session", label: "Signed in, no session" },
+                    { value: "signed-in", label: "Signed in (valid session)" },
+                    { value: "biometric-enrolled", label: "Biometric enrolled" },
+                  ]}
+                  onChange={(v) => set("authState", v)}
+                />
+              </Field>
+
+              <Field
+                label="Onboarding progress"
+                hint="Lands signup at the next missing step"
+              >
+                <Stacked<OnboardingProgress>
+                  value={state.onboardingProgress}
+                  options={[
+                    { value: "none", label: "Nothing yet" },
+                    { value: "phone-no-name", label: "Phone, no name" },
+                    { value: "phone-name-no-address", label: "+ name, no address" },
+                    { value: "phone-name-address-no-payment", label: "+ address, no payment" },
+                    { value: "complete", label: "Fully complete" },
+                  ]}
+                  onChange={(v) => set("onboardingProgress", v)}
                 />
               </Field>
             </div>
@@ -110,6 +145,16 @@ export function DevStateToggle() {
   );
 }
 
+function authStateHint(s: AuthState): string {
+  switch (s) {
+    case "signed-out": return "Splash → Welcome / Sign in";
+    case "mid-signup": return "Splash → Sign up (resume)";
+    case "signed-in-no-session": return "Splash → Sign in";
+    case "signed-in": return "Splash → Discover";
+    case "biometric-enrolled": return "Splash → Unlock (Face ID)";
+  }
+}
+
 function Field({
   label,
   hint,
@@ -121,10 +166,10 @@ function Field({
 }) {
   return (
     <div>
-      <div className="mb-1.5 flex items-baseline justify-between">
+      <div className="mb-1.5 flex items-baseline justify-between gap-3">
         <span className="text-[12px] font-medium text-foreground">{label}</span>
         {hint && (
-          <span className="font-mono text-[10px] text-muted-foreground">{hint}</span>
+          <span className="text-right font-mono text-[10px] text-muted-foreground">{hint}</span>
         )}
       </div>
       {children}
@@ -156,6 +201,44 @@ function Segmented<T extends string>({
             }`}
           >
             {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function Stacked<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      {options.map((opt) => {
+        const active = opt.value === value;
+        return (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-[12.5px] font-medium transition-colors ${
+              active
+                ? "border-bagel bg-bagel/10 text-foreground"
+                : "border-hairline text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span>{opt.label}</span>
+            {active && (
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-bagel text-bagel-foreground">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+              </span>
+            )}
           </button>
         );
       })}

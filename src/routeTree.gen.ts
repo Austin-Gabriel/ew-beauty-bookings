@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SplashRouteImport } from './routes/splash'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplashRoute = SplashRouteImport.update({
@@ -41,6 +48,11 @@ const DiscoverRoute = DiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BiometricEnrollRoute = BiometricEnrollRouteImport.update({
+  id: '/biometric-enroll',
+  path: '/biometric-enroll',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,50 +61,76 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/biometric-enroll': typeof BiometricEnrollRoute
   '/discover': typeof DiscoverRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/biometric-enroll': typeof BiometricEnrollRoute
   '/discover': typeof DiscoverRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/biometric-enroll': typeof BiometricEnrollRoute
   '/discover': typeof DiscoverRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/discover' | '/signin' | '/signup' | '/splash' | '/welcome'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover' | '/signin' | '/signup' | '/splash' | '/welcome'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
+    | '/biometric-enroll'
     | '/discover'
     | '/signin'
     | '/signup'
     | '/splash'
+    | '/unlock'
+    | '/welcome'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/biometric-enroll'
+    | '/discover'
+    | '/signin'
+    | '/signup'
+    | '/splash'
+    | '/unlock'
+    | '/welcome'
+  id:
+    | '__root__'
+    | '/'
+    | '/biometric-enroll'
+    | '/discover'
+    | '/signin'
+    | '/signup'
+    | '/splash'
+    | '/unlock'
     | '/welcome'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BiometricEnrollRoute: typeof BiometricEnrollRoute
   DiscoverRoute: typeof DiscoverRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
+  UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
 }
 
@@ -103,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/splash': {
@@ -133,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biometric-enroll': {
+      id: '/biometric-enroll'
+      path: '/biometric-enroll'
+      fullPath: '/biometric-enroll'
+      preLoaderRoute: typeof BiometricEnrollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -145,10 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BiometricEnrollRoute: BiometricEnrollRoute,
   DiscoverRoute: DiscoverRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
+  UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
