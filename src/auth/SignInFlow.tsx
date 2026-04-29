@@ -1,13 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { AuthFrame, PrimaryCta, TertiaryLink } from "./AuthFrame";
+import {
+  AuthFrame,
+  AuthHeadline,
+  AuthSubhead,
+  AuthEyebrow,
+  PrimaryCta,
+  TertiaryLink,
+} from "./AuthFrame";
+import { AuthShell, useAuthTheme, SANS_STACK } from "./auth-shell";
 import { EditorialField } from "./EditorialField";
 import { OtpInput } from "./OtpInput";
 import { useDevState } from "@/dev-state/devState";
 
+const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+
 /**
- * SignInFlow — two screens (identifier → OTP) plus the biometric prompt
- * that fires on launch when a session + enrollment exist.
+ * SignInFlow — two screens (identifier → OTP). No squiggles, no logo.
  */
 export function SignInFlow() {
   const [screen, setScreen] = useState<"identifier" | "verify">("identifier");
@@ -22,12 +31,7 @@ export function SignInFlow() {
       />
     );
   }
-  return (
-    <SignInVerify
-      identifier={identifier}
-      onBack={() => setScreen("identifier")}
-    />
-  );
+  return <SignInVerify identifier={identifier} onBack={() => setScreen("identifier")} />;
 }
 
 function SignInIdentifier({
@@ -40,20 +44,17 @@ function SignInIdentifier({
   onContinue: () => void;
 }) {
   const navigate = useNavigate();
+  const { text } = useAuthTheme();
   const looksEmail = value.includes("@");
   const valid = looksEmail
     ? /.+@.+\..+/.test(value)
     : value.replace(/\D/g, "").length >= 7;
 
   return (
-    <AuthFrame onBack={() => navigate({ to: "/welcome" })} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[48px] leading-[1.02] tracking-tight text-foreground">
-          Welcome <span className="italic">back</span>.
-        </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          Phone number or email — we'll send a one-time code.
-        </p>
+    <AuthFrame onBack={() => navigate({ to: "/welcome" })}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Welcome back.</AuthHeadline>
+        <AuthSubhead>Phone number or email — we'll send a one-time code.</AuthSubhead>
 
         <div className="mt-12">
           <EditorialField
@@ -69,16 +70,24 @@ function SignInIdentifier({
         </div>
       </section>
 
-      <footer className="space-y-4">
+      <footer className="mt-6 flex flex-col gap-3" style={{ paddingBottom: 8 }}>
         <PrimaryCta disabled={!valid} onClick={onContinue}>
           Continue
         </PrimaryCta>
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-1">
           <TertiaryLink>Forgot your account?</TertiaryLink>
         </div>
-        <p className="pt-2 text-center text-[12.5px] text-muted-foreground">
+        <p
+          className="pt-2 text-center"
+          style={{
+            fontFamily: SANS_STACK,
+            fontSize: 12.5,
+            color: text,
+            opacity: 0.55,
+          }}
+        >
           New to Ewà?{" "}
-          <Link to="/signup" className="font-semibold text-foreground underline-offset-4 hover:underline">
+          <Link to="/signup" style={{ color: "#FF823F", fontWeight: 500 }}>
             Sign up
           </Link>
         </p>
@@ -90,6 +99,7 @@ function SignInIdentifier({
 function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () => void }) {
   const navigate = useNavigate();
   const { state, set } = useDevState();
+  const { text } = useAuthTheme();
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
 
@@ -107,8 +117,6 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
   };
 
   const submit = () => {
-    // First successful sign-in → mark signed-in. If they haven't enrolled
-    // biometrics yet, send them through the enroll prompt before Discover.
     if (state.authState !== "biometric-enrolled") {
       set("authState", "signed-in");
       navigate({ to: "/biometric-enroll" });
@@ -119,13 +127,26 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
   };
 
   return (
-    <AuthFrame onBack={onBack} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[40px] leading-[1.02] tracking-tight text-foreground">
-          Enter your <span className="italic">code</span>
-        </h1>
-        <p className="mt-4 text-[14px] text-muted-foreground">
-          Sent to <span className="tabular font-medium text-foreground">{identifier}</span>
+    <AuthFrame onBack={onBack}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Enter your code.</AuthHeadline>
+        <p
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 400,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: text,
+            opacity: 0.62,
+            marginTop: 12,
+            animationDelay: "120ms",
+          }}
+        >
+          Sent to{" "}
+          <span className="tabular" style={{ fontWeight: 500, opacity: 0.9 }}>
+            {identifier}
+          </span>
         </p>
 
         <div className="mt-12">
@@ -134,8 +155,15 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
 
         <div className="mt-8">
           {cooldown > 0 ? (
-            <p className="text-[13px] text-muted-foreground">
-              Resend code in <span className="tabular text-foreground">{cooldown}s</span>
+            <p
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 13,
+                color: text,
+                opacity: 0.55,
+              }}
+            >
+              Resend code in <span className="tabular">{cooldown}s</span>
             </p>
           ) : (
             <TertiaryLink onClick={startCooldown}>Resend code</TertiaryLink>
@@ -143,7 +171,7 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
         </div>
       </section>
 
-      <footer>
+      <footer className="mt-6" style={{ paddingBottom: 8 }}>
         <PrimaryCta disabled={code.length !== 6} onClick={submit}>
           Verify
         </PrimaryCta>
@@ -154,8 +182,7 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
 
 /**
  * BiometricPrompt — used on app launch when there's a saved session.
- * Pure UI; tap to "authenticate" and continue. "Use code instead" falls
- * back to the sign-in OTP flow.
+ * No squiggles, no logo — clean working surface.
  */
 export function BiometricPrompt({
   onSuccess,
@@ -164,24 +191,43 @@ export function BiometricPrompt({
   onSuccess: () => void;
   onFallback: () => void;
 }) {
+  const { text, borderCol } = useAuthTheme();
   return (
     <AuthFrame>
-      <section className="mt-24 flex flex-1 flex-col items-start">
-        <p className="text-[11px] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-          Welcome back
-        </p>
-        <h1 className="mt-4 font-display text-[44px] leading-[1.02] tracking-tight text-foreground">
-          Unlock with <span className="italic">Face ID</span>
+      <section className="mt-20 flex flex-1 flex-col items-start">
+        <AuthEyebrow>Welcome back</AuthEyebrow>
+        <h1
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 500,
+            fontSize: 26,
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            color: text,
+            margin: 0,
+            marginTop: 14,
+            animationDelay: "120ms",
+          }}
+        >
+          Unlock with{" "}
+          <span style={{ fontFamily: FRAUNCES, fontStyle: "italic", fontWeight: 400 }}>
+            Face ID
+          </span>
+          .
         </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          We'll never see your biometrics — they stay on your device.
-        </p>
+        <AuthSubhead>We'll never see your biometrics — they stay on your device.</AuthSubhead>
 
         <button
           type="button"
           onClick={onSuccess}
           aria-label="Authenticate with Face ID"
-          className="mt-16 grid h-28 w-28 place-items-center rounded-3xl border border-hairline bg-foreground/[0.04] text-foreground transition-transform hover:scale-[1.03] active:scale-[0.97]"
+          className="mt-12 grid h-28 w-28 place-items-center rounded-3xl transition-transform hover:scale-[1.03] active:scale-[0.97]"
+          style={{
+            border: `1px solid ${borderCol}`,
+            color: text,
+            backgroundColor: "transparent",
+          }}
         >
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
@@ -191,11 +237,18 @@ export function BiometricPrompt({
         </button>
       </section>
 
-      <footer>
+      <footer className="mt-6 flex flex-col gap-3" style={{ paddingBottom: 8 }}>
         <button
           type="button"
           onClick={onFallback}
-          className="flex h-12 w-full items-center justify-center rounded-full border border-hairline text-[14px] font-medium text-foreground"
+          className="flex h-12 w-full items-center justify-center rounded-full transition-colors"
+          style={{
+            border: `1px solid ${borderCol}`,
+            color: text,
+            fontFamily: SANS_STACK,
+            fontWeight: 500,
+            fontSize: 14,
+          }}
         >
           Use code instead
         </button>
@@ -205,12 +258,12 @@ export function BiometricPrompt({
 }
 
 /**
- * BiometricEnroll — shown right after a first successful sign-in. Lets the
- * user opt into biometrics so subsequent launches skip OTP.
+ * BiometricEnroll — shown right after a first successful sign-in.
  */
 export function BiometricEnroll() {
   const navigate = useNavigate();
   const { set } = useDevState();
+  const { text } = useAuthTheme();
   const enroll = () => {
     set("authState", "biometric-enrolled");
     navigate({ to: "/discover" });
@@ -222,25 +275,46 @@ export function BiometricEnroll() {
 
   return (
     <AuthFrame>
-      <section className="mt-24 flex-1">
-        <p className="text-[11px] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-          One-time setup
-        </p>
-        <h1 className="mt-4 font-display text-[44px] leading-[1.02] tracking-tight text-foreground">
-          Skip the code <span className="italic">next time</span>
+      <section className="mt-20 flex-1">
+        <AuthEyebrow>One-time setup</AuthEyebrow>
+        <h1
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 500,
+            fontSize: 26,
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            color: text,
+            margin: 0,
+            marginTop: 14,
+            animationDelay: "120ms",
+          }}
+        >
+          Skip the code{" "}
+          <span style={{ fontFamily: FRAUNCES, fontStyle: "italic", fontWeight: 400 }}>
+            next time
+          </span>
+          .
         </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          Use Face ID or Touch ID to sign in faster on this device. You can
-          turn it off anytime in settings.
-        </p>
+        <AuthSubhead>
+          Use Face ID or Touch ID to sign in faster on this device. You can turn it off anytime in settings.
+        </AuthSubhead>
       </section>
 
-      <footer className="space-y-3">
+      <footer className="mt-6 flex flex-col gap-3" style={{ paddingBottom: 8 }}>
         <PrimaryCta onClick={enroll}>Turn on Face ID</PrimaryCta>
         <button
           type="button"
           onClick={skip}
-          className="flex h-12 w-full items-center justify-center text-[14px] font-medium text-foreground/70"
+          className="flex h-12 w-full items-center justify-center"
+          style={{
+            color: text,
+            opacity: 0.65,
+            fontFamily: SANS_STACK,
+            fontWeight: 500,
+            fontSize: 14,
+          }}
         >
           Not now
         </button>

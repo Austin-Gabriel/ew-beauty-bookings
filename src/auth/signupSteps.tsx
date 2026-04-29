@@ -1,29 +1,33 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { AuthFrame, PrimaryCta, TertiaryLink } from "./AuthFrame";
+import { type ReactNode, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import {
+  AuthFrame,
+  AuthHeadline,
+  AuthSubhead,
+  AuthEyebrow,
+  PrimaryCta,
+  TertiaryLink,
+} from "./AuthFrame";
+import { AuthShell, useAuthTheme, SANS_STACK } from "./auth-shell";
 import { EditorialField } from "./EditorialField";
+import { OtpInput } from "./OtpInput";
 import { useSignup } from "./signupState";
+import { EwaLockup } from "@/components/ewa-logo";
 
-/**
- * Screen 1 — Phone (or email) identifier.
- * Display headline (Fraunces). Single field. One primary action.
- */
+const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+
+/** Screen 1 — Phone (or email) identifier. */
 export function StepIdentifier() {
   const { data, set, next, back, index, total } = useSignup();
   const isPhone = data.identifierKind === "phone";
-
   const phoneDigits = data.phone.replace(/\D/g, "");
   const valid = isPhone ? phoneDigits.length >= 7 : /.+@.+\..+/.test(data.email);
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[44px] leading-[1.02] tracking-tight text-foreground">
-          Let's get you <span className="italic">started</span>.
-        </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          We'll send you a code to verify it's really you.
-        </p>
+    <AuthFrame onBack={back} progress={(index + 1) / total}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Let's get you started.</AuthHeadline>
+        <AuthSubhead>We'll send you a code to verify it's really you.</AuthSubhead>
 
         <div className="mt-12">
           {isPhone ? (
@@ -53,24 +57,22 @@ export function StepIdentifier() {
         </div>
       </section>
 
-      <footer className="space-y-4">
+      <FooterStack>
         <PrimaryCta disabled={!valid} onClick={next}>
           Continue
         </PrimaryCta>
-        <div className="flex justify-center">
-          <TertiaryLink
-            onClick={() => set("identifierKind", isPhone ? "email" : "phone")}
-          >
+        <div className="flex justify-center pt-1">
+          <TertiaryLink onClick={() => set("identifierKind", isPhone ? "email" : "phone")}>
             Use {isPhone ? "email" : "phone"} instead
           </TertiaryLink>
         </div>
-        <p className="pt-2 text-center text-[12.5px] text-muted-foreground">
+        <AuthFootnote>
           Already have an account?{" "}
-          <Link to="/signin" className="font-semibold text-foreground underline-offset-4 hover:underline">
+          <Link to="/signin" style={{ color: "#FF823F", fontWeight: 500 }}>
             Sign in
           </Link>
-        </p>
-      </footer>
+        </AuthFootnote>
+      </FooterStack>
     </AuthFrame>
   );
 }
@@ -80,6 +82,7 @@ export function StepVerify() {
   const { identifierDisplay, back, next, index, total, goTo } = useSignup();
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  const { text } = useAuthTheme();
 
   const startCooldown = () => {
     setCooldown(30);
@@ -95,35 +98,52 @@ export function StepVerify() {
   };
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[40px] leading-[1.02] tracking-tight text-foreground">
-          Enter your <span className="italic">code</span>
-        </h1>
-        <p className="mt-4 flex flex-wrap items-center gap-1.5 text-[14px] text-muted-foreground">
+    <AuthFrame onBack={back} progress={(index + 1) / total}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Enter your code.</AuthHeadline>
+        <p
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 400,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: text,
+            opacity: 0.62,
+            marginTop: 12,
+            animationDelay: "120ms",
+          }}
+        >
           Sent to{" "}
-          <span className="tabular font-medium text-foreground">{identifierDisplay}</span>
+          <span className="tabular" style={{ fontWeight: 500, opacity: 0.9 }}>
+            {identifierDisplay}
+          </span>
+          {"  "}
           <button
             type="button"
             onClick={() => goTo("identifier")}
             aria-label="Edit"
-            className="inline-flex h-6 w-6 items-center justify-center rounded-full text-foreground/60 hover:bg-foreground/[0.05] hover:text-foreground"
+            style={{ color: "#FF823F", fontWeight: 500 }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
+            Edit
           </button>
         </p>
 
         <div className="mt-12">
-          <OtpInputBlock value={code} onChange={setCode} onComplete={() => next()} />
+          <OtpInput value={code} onChange={setCode} onComplete={() => next()} />
         </div>
 
         <div className="mt-8">
           {cooldown > 0 ? (
-            <p className="text-[13px] text-muted-foreground">
-              Resend code in <span className="tabular text-foreground">{cooldown}s</span>
+            <p
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 13,
+                color: text,
+                opacity: 0.55,
+              }}
+            >
+              Resend code in <span className="tabular">{cooldown}s</span>
             </p>
           ) : (
             <TertiaryLink onClick={startCooldown}>Resend code</TertiaryLink>
@@ -131,19 +151,13 @@ export function StepVerify() {
         </div>
       </section>
 
-      <footer>
+      <FooterStack>
         <PrimaryCta disabled={code.length !== 6} onClick={next}>
           Verify
         </PrimaryCta>
-      </footer>
+      </FooterStack>
     </AuthFrame>
   );
-}
-
-// Local import to avoid a top-level circular concern
-import { OtpInput } from "./OtpInput";
-function OtpInputBlock(props: React.ComponentProps<typeof OtpInput>) {
-  return <OtpInput {...props} />;
 }
 
 /** Screen 3 — name. */
@@ -152,14 +166,10 @@ export function StepName() {
   const valid = data.firstName.trim().length >= 1;
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[44px] leading-[1.02] tracking-tight text-foreground">
-          What should we <span className="italic">call</span> you?
-        </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          This is what pros will see when you book.
-        </p>
+    <AuthFrame onBack={back} progress={(index + 1) / total}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>What should we call you?</AuthHeadline>
+        <AuthSubhead>This is what pros will see when you book.</AuthSubhead>
 
         <div className="mt-12 space-y-8">
           <EditorialField
@@ -180,11 +190,11 @@ export function StepName() {
         </div>
       </section>
 
-      <footer>
+      <FooterStack>
         <PrimaryCta disabled={!valid} onClick={next}>
           Continue
         </PrimaryCta>
-      </footer>
+      </FooterStack>
     </AuthFrame>
   );
 }
@@ -194,14 +204,10 @@ export function StepAddress() {
   const { data, set, next, back, index, total } = useSignup();
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[42px] leading-[1.02] tracking-tight text-foreground">
-          Where should pros <span className="italic">come</span>?
-        </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          You can skip this and add it later.
-        </p>
+    <AuthFrame onBack={back} progress={(index + 1) / total}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Where should pros come?</AuthHeadline>
+        <AuthSubhead>You can skip this and add it later.</AuthSubhead>
 
         <div className="mt-12">
           <EditorialField
@@ -215,7 +221,13 @@ export function StepAddress() {
           <button
             type="button"
             onClick={() => set("address", "Current location · Brooklyn, NY")}
-            className="mt-5 inline-flex items-center gap-2 text-[13px] font-medium text-bagel hover:underline underline-offset-4"
+            className="mt-5 inline-flex items-center gap-2"
+            style={{
+              fontFamily: SANS_STACK,
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#FF823F",
+            }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -226,14 +238,14 @@ export function StepAddress() {
         </div>
       </section>
 
-      <footer className="space-y-3">
+      <FooterStack>
         <PrimaryCta disabled={data.address.trim().length < 3} onClick={next}>
           Continue
         </PrimaryCta>
         <div className="flex justify-center pt-1">
           <TertiaryLink onClick={next}>Skip for now</TertiaryLink>
         </div>
-      </footer>
+      </FooterStack>
     </AuthFrame>
   );
 }
@@ -241,6 +253,7 @@ export function StepAddress() {
 /** Screen 5 — payment (optional). */
 export function StepPayment() {
   const { data, set, next, back, index, total } = useSignup();
+  const { text, borderCol, isDark } = useAuthTheme();
 
   const Method = ({
     id,
@@ -249,23 +262,34 @@ export function StepPayment() {
   }: {
     id: NonNullable<typeof data.paymentMethod>;
     label: string;
-    icon: ReactIcon;
+    icon: ReactNode;
   }) => {
     const active = data.paymentMethod === id;
     return (
       <button
         type="button"
         onClick={() => set("paymentMethod", id)}
-        className={`flex h-14 w-full items-center gap-3 rounded-2xl border px-4 text-left transition-all ${
-          active
-            ? "border-bagel bg-bagel/10"
-            : "border-hairline hover:border-foreground/30"
-        }`}
+        className="flex h-14 w-full items-center gap-3 rounded-2xl px-4 text-left transition-all"
+        style={{
+          border: `1px solid ${active ? "#FF823F" : borderCol}`,
+          backgroundColor: active
+            ? "rgba(255,130,63,0.08)"
+            : isDark
+              ? "rgba(240,235,216,0.03)"
+              : "rgba(6,28,39,0.02)",
+          color: text,
+          fontFamily: SANS_STACK,
+          fontSize: 14,
+          fontWeight: 600,
+        }}
       >
-        <span className="text-foreground">{icon}</span>
-        <span className="flex-1 text-[14px] font-semibold text-foreground">{label}</span>
+        <span style={{ color: text, opacity: 0.9 }}>{icon}</span>
+        <span style={{ flex: 1 }}>{label}</span>
         {active && (
-          <span className="grid h-5 w-5 place-items-center rounded-full bg-bagel text-bagel-foreground">
+          <span
+            className="grid h-5 w-5 place-items-center rounded-full"
+            style={{ backgroundColor: "#FF823F", color: "#061C27" }}
+          >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12l5 5L20 7" />
             </svg>
@@ -276,14 +300,10 @@ export function StepPayment() {
   };
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} quietRibbons>
-      <section className="mt-14 flex-1">
-        <h1 className="font-display text-[42px] leading-[1.02] tracking-tight text-foreground">
-          Add a <span className="italic">payment</span> method
-        </h1>
-        <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed text-muted-foreground">
-          Required when you book — you can skip this for now.
-        </p>
+    <AuthFrame onBack={back} progress={(index + 1) / total}>
+      <section className="mt-12 flex-1">
+        <AuthHeadline>Add a payment method.</AuthHeadline>
+        <AuthSubhead>Required when you book — you can skip this for now.</AuthSubhead>
 
         <div className="mt-12 space-y-3">
           <Method
@@ -299,9 +319,9 @@ export function StepPayment() {
             id="googlepay"
             label="Google Pay"
             icon={
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 7v5l3 2" strokeLinecap="round" />
               </svg>
             }
           />
@@ -318,45 +338,122 @@ export function StepPayment() {
         </div>
       </section>
 
-      <footer className="space-y-3">
+      <FooterStack>
         <PrimaryCta disabled={!data.paymentMethod} onClick={next}>
           Add
         </PrimaryCta>
         <div className="flex justify-center pt-1">
           <TertiaryLink onClick={next}>Skip for now</TertiaryLink>
         </div>
-      </footer>
+      </FooterStack>
     </AuthFrame>
   );
 }
 
-type ReactIcon = React.ReactNode;
-
-/** Screen 6 — done. */
+/**
+ * Screen 6 — celebratory done screen. This IS an editorial moment, so it
+ * gets the squiggles + full Ewà lockup. Mirrors Welcome's visual language.
+ */
 export function StepDone() {
+  const navigate = useNavigate();
+  const { isDark, text } = useAuthTheme();
   return (
-    <AuthFrame progress={1}>
-      <section className="mt-20 flex-1">
-        <p className="text-[11px] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-          Welcome to ewà
-        </p>
-        <h1 className="mt-4 font-display text-[64px] leading-[0.96] tracking-tight text-foreground">
-          You're <span className="italic text-bagel">in</span>.
-        </h1>
-        <p className="mt-6 max-w-[32ch] text-[15px] leading-relaxed text-muted-foreground">
-          We'll keep things simple — discover trusted pros, book what fits your
-          day, and we'll take care of the rest.
-        </p>
-      </section>
+    <AuthShell glowBoost={1.1}>
+      <div
+        className="relative z-[1] flex flex-col items-center"
+        style={{ paddingTop: "10vh" }}
+      >
+        <div className="ewa-mark-in">
+          <div className="ewa-breathe">
+            <EwaLockup isDark={isDark} markSize={48} />
+          </div>
+        </div>
+      </div>
 
-      <footer>
-        <Link
-          to="/discover"
-          className="flex h-12 w-full items-center justify-center rounded-full bg-bagel text-[15px] font-semibold text-bagel-foreground shadow-[0_8px_24px_-12px_rgba(255,130,63,0.7)] transition-transform active:scale-[0.99]"
+      <div className="flex-1" />
+
+      <div className="relative z-[1] flex flex-col items-center px-8 text-center">
+        <AuthEyebrow>Welcome to ewà</AuthEyebrow>
+        <h1
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 500,
+            fontSize: 26,
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            color: text,
+            margin: 0,
+            marginTop: 14,
+            animationDelay: "200ms",
+          }}
         >
+          You're{" "}
+          <span
+            style={{
+              fontFamily: FRAUNCES,
+              fontStyle: "italic",
+              fontWeight: 400,
+              color: "#FF823F",
+            }}
+          >
+            in
+          </span>
+          .
+        </h1>
+        <p
+          className="ewa-rise"
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 400,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: text,
+            opacity: 0.62,
+            marginTop: 12,
+            maxWidth: 280,
+            animationDelay: "320ms",
+          }}
+        >
+          Discover trusted pros, book what fits your day — we'll take care of the rest.
+        </p>
+      </div>
+
+      <div
+        className="relative z-[1] mt-10 flex flex-col items-stretch px-5 ewa-rise"
+        style={{ animationDelay: "440ms", paddingBottom: 24 }}
+      >
+        <PrimaryCta onClick={() => navigate({ to: "/discover" })}>
           Start exploring
-        </Link>
-      </footer>
-    </AuthFrame>
+        </PrimaryCta>
+      </div>
+    </AuthShell>
+  );
+}
+
+/* ---------- Footer helpers ---------- */
+
+function FooterStack({ children }: { children: ReactNode }) {
+  return (
+    <footer className="mt-6 flex flex-col gap-3" style={{ paddingBottom: 8 }}>
+      {children}
+    </footer>
+  );
+}
+
+function AuthFootnote({ children }: { children: ReactNode }) {
+  const { text } = useAuthTheme();
+  return (
+    <p
+      className="pt-2 text-center"
+      style={{
+        fontFamily: SANS_STACK,
+        fontSize: 12.5,
+        color: text,
+        opacity: 0.55,
+      }}
+    >
+      {children}
+    </p>
   );
 }

@@ -34,9 +34,27 @@ export interface AuthShellProps {
   onBack?: () => void;
   glowBoost?: number;
   quietSquiggles?: boolean;
+  /**
+   * Fully removes the decorative bagel squiggle layers AND the warm glow.
+   * Use on form/working surfaces (signup steps, signin, face id, discover) —
+   * squiggles are an editorial accent reserved for celebratory/marketing
+   * moments (welcome, splash, signup-done).
+   */
+  noSquiggles?: boolean;
+  /** Hide the top-right theme toggle (used on screens that already have
+   *  their own chrome). */
+  hideThemeToggle?: boolean;
 }
 
-export function AuthShell({ children, topLabel, onBack, glowBoost = 1, quietSquiggles = false }: AuthShellProps) {
+export function AuthShell({
+  children,
+  topLabel,
+  onBack,
+  glowBoost = 1,
+  quietSquiggles = false,
+  noSquiggles = false,
+  hideThemeToggle = false,
+}: AuthShellProps) {
   // Bridge AuthShell theme to global dev-state so the floating dev toggle
   // controls dark/light here too. The local "setIsDark" updates the dev state.
   const { resolvedTheme, set } = useDevState();
@@ -68,65 +86,69 @@ export function AuthShell({ children, topLabel, onBack, glowBoost = 1, quietSqui
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -inset-[10%] ewa-drift-a"
-          style={{
-            opacity: squiggleOpacity,
-            transition: "opacity 600ms ease",
-            ...(quietSquiggles
-              ? {
-                  WebkitMaskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
-                  maskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
-                }
-              : {}),
-          }}
-        >
-          <svg viewBox="0 0 600 600" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
-            <path d="M-20,180 C80,100 180,260 290,180 S500,100 640,200" fill="none" stroke="#FF823F" strokeWidth="42" strokeLinecap="round" />
-            <path d="M-40,440 C90,360 220,520 340,440 S560,360 660,460" fill="none" stroke="#FF823F" strokeWidth="36" strokeLinecap="round" />
-          </svg>
-        </div>
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -inset-[15%] ewa-drift-b"
-          style={{
-            opacity: squiggleOpacity * 0.7,
-            transition: "opacity 600ms ease",
-            ...(quietSquiggles
-              ? {
-                  WebkitMaskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
-                  maskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
-                }
-              : {}),
-          }}
-        >
-          <svg viewBox="0 0 600 600" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
-            <path d="M-30,300 C120,220 260,400 400,310 S620,240 700,330" fill="none" stroke="#FF823F" strokeWidth="28" strokeLinecap="round" />
-          </svg>
-        </div>
+        {!noSquiggles && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-[10%] ewa-drift-a"
+              style={{
+                opacity: squiggleOpacity,
+                transition: "opacity 600ms ease",
+                ...(quietSquiggles
+                  ? {
+                      WebkitMaskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
+                      maskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
+                    }
+                  : {}),
+              }}
+            >
+              <svg viewBox="0 0 600 600" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+                <path d="M-20,180 C80,100 180,260 290,180 S500,100 640,200" fill="none" stroke="#FF823F" strokeWidth="42" strokeLinecap="round" />
+                <path d="M-40,440 C90,360 220,520 340,440 S560,360 660,460" fill="none" stroke="#FF823F" strokeWidth="36" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-[15%] ewa-drift-b"
+              style={{
+                opacity: squiggleOpacity * 0.7,
+                transition: "opacity 600ms ease",
+                ...(quietSquiggles
+                  ? {
+                      WebkitMaskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
+                      maskImage: "linear-gradient(to bottom, transparent 70%, #000 92%)",
+                    }
+                  : {}),
+              }}
+            >
+              <svg viewBox="0 0 600 600" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+                <path d="M-30,300 C120,220 260,400 400,310 S620,240 700,330" fill="none" stroke="#FF823F" strokeWidth="28" strokeLinecap="round" />
+              </svg>
+            </div>
 
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 ewa-glow-anim"
-          style={
-            {
-              background: `radial-gradient(circle 460px at 50% 28%, rgba(255,130,63,${glowBase}) 0%, rgba(255,130,63,0) 70%)`,
-              ["--glow-base" as never]: glowBase,
-            } as React.CSSProperties
-          }
-        />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 ewa-glow-anim"
+              style={
+                {
+                  background: `radial-gradient(circle 460px at 50% 28%, rgba(255,130,63,${glowBase}) 0%, rgba(255,130,63,0) 70%)`,
+                  ["--glow-base" as never]: glowBase,
+                } as React.CSSProperties
+              }
+            />
 
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: isDark
-              ? "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.35) 100%)"
-              : "radial-gradient(ellipse at center, transparent 60%, rgba(6,28,39,0.06) 100%)",
-            transition: "background 600ms ease",
-          }}
-        />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: isDark
+                  ? "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.35) 100%)"
+                  : "radial-gradient(ellipse at center, transparent 60%, rgba(6,28,39,0.06) 100%)",
+                transition: "background 600ms ease",
+              }}
+            />
+          </>
+        )}
 
         <div
           aria-hidden
@@ -171,15 +193,17 @@ export function AuthShell({ children, topLabel, onBack, glowBoost = 1, quietSqui
               </div>
             ) : null}
           </div>
-          <button
-            type="button"
-            onClick={() => setIsDark(!isDark)}
-            aria-label="Toggle color mode"
-            className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
-            style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
-          >
-            {isDark ? "☀" : "☾"}
-          </button>
+          {!hideThemeToggle && (
+            <button
+              type="button"
+              onClick={() => setIsDark(!isDark)}
+              aria-label="Toggle color mode"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
+              style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
+            >
+              {isDark ? "☀" : "☾"}
+            </button>
+          )}
         </div>
 
         {children}
