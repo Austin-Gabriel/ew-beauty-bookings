@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Welcome } from "../onboarding/Welcome";
+import WelcomePage from "@/pages/Welcome";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -17,9 +17,5 @@ export const Route = createFileRoute("/welcome")({
       },
     ],
   }),
-  component: WelcomeRoute,
+  component: WelcomePage,
 });
-
-function WelcomeRoute() {
-  return <Welcome />;
-}

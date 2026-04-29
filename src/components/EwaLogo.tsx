@@ -1,4 +1,4 @@
-import lockupLight from "@/assets/ewa-lockup.png"; // midnight wordmark, transparent — use on cream
+import lockupLight from "@/assets/ewa-wordmark-light.png"; // midnight wordmark, transparent — use on cream
 import lockupDark from "@/assets/ewa-wordmark.png"; // cream wordmark, transparent  — use on midnight
 import { useDevState } from "@/dev-state/devState";
 
