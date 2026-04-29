@@ -20,53 +20,93 @@ const FRAUNCES = '"Fraunces", "Times New Roman", serif';
  */
 export function SignInFlow() {
   const [screen, setScreen] = useState<"identifier" | "verify">("identifier");
-  const [identifier, setIdentifier] = useState("");
+  const [kind, setKind] = useState<"phone" | "email">("phone");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const countryCode = "+1";
+
+  const identifierDisplay =
+    kind === "phone" ? `${countryCode} ${phone}` : email;
 
   if (screen === "identifier") {
     return (
       <SignInIdentifier
-        value={identifier}
-        onChange={setIdentifier}
+        kind={kind}
+        setKind={setKind}
+        phone={phone}
+        setPhone={setPhone}
+        email={email}
+        setEmail={setEmail}
+        countryCode={countryCode}
         onContinue={() => setScreen("verify")}
       />
     );
   }
-  return <SignInVerify identifier={identifier} onBack={() => setScreen("identifier")} />;
+  return (
+    <SignInVerify
+      identifier={identifierDisplay}
+      onBack={() => setScreen("identifier")}
+    />
+  );
 }
 
 function SignInIdentifier({
-  value,
-  onChange,
+  kind,
+  setKind,
+  phone,
+  setPhone,
+  email,
+  setEmail,
+  countryCode,
   onContinue,
 }: {
-  value: string;
-  onChange: (v: string) => void;
+  kind: "phone" | "email";
+  setKind: (k: "phone" | "email") => void;
+  phone: string;
+  setPhone: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  countryCode: string;
   onContinue: () => void;
 }) {
   const navigate = useNavigate();
   const { text } = useAuthTheme();
-  const looksEmail = value.includes("@");
-  const valid = looksEmail
-    ? /.+@.+\..+/.test(value)
-    : value.replace(/\D/g, "").length >= 7;
+  const isPhone = kind === "phone";
+  const valid = isPhone
+    ? phone.replace(/\D/g, "").length >= 7
+    : /.+@.+\..+/.test(email);
 
   return (
     <AuthFrame onBack={() => navigate({ to: "/welcome" })}>
       <section className="mt-12 flex-1">
         <AuthHeadline>Welcome back.</AuthHeadline>
-        <AuthSubhead>Phone number or email — we'll send a one-time code.</AuthSubhead>
+        <AuthSubhead>We'll send a one-time code to sign you in.</AuthSubhead>
 
         <div className="mt-12">
-          <EditorialField
-            label="Phone or email"
-            value={value}
-            onChange={onChange}
-            type={looksEmail ? "email" : "tel"}
-            inputMode={looksEmail ? "email" : "tel"}
-            autoComplete="username"
-            autoFocus
-            placeholder="555 010 1234  ·  you@domain.com"
-          />
+          {isPhone ? (
+            <EditorialField
+              label="Phone number"
+              prefix={countryCode}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              autoFocus
+              value={phone}
+              onChange={(v) => setPhone(v.replace(/[^\d\s-]/g, ""))}
+              placeholder="555 010 1234"
+            />
+          ) : (
+            <EditorialField
+              label="Email address"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={setEmail}
+              placeholder="you@domain.com"
+            />
+          )}
         </div>
       </section>
 
@@ -75,7 +115,9 @@ function SignInIdentifier({
           Continue
         </PrimaryCta>
         <div className="flex justify-center pt-1">
-          <TertiaryLink>Forgot your account?</TertiaryLink>
+          <TertiaryLink onClick={() => setKind(isPhone ? "email" : "phone")}>
+            Use {isPhone ? "email" : "phone"} instead
+          </TertiaryLink>
         </div>
         <p
           className="pt-2 text-center"

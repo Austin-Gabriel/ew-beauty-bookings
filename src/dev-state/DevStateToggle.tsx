@@ -127,7 +127,7 @@ export function DevStateToggle() {
                     { value: "none", label: "Nothing yet" },
                     { value: "phone-no-name", label: "Phone, no name" },
                     { value: "phone-name-no-address", label: "+ name, no address" },
-                    { value: "phone-name-address-no-payment", label: "+ address, no payment" },
+                    { value: "phone-name-address-no-payment", label: "+ name + address" },
                     { value: "complete", label: "Fully complete" },
                   ]}
                   onChange={(v) => set("onboardingProgress", v)}
