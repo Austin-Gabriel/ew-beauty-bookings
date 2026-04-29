@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { AuthShell, useAuthTheme, SANS_STACK } from "./auth-shell";
 import { PrimaryButton, SecondaryButton } from "./auth-buttons";
 
+const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+
 /**
  * AuthFrame — the canonical shell for every working / form auth screen.
  *
@@ -60,14 +62,14 @@ export function AuthHeadline({ children, className }: { children: ReactNode; cla
     <h1
       className={`ewa-rise ${className ?? ""}`}
       style={{
-        fontFamily: SANS_STACK,
-        fontWeight: 500,
-        fontSize: 26,
-        lineHeight: 1.18,
+        fontFamily: FRAUNCES,
+        fontWeight: 400,
+        fontSize: 38,
+        lineHeight: 1.05,
         letterSpacing: "-0.02em",
         color: text,
         margin: 0,
-        maxWidth: 320,
+        maxWidth: 360,
       }}
     >
       {children}
