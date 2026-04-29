@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ClipboardEvent, type KeyboardEvent } from "react";
+import { useAuthTheme } from "./auth-shell";
 
 /**
  * OtpInput — six big editorial digit slots. Auto-advances, paste-friendly,
@@ -20,6 +21,9 @@ export function OtpInput({
   error?: boolean;
 }) {
   const refs = useRef<Array<HTMLInputElement | null>>([]);
+  const { isDark, text, borderCol } = useAuthTheme();
+  const slotBg = isDark ? "rgba(240,235,216,0.04)" : "rgba(6,28,39,0.04)";
+  const slotBgFocus = isDark ? "rgba(240,235,216,0.08)" : "rgba(6,28,39,0.06)";
 
   useEffect(() => {
     if (autoFocus) refs.current[0]?.focus();
@@ -74,11 +78,25 @@ export function OtpInput({
           onChange={() => {}}
           onKeyDown={(e) => handleKey(i, e)}
           onPaste={handlePaste}
-          className={`tabular h-14 w-full min-w-0 flex-1 rounded-xl border bg-foreground/[0.03] text-center text-[24px] font-semibold text-foreground transition-colors focus:outline-none ${
-            error
-              ? "border-destructive"
-              : "border-hairline focus:border-bagel focus:bg-foreground/[0.06]"
-          }`}
+          className="tabular h-14 w-full min-w-0 flex-1 rounded-xl border text-center text-[24px] font-semibold transition-colors focus:outline-none"
+          style={{
+            color: text,
+            backgroundColor: slotBg,
+            borderColor: error ? "#E5484D" : borderCol,
+            caretColor: "#FF823F",
+          }}
+          onFocus={(e) => {
+            if (!error) {
+              e.currentTarget.style.borderColor = "#FF823F";
+              e.currentTarget.style.backgroundColor = slotBgFocus;
+            }
+          }}
+          onBlur={(e) => {
+            if (!error) {
+              e.currentTarget.style.borderColor = borderCol;
+              e.currentTarget.style.backgroundColor = slotBg;
+            }
+          }}
           aria-label={`Digit ${i + 1}`}
         />
       ))}

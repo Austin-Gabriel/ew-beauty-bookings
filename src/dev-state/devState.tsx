@@ -33,11 +33,27 @@ export type OnboardingProgress =
   | "after-address"
   | "complete";
 
+/** Customer history density — drives Quick Rebook + greeting. */
+export type CustomerState = "new" | "returning" | "power";
+
+/** How many pros + categories appear in Discover. */
+export type DiscoverDensity = "empty" | "sparse" | "rich";
+
+/** Current location (drives feed + empty state). */
+export type LocationArea = "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "out-of-coverage";
+
+/** How many pros are online right now. */
+export type AvailabilityMix = "many" | "few" | "none";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
   authState: AuthState;
   onboardingProgress: OnboardingProgress;
+  customerState: CustomerState;
+  discoverDensity: DiscoverDensity;
+  location: LocationArea;
+  availabilityMix: AvailabilityMix;
 };
 
 const DEFAULTS: DevState = {
@@ -45,6 +61,10 @@ const DEFAULTS: DevState = {
   userState: "new",
   authState: "signed-out",
   onboardingProgress: "none",
+  customerState: "new",
+  discoverDensity: "rich",
+  location: "Bed-Stuy",
+  availabilityMix: "many",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";

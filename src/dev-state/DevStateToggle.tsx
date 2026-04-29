@@ -5,6 +5,10 @@ import {
   type UserState,
   type AuthState,
   type OnboardingProgress,
+  type CustomerState,
+  type DiscoverDensity,
+  type LocationArea,
+  type AvailabilityMix,
 } from "./devState";
 
 /**
@@ -132,6 +136,63 @@ export function DevStateToggle() {
                     { value: "complete", label: "Fully complete" },
                   ]}
                   onChange={(v) => set("onboardingProgress", v)}
+                />
+              </Field>
+
+              <div
+                className="my-2 border-t"
+                style={{ borderColor: "rgba(127,127,127,0.2)" }}
+              />
+              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                Discover
+              </p>
+
+              <Field label="Customer state" hint="Drives greeting + Quick Rebook">
+                <Stacked<CustomerState>
+                  value={state.customerState}
+                  options={[
+                    { value: "new", label: "New (no history)" },
+                    { value: "returning", label: "Returning (favs + 1 booking)" },
+                    { value: "power", label: "Power user (many bookings)" },
+                  ]}
+                  onChange={(v) => set("customerState", v)}
+                />
+              </Field>
+
+              <Field label="Discover density" hint="Pool size for the feed">
+                <Segmented<DiscoverDensity>
+                  value={state.discoverDensity}
+                  options={[
+                    { value: "empty", label: "Empty" },
+                    { value: "sparse", label: "Sparse" },
+                    { value: "rich", label: "Rich" },
+                  ]}
+                  onChange={(v) => set("discoverDensity", v)}
+                />
+              </Field>
+
+              <Field label="Location" hint="Filters by neighborhood">
+                <Stacked<LocationArea>
+                  value={state.location}
+                  options={[
+                    { value: "Bed-Stuy", label: "Bed-Stuy" },
+                    { value: "Crown Heights", label: "Crown Heights" },
+                    { value: "Fort Greene", label: "Fort Greene" },
+                    { value: "out-of-coverage", label: "Out-of-coverage" },
+                  ]}
+                  onChange={(v) => set("location", v)}
+                />
+              </Field>
+
+              <Field label="Availability mix" hint="How many pros are online now">
+                <Segmented<AvailabilityMix>
+                  value={state.availabilityMix}
+                  options={[
+                    { value: "many", label: "Many" },
+                    { value: "few", label: "Few" },
+                    { value: "none", label: "None" },
+                  ]}
+                  onChange={(v) => set("availabilityMix", v)}
                 />
               </Field>
             </div>
