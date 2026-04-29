@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { AuthShell, useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { EwaLockup } from "@/components/ewa-logo";
 import { PrimaryButton, SecondaryButton } from "@/auth/auth-buttons";
@@ -11,6 +12,7 @@ export default function WelcomePage() {
 }
 
 function WelcomeBody() {
+  const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
 
   return (
@@ -91,9 +93,9 @@ function WelcomeBody() {
       </div>
 
       <div className="relative z-[1] mt-10 flex flex-col items-stretch px-5 ewa-rise" style={{ animationDelay: "640ms" }}>
-        <PrimaryButton onClick={() => { /* route to signup */ }}>Sign up</PrimaryButton>
+        <PrimaryButton onClick={() => navigate({ to: "/signup" })}>Sign up</PrimaryButton>
         <div className="mt-2.5">
-          <SecondaryButton onClick={() => { /* route to login */ }}>I already have an account</SecondaryButton>
+          <SecondaryButton onClick={() => navigate({ to: "/signin" })}>I already have an account</SecondaryButton>
         </div>
       </div>
 
