@@ -1,64 +1,94 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 /**
  * Dev State — single source of truth for testing UI states without real data.
- * Every field MUST drive a UI change somewhere. Add fields as we build features.
+ * Every field MUST drive a UI change somewhere. Add fields as features land.
  *
- * In production builds the floating toggle is hidden, but defaults still apply.
+ * Hidden in production (toggle won't render), but defaults still apply.
  */
+export type ThemeMode = "system" | "light" | "dark";
+export type UserState = "new" | "returning";
+
 export type DevState = {
-  theme: "light" | "dark";
-  authed: boolean;
-  hasBookings: boolean;
+  themeMode: ThemeMode;
+  userState: UserState;
 };
 
 const DEFAULTS: DevState = {
-  theme: "light",
-  authed: false,
-  hasBookings: false,
+  themeMode: "system",
+  userState: "new",
 };
 
-const STORAGE_KEY = "ewa.devstate";
+const STORAGE_KEY = "ewa.devstate.v1";
 
 type Ctx = {
   state: DevState;
+  /** The actual applied theme after resolving "system". */
+  resolvedTheme: "light" | "dark";
   set: <K extends keyof DevState>(key: K, value: DevState[K]) => void;
   reset: () => void;
 };
 
 const DevStateCtx = createContext<Ctx | null>(null);
 
+function getSystemTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 export function DevStateProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DevState>(DEFAULTS);
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
 
-  // Hydrate from localStorage after mount (SSR-safe)
+  // Hydrate from localStorage post-mount (SSR-safe)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setState({ ...DEFAULTS, ...JSON.parse(raw) });
     } catch {}
+    setSystemTheme(getSystemTheme());
+
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? "dark" : "light");
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Persist + apply theme class to <html>
+  const resolvedTheme = state.themeMode === "system" ? systemTheme : state.themeMode;
+
+  // Persist + apply theme class
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {}
     const root = document.documentElement;
-    root.classList.toggle("dark", state.theme === "dark");
-  }, [state]);
+    root.classList.toggle("dark", resolvedTheme === "dark");
+    root.style.colorScheme = resolvedTheme;
+  }, [state, resolvedTheme]);
 
-  const value: Ctx = {
-    state,
-    set: (k, v) => setState((s) => ({ ...s, [k]: v })),
-    reset: () => setState(DEFAULTS),
-  };
+  const value: Ctx = useMemo(
+    () => ({
+      state,
+      resolvedTheme,
+      set: (k, v) => setState((s) => ({ ...s, [k]: v })),
+      reset: () => setState(DEFAULTS),
+    }),
+    [state, resolvedTheme],
+  );
 
   return <DevStateCtx.Provider value={value}>{children}</DevStateCtx.Provider>;
 }
 
 export function useDevState() {
   const ctx = useContext(DevStateCtx);
-  if (!ctx) throw new Error("useDevState must be used inside DevStateProvider");
+  if (!ctx) {
+    // Allow EwaLockup etc. to be rendered in storybook-ish previews without a provider
+    return {
+      state: DEFAULTS,
+      resolvedTheme: "light" as const,
+      set: () => {},
+      reset: () => {},
+    };
+  }
   return ctx;
 }

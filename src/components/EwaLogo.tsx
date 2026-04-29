@@ -1,9 +1,15 @@
+import wordmarkLight from "@/assets/ewa-logo.jpg"; // dark wordmark on white (use in light mode)
+import wordmarkDark from "@/assets/ewa-wordmark.png"; // white wordmark on transparent (use in dark mode)
+import { useDevState } from "@/dev-state/devState";
+
 /**
- * The Ewà logomark — orange circle with midnight dot, plus the accent stroke.
- * Pure SVG so it scales and themes cleanly. Use the brand orange always
- * (Bagel is full saturation, never tinted).
+ * Pure SVG mark — orange donut + inner dot + accent. The dot color
+ * adapts to the surface (use `text-midnight` on light, `text-cream` on dark
+ * via currentColor) so the inner cutout reads correctly on both.
+ *
+ * Use this in tight spaces (top corners, nav, avatars).
  */
-export function EwaLogo({ size = 56, className }: { size?: number; className?: string }) {
+export function EwaMark({ size = 32, className }: { size?: number; className?: string }) {
   return (
     <svg
       viewBox="0 0 120 140"
@@ -20,16 +26,28 @@ export function EwaLogo({ size = 56, className }: { size?: number; className?: s
 }
 
 /**
- * Full wordmark — "ewà" in editorial serif beside the mark.
- * Use only on splash, welcome, and rare editorial moments.
+ * Full lockup — uses the EXACT uploaded brand artwork (mark + wordmark).
+ * Reserved for editorial moments: splash, welcome, marketing surfaces.
+ *
+ * Picks the correct artwork for the current theme automatically so the
+ * letterforms stay legible on either background.
  */
-export function EwaWordmark({ className }: { className?: string }) {
+export function EwaLockup({
+  height = 56,
+  className,
+}: {
+  height?: number;
+  className?: string;
+}) {
+  const { resolvedTheme } = useDevState();
+  const src = resolvedTheme === "dark" ? wordmarkDark : wordmarkLight;
   return (
-    <div className={`flex items-center gap-3 ${className ?? ""}`}>
-      <EwaLogo size={44} className="text-foreground" />
-      <span className="font-display text-5xl leading-none tracking-tight text-foreground">
-        ewà
-      </span>
-    </div>
+    <img
+      src={src}
+      alt="Ewà"
+      style={{ height }}
+      className={`w-auto select-none ${className ?? ""}`}
+      draggable={false}
+    />
   );
 }

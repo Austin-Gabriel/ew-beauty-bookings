@@ -1,104 +1,82 @@
 import { Link } from "@tanstack/react-router";
-import { EwaLogo } from "../components/EwaLogo";
+import { EwaMark } from "@/components/EwaLogo";
 
 /**
- * Welcome — editorial onboarding intro. Generous space, Fraunces headline,
- * Uncut Sans body. Light/dark via tokens.
+ * Welcome — pre-auth. Editorial typography composition (no stock photos).
+ * One screen, two actions: Sign up (bagel CTA) + Sign in (text link).
  */
 export function Welcome() {
   return (
-    <main className="relative min-h-screen bg-background text-foreground">
-      {/* Soft brand wash in the corner — uses Bagel at full saturation */}
+    <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Warm bagel wash anchored top-right */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -right-24 h-80 w-80 rounded-full"
+        className="pointer-events-none absolute -top-40 -right-40 h-[420px] w-[420px] rounded-full"
         style={{
           background:
             "radial-gradient(closest-side, rgba(255,130,63,0.55), transparent 70%)",
         }}
       />
+      {/* Subtle squiggle for cultural warmth */}
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute bottom-32 -left-6 opacity-25"
+        width="220"
+        height="80"
+        viewBox="0 0 220 80"
+        fill="none"
+      >
+        <path
+          d="M4 50 C 30 20, 60 70, 90 40 S 150 20, 180 50 S 220 60, 216 30"
+          stroke="#FF823F"
+          strokeWidth="3"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </svg>
 
-      <div className="relative mx-auto flex min-h-screen max-w-[420px] flex-col px-6 pt-10 pb-8">
-        <header className="flex items-center gap-2">
-          <EwaLogo size={28} className="text-foreground" />
-          <span className="font-display text-2xl leading-none">ewà</span>
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[420px] flex-col px-6 pt-10 pb-8">
+        {/* Top corner: mark only, never the wordmark */}
+        <header>
+          <EwaMark size={32} className="text-foreground" />
         </header>
 
-        <section className="mt-16 flex-1">
-          <p className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-            Welcome
+        {/* Editorial typographic hero */}
+        <section className="mt-20 flex-1">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-muted-foreground uppercase">
+            Welcome to ewà
           </p>
-          <h1 className="mt-3 font-display text-[44px] leading-[1.05] tracking-tight">
-            Beauty that comes to <em className="not-italic text-bagel">you</em>.
+          <h1 className="mt-4 font-display text-[52px] leading-[0.98] tracking-tight text-foreground">
+            Bring beauty
+            <br />
+            <span className="italic">to</span>{" "}
+            <span className="text-bagel">you</span>.
           </h1>
-          <p className="mt-5 max-w-[34ch] text-[15px] leading-relaxed text-muted-foreground">
-            Trusted barbers, stylists, braiders, nail techs, makeup artists and
-            locticians — booked on your terms, at your door.
+          <p className="mt-6 max-w-[32ch] text-[15px] leading-relaxed text-muted-foreground">
+            Trusted barbers, stylists, braiders, nail techs and makeup artists —
+            booked on your terms, at your door.
           </p>
-
-          <ul className="mt-10 space-y-5">
-            <Bullet
-              kicker="01"
-              title="Browse like a friend's recommendation"
-              body="Hand-picked pros, with the work and reviews to back it up."
-            />
-            <Bullet
-              kicker="02"
-              title="Book in a few taps"
-              body="Pick a time, share an address, and we'll handle the rest."
-            />
-            <Bullet
-              kicker="03"
-              title="Show up ready, anywhere"
-              body="At home, at the office, before the wedding — wherever life is."
-            />
-          </ul>
         </section>
 
-        <footer className="mt-10 space-y-3">
+        {/* Actions */}
+        <footer className="space-y-3">
           <Link
-            to="/"
-            className="flex h-12 w-full items-center justify-center rounded-full bg-bagel font-semibold text-bagel-foreground transition-transform active:scale-[0.99]"
+            to="/signup"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-bagel text-[15px] font-semibold text-bagel-foreground shadow-[0_8px_24px_-12px_rgba(255,130,63,0.7)] transition-transform active:scale-[0.99]"
           >
-            Get started
+            Sign up
           </Link>
-          <button
-            type="button"
-            className="flex h-12 w-full items-center justify-center rounded-full border border-hairline font-medium text-foreground"
+          <Link
+            to="/signin"
+            className="flex h-12 w-full items-center justify-center rounded-full text-[14px] font-medium text-foreground"
           >
             I already have an account
-          </button>
+          </Link>
           <p className="pt-2 text-center text-[11px] leading-relaxed text-muted-foreground">
             By continuing you agree to our Terms and Privacy Policy.
           </p>
         </footer>
       </div>
     </main>
-  );
-}
-
-function Bullet({
-  kicker,
-  title,
-  body,
-}: {
-  kicker: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <li className="flex gap-4">
-      <span className="tabular pt-1 text-xs font-semibold tracking-widest text-bagel">
-        {kicker}
-      </span>
-      <div>
-        <h3 className="text-[15px] font-semibold leading-snug text-foreground">
-          {title}
-        </h3>
-        <p className="mt-1 text-[13.5px] leading-relaxed text-muted-foreground">
-          {body}
-        </p>
-      </div>
-    </li>
   );
 }
