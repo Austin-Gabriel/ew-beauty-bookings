@@ -93,9 +93,9 @@ function WelcomeBody() {
       </div>
 
       <div className="relative z-[1] mt-10 flex flex-col items-stretch px-5 ewa-rise" style={{ animationDelay: "640ms" }}>
-        <PrimaryButton onClick={() => { /* route to signup */ }}>Sign up</PrimaryButton>
+        <PrimaryButton onClick={() => navigate({ to: "/signup" })}>Sign up</PrimaryButton>
         <div className="mt-2.5">
-          <SecondaryButton onClick={() => { /* route to login */ }}>I already have an account</SecondaryButton>
+          <SecondaryButton onClick={() => navigate({ to: "/signin" })}>I already have an account</SecondaryButton>
         </div>
       </div>
 
