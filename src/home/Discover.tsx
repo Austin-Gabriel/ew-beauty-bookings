@@ -119,7 +119,9 @@ export function DiscoverPage() {
     setSearch("");
   };
 
-  const stickyBg = isDark ? "rgba(6,28,39,0.82)" : "rgba(240,235,216,0.9)";
+  // Fully opaque so the editorial waveform doesn't bleed through and crush
+  // contrast in light mode (cream-on-cream "Hello, Friend" was unreadable).
+  const stickyBg = isDark ? "#061C27" : "#F0EBD8";
   const subtle = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
 
   return (
