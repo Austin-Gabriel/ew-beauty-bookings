@@ -11,49 +11,54 @@ import {
 import { AuthShell, useAuthTheme, SANS_STACK } from "./auth-shell";
 import { EditorialField } from "./EditorialField";
 import { OtpInput } from "./OtpInput";
-import { useSignup } from "./signupState";
-import { EwaLockup } from "@/components/ewa-logo";
+import { useSignup, type SignupStepId } from "./signupState";
 
 const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
-/** Screen 1 — Phone (or email) identifier. */
-export function StepIdentifier() {
+/* ───────────────────────── Screen 1 — Create account ───────────────────────── */
+
+export function StepAccount() {
   const { data, set, next, back, index, total } = useSignup();
-  const isPhone = data.identifierKind === "phone";
   const phoneDigits = data.phone.replace(/\D/g, "");
-  const valid = isPhone ? phoneDigits.length >= 7 : /.+@.+\..+/.test(data.email);
+  const emailValid = /.+@.+\..+/.test(data.email);
+  const valid = data.fullName.trim().length >= 2 && emailValid && phoneDigits.length >= 7;
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total}>
-      <section className="mt-12 flex-1">
-        <AuthHeadline>Let's get you started.</AuthHeadline>
-        <AuthSubhead>We'll send you a code to verify it's really you.</AuthSubhead>
+    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Create account">
+      <section className="mt-10 flex-1">
+        <AuthHeadline>
+          Create your <span style={{ fontStyle: "italic" }}>account</span>.
+        </AuthHeadline>
+        <AuthSubhead>A few details so we can text you bookings.</AuthSubhead>
 
-        <div className="mt-12">
-          {isPhone ? (
-            <EditorialField
-              label="Phone number"
-              prefix={data.countryCode}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              autoFocus
-              value={data.phone}
-              onChange={(v) => set("phone", v.replace(/[^\d\s-]/g, ""))}
-              placeholder="555 010 1234"
-            />
-          ) : (
-            <EditorialField
-              label="Email address"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              autoFocus
-              value={data.email}
-              onChange={(v) => set("email", v)}
-              placeholder="you@domain.com"
-            />
-          )}
+        <div className="mt-10 space-y-7">
+          <EditorialField
+            label="Full name"
+            value={data.fullName}
+            onChange={(v) => set("fullName", v)}
+            autoComplete="name"
+            autoFocus
+            placeholder="Amara Okafor"
+          />
+          <EditorialField
+            label="Email"
+            type="email"
+            inputMode="email"
+            value={data.email}
+            onChange={(v) => set("email", v)}
+            autoComplete="email"
+            placeholder="you@domain.com"
+          />
+          <EditorialField
+            label="Mobile number"
+            type="tel"
+            inputMode="tel"
+            prefix={data.countryCode}
+            value={data.phone}
+            onChange={(v) => set("phone", v.replace(/[^\d\s-]/g, ""))}
+            autoComplete="tel"
+            placeholder="555 010 1234"
+          />
         </div>
       </section>
 
@@ -61,25 +66,24 @@ export function StepIdentifier() {
         <PrimaryCta disabled={!valid} onClick={next}>
           Continue
         </PrimaryCta>
-        <div className="flex justify-center pt-1">
-          <TertiaryLink onClick={() => set("identifierKind", isPhone ? "email" : "phone")}>
-            Use {isPhone ? "email" : "phone"} instead
-          </TertiaryLink>
-        </div>
         <AuthFootnote>
           Already have an account?{" "}
           <Link to="/signin" style={{ color: "#FF823F", fontWeight: 500 }}>
             Sign in
           </Link>
         </AuthFootnote>
+        <FinePrint>
+          By continuing you agree to our Terms and Privacy Policy.
+        </FinePrint>
       </FooterStack>
     </AuthFrame>
   );
 }
 
-/** Screen 2 — OTP verification. */
+/* ───────────────────────── Screen 2 — Verify your number ───────────────────────── */
+
 export function StepVerify() {
-  const { identifierDisplay, back, next, index, total, goTo } = useSignup();
+  const { phoneDisplay, back, next, index, total, goTo } = useSignup();
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const { text } = useAuthTheme();
@@ -98,9 +102,11 @@ export function StepVerify() {
   };
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total}>
-      <section className="mt-12 flex-1">
-        <AuthHeadline>Enter your code.</AuthHeadline>
+    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Verify">
+      <section className="mt-10 flex-1">
+        <AuthHeadline>
+          Enter your <span style={{ fontStyle: "italic" }}>code</span>.
+        </AuthHeadline>
         <p
           className="ewa-rise"
           style={{
@@ -116,12 +122,12 @@ export function StepVerify() {
         >
           Sent to{" "}
           <span className="tabular" style={{ fontWeight: 500, opacity: 0.9 }}>
-            {identifierDisplay}
+            {phoneDisplay}
           </span>
           {"  "}
           <button
             type="button"
-            onClick={() => goTo("identifier")}
+            onClick={() => goTo("account")}
             aria-label="Edit"
             style={{ color: "#FF823F", fontWeight: 500 }}
           >
@@ -160,54 +166,20 @@ export function StepVerify() {
   );
 }
 
-/** Screen 3 — name. */
-export function StepName() {
-  const { data, set, next, back, index, total } = useSignup();
-  const valid = data.firstName.trim().length >= 1;
+/* ───────────────────────── Screen 3 — Default address ───────────────────────── */
 
-  return (
-    <AuthFrame onBack={back} progress={(index + 1) / total}>
-      <section className="mt-12 flex-1">
-        <AuthHeadline>What should we call you?</AuthHeadline>
-        <AuthSubhead>This is what pros will see when you book.</AuthSubhead>
-
-        <div className="mt-12 space-y-8">
-          <EditorialField
-            label="First name"
-            value={data.firstName}
-            onChange={(v) => set("firstName", v)}
-            autoComplete="given-name"
-            autoFocus
-            placeholder="Amara"
-          />
-          <EditorialField
-            label="Last name (optional)"
-            value={data.lastName}
-            onChange={(v) => set("lastName", v)}
-            autoComplete="family-name"
-            placeholder="Okafor"
-          />
-        </div>
-      </section>
-
-      <FooterStack>
-        <PrimaryCta disabled={!valid} onClick={next}>
-          Continue
-        </PrimaryCta>
-      </FooterStack>
-    </AuthFrame>
-  );
-}
-
-/** Screen 4 — default address (optional). */
 export function StepAddress() {
   const { data, set, next, back, index, total } = useSignup();
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total}>
-      <section className="mt-12 flex-1">
-        <AuthHeadline>Where should pros come?</AuthHeadline>
-        <AuthSubhead>You can skip this and add it later.</AuthSubhead>
+    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Address">
+      <section className="mt-10 flex-1">
+        <AuthHeadline>
+          Where should pros <span style={{ fontStyle: "italic" }}>come</span>?
+        </AuthHeadline>
+        <AuthSubhead>
+          We'll use this as your default booking address. You can skip and add it later.
+        </AuthSubhead>
 
         <div className="mt-12">
           <EditorialField
@@ -250,78 +222,153 @@ export function StepAddress() {
   );
 }
 
+/* ───────────────────────── Screen 4 — Review and continue ───────────────────────── */
 
-/**
- * Screen 6 — celebratory done screen. This IS an editorial moment, so it
- * gets the squiggles + full Ewà lockup. Mirrors Welcome's visual language.
- */
+export function StepReview() {
+  const { data, goTo, next, back, index, total } = useSignup();
+
+  return (
+    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Review">
+      <section className="mt-10 flex-1">
+        <AuthHeadline>
+          Review and <span style={{ fontStyle: "italic" }}>continue</span>.
+        </AuthHeadline>
+        <AuthSubhead>Looks good? You're almost in.</AuthSubhead>
+
+        <div className="mt-10">
+          <ReviewRow label="Name" value={data.fullName || "—"} onEdit={() => goTo("account")} />
+          <ReviewRow label="Email" value={data.email || "—"} onEdit={() => goTo("account")} />
+          <ReviewRow
+            label="Mobile number"
+            value={`${data.countryCode} ${data.phone}`.trim()}
+            onEdit={() => goTo("account")}
+          />
+          <ReviewRow
+            label="Default address"
+            value={data.address || "Not set"}
+            actionLabel={data.address ? "Edit" : "Add"}
+            onEdit={() => goTo("address")}
+            muted={!data.address}
+          />
+        </div>
+      </section>
+
+      <FooterStack>
+        <PrimaryCta onClick={next}>Continue</PrimaryCta>
+      </FooterStack>
+    </AuthFrame>
+  );
+}
+
+function ReviewRow({
+  label,
+  value,
+  onEdit,
+  actionLabel = "Edit",
+  muted = false,
+}: {
+  label: string;
+  value: string;
+  onEdit: () => void;
+  actionLabel?: string;
+  muted?: boolean;
+}) {
+  const { text, borderCol } = useAuthTheme();
+  return (
+    <div
+      className="flex items-start justify-between gap-4 py-4"
+      style={{ borderBottom: `1px solid ${borderCol}` }}
+    >
+      <div className="min-w-0 flex-1">
+        <div
+          style={{
+            fontFamily: SANS_STACK,
+            fontSize: 10,
+            letterSpacing: "1.6px",
+            textTransform: "uppercase",
+            color: text,
+            opacity: 0.5,
+            fontWeight: 600,
+          }}
+        >
+          {label}
+        </div>
+        <div
+          className="mt-1.5 truncate"
+          style={{
+            fontFamily: SANS_STACK,
+            fontSize: 16,
+            fontWeight: 500,
+            color: text,
+            opacity: muted ? 0.5 : 1,
+          }}
+        >
+          {value}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onEdit}
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 13,
+          fontWeight: 500,
+          color: "#FF823F",
+          marginTop: 6,
+        }}
+      >
+        {actionLabel}
+      </button>
+    </div>
+  );
+}
+
+/* ───────────────────────── Screen 5 — You're in ───────────────────────── */
+
 export function StepDone() {
   const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
   return (
-    <AuthShell glowBoost={1.1}>
-      <div
-        className="relative z-[1] flex flex-col items-center"
-        style={{ paddingTop: "10vh" }}
-      >
-        <div className="ewa-mark-in">
-          <div className="ewa-breathe">
-            <EwaLockup isDark={isDark} markSize={48} />
-          </div>
-        </div>
-      </div>
+    <AuthShell glowBoost={1.1} topLabel="Welcome">
+      <div className="relative z-[1] flex flex-1 flex-col items-center justify-center px-8 text-center">
+        <CheckMark isDark={isDark} />
 
-      <div className="flex-1" />
-
-      <div className="relative z-[1] flex flex-col items-center px-8 text-center">
-        <AuthEyebrow>Welcome to ewà</AuthEyebrow>
         <h1
           className="ewa-rise"
           style={{
-            fontFamily: SANS_STACK,
-            fontWeight: 500,
-            fontSize: 26,
-            lineHeight: 1.18,
+            fontFamily: FRAUNCES,
+            fontWeight: 400,
+            fontSize: 38,
+            lineHeight: 1.05,
             letterSpacing: "-0.02em",
             color: text,
             margin: 0,
-            marginTop: 14,
+            marginTop: 28,
             animationDelay: "200ms",
           }}
         >
-          You're{" "}
-          <span
-            style={{
-              fontFamily: FRAUNCES,
-              fontStyle: "italic",
-              fontWeight: 400,
-              color: "#FF823F",
-            }}
-          >
-            in
-          </span>
-          .
+          You're <span style={{ fontStyle: "italic", color: "#FF823F" }}>in</span>.
         </h1>
         <p
           className="ewa-rise"
           style={{
             fontFamily: SANS_STACK,
             fontWeight: 400,
-            fontSize: 13,
+            fontSize: 14,
             lineHeight: 1.5,
             color: text,
             opacity: 0.62,
-            marginTop: 12,
-            maxWidth: 280,
+            marginTop: 14,
+            maxWidth: 300,
             animationDelay: "320ms",
           }}
         >
-          Discover trusted pros, book what fits your day — we'll take care of the rest.
+          Start exploring pros near you.
         </p>
       </div>
 
       <div
-        className="relative z-[1] mt-10 flex flex-col items-stretch px-5 ewa-rise"
+        className="relative z-[1] mx-auto w-full max-w-[420px] px-6 ewa-rise"
         style={{ animationDelay: "440ms", paddingBottom: 24 }}
       >
         <PrimaryCta onClick={() => navigate({ to: "/discover" })}>
@@ -332,7 +379,27 @@ export function StepDone() {
   );
 }
 
-/* ---------- Footer helpers ---------- */
+function CheckMark({ isDark }: { isDark: boolean }) {
+  const ringBg = isDark ? "rgba(255,130,63,0.10)" : "rgba(255,130,63,0.12)";
+  return (
+    <div
+      className="ewa-mark-in flex items-center justify-center rounded-full"
+      style={{
+        width: 96,
+        height: 96,
+        backgroundColor: ringBg,
+        border: "1.5px solid #FF823F",
+        boxShadow: "0 0 60px 0 rgba(255,130,63,0.35)",
+      }}
+    >
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#FF823F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12l5 5L20 7" />
+      </svg>
+    </div>
+  );
+}
+
+/* ───────────────────────── Footer helpers ───────────────────────── */
 
 function FooterStack({ children }: { children: ReactNode }) {
   return (
@@ -351,10 +418,33 @@ function AuthFootnote({ children }: { children: ReactNode }) {
         fontFamily: SANS_STACK,
         fontSize: 12.5,
         color: text,
-        opacity: 0.55,
+        opacity: 0.6,
       }}
     >
       {children}
     </p>
   );
 }
+
+function FinePrint({ children }: { children: ReactNode }) {
+  const { text } = useAuthTheme();
+  return (
+    <p
+      className="text-center"
+      style={{
+        fontFamily: SANS_STACK,
+        fontSize: 11,
+        lineHeight: 1.5,
+        color: text,
+        opacity: 0.45,
+        maxWidth: 320,
+        marginInline: "auto",
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+// Suppress unused-import warnings for type re-export consumers.
+export type { SignupStepId };
