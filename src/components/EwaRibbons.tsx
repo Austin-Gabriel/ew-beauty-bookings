@@ -33,7 +33,7 @@ export function EwaRibbons({ className }: { className?: string }) {
       <svg
         className="absolute -left-[80%] top-[10%] h-[26vh] w-[260%] animate-[ewaRibbonA_24s_ease-in-out_infinite]"
         viewBox="0 0 1200 260"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMid meet" style={{overflow:"visible"}}
         fill="none"
       >
         <path
@@ -47,7 +47,7 @@ export function EwaRibbons({ className }: { className?: string }) {
       <svg
         className="absolute -left-[80%] top-[40%] h-[24vh] w-[260%] animate-[ewaRibbonB_30s_ease-in-out_infinite]"
         viewBox="0 0 1200 260"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMid meet" style={{overflow:"visible"}}
         fill="none"
       >
         <path
@@ -61,7 +61,7 @@ export function EwaRibbons({ className }: { className?: string }) {
       <svg
         className="absolute -left-[80%] bottom-[4%] h-[28vh] w-[260%] animate-[ewaRibbonC_36s_ease-in-out_infinite]"
         viewBox="0 0 1200 280"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMid meet" style={{overflow:"visible"}}
         fill="none"
       >
         <path
