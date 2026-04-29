@@ -1,44 +1,24 @@
 import { Link } from "@tanstack/react-router";
-import { EwaMark } from "@/components/EwaLogo";
+import { EwaLockup } from "@/components/EwaLogo";
+import { EwaRibbons } from "@/components/EwaRibbons";
 
 /**
- * Welcome — pre-auth. Editorial typography composition (no stock photos).
+ * Welcome — pre-auth. Editorial typographic composition over the brand's
+ * drifting bagel ribbons (same visual language as Ewà Biz).
  * One screen, two actions: Sign up (bagel CTA) + Sign in (text link).
  */
 export function Welcome() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      {/* Warm bagel wash anchored top-right */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 -right-40 h-[420px] w-[420px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(255,130,63,0.55), transparent 70%)",
-        }}
-      />
-      {/* Subtle squiggle for cultural warmth */}
-      <svg
-        aria-hidden
-        className="pointer-events-none absolute bottom-32 -left-6 opacity-25"
-        width="220"
-        height="80"
-        viewBox="0 0 220 80"
-        fill="none"
-      >
-        <path
-          d="M4 50 C 30 20, 60 70, 90 40 S 150 20, 180 50 S 220 60, 216 30"
-          stroke="#FF823F"
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="none"
-        />
-      </svg>
+      <EwaRibbons />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-[420px] flex-col px-6 pt-10 pb-8">
-        {/* Top corner: mark only, never the wordmark */}
-        <header>
-          <EwaMark size={32} className="text-foreground" />
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[420px] flex-col px-6 pt-10 pb-8">
+        {/* Top: official lockup, small */}
+        <header className="flex items-center justify-between">
+          <EwaLockup height={28} />
+          <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+            For customers
+          </span>
         </header>
 
         {/* Editorial typographic hero */}
