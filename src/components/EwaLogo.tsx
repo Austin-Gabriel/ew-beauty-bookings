@@ -43,7 +43,12 @@ export function EwaLockup({
   variant?: "auto" | "light" | "dark";
 }) {
   const { resolvedTheme } = useDevState();
-  const useDark = (variant === "auto" ? resolvedTheme : variant) === "dark";
+  // Fall back to the html class set by the pre-hydration script so we pick
+  // the correct artwork on first paint, before React state hydrates.
+  const domDark =
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const useDark =
+    variant === "auto" ? resolvedTheme === "dark" || domDark : variant === "dark";
   const src = useDark ? lockupDark : lockupLight;
   return (
     <img
