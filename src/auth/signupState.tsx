@@ -7,7 +7,6 @@ export type SignupStepId =
   | "verify"
   | "name"
   | "address"
-  | "payment"
   | "done";
 
 export const SIGNUP_STEPS: SignupStepId[] = [
@@ -15,7 +14,6 @@ export const SIGNUP_STEPS: SignupStepId[] = [
   "verify",
   "name",
   "address",
-  "payment",
   "done",
 ];
 
@@ -29,7 +27,6 @@ export interface SignupData {
   firstName: string;
   lastName: string;
   address: string;
-  paymentMethod: "applepay" | "googlepay" | "card" | null;
 }
 
 const DEFAULTS: SignupData = {
@@ -40,7 +37,6 @@ const DEFAULTS: SignupData = {
   firstName: "",
   lastName: "",
   address: "",
-  paymentMethod: null,
 };
 
 interface SignupCtx {
@@ -70,7 +66,7 @@ function startStepFromDev(progress: string): SignupStepId {
     case "phone-name-no-address":
       return "address";
     case "phone-name-address-no-payment":
-      return "payment";
+      return "address";
     case "complete":
       return "done";
     default:
@@ -100,9 +96,6 @@ export function SignupProvider({ children }: { children: ReactNode }) {
     }
     if (p === "phone-name-address-no-payment" || p === "complete") {
       d.address = "215 Atlantic Ave, Brooklyn, NY";
-    }
-    if (p === "complete") {
-      d.paymentMethod = "applepay";
     }
     return d;
     // We deliberately only re-seed on first mount — once the user is
