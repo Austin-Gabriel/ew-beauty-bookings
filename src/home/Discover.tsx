@@ -362,16 +362,10 @@ export function DiscoverPage() {
       )}
       {filterSheetOpen && (
         <Sheet onClose={() => setFilterSheetOpen(false)} title="Filters">
-          <p
-            style={{
-              fontFamily: SANS_STACK,
-              fontSize: 14,
-              color: text,
-              opacity: 0.6,
-            }}
-          >
-            Advanced filters are coming soon. Use the chips above for now.
-          </p>
+          <SheetSubhead text={text}>
+            Refine by service, price, distance, and availability.
+          </SheetSubhead>
+          <SheetComingSoon text={text} label="Advanced filters" hint="Use the chips above the feed for quick filtering in the meantime." />
         </Sheet>
       )}
       {prefSheetOpen && (
@@ -379,16 +373,16 @@ export function DiscoverPage() {
           onClose={() => setPrefSheetOpen(null)}
           title={prefSheetOpen === "now" ? "Book now" : "Schedule later"}
         >
-          <p
-            style={{
-              fontFamily: SANS_STACK,
-              fontSize: 14,
-              color: text,
-              opacity: 0.6,
-            }}
-          >
-            Preference sheet (when, what, where) coming soon.
-          </p>
+          <SheetSubhead text={text}>
+            {prefSheetOpen === "now"
+              ? "Tell us what you need today and we'll match you with a pro who's online right now."
+              : "Pick a date, a service, and a place — we'll find the right pro and confirm in minutes."}
+          </SheetSubhead>
+          <SheetComingSoon
+            text={text}
+            label={prefSheetOpen === "now" ? "Instant matching" : "Scheduling flow"}
+            hint="The full preference flow (when, what, where) lands next."
+          />
         </Sheet>
       )}
       <span hidden>{bg}</span>
