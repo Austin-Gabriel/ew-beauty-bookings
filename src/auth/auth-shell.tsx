@@ -193,15 +193,17 @@ export function AuthShell({
               </div>
             ) : null}
           </div>
-          <button
-            type="button"
-            onClick={() => setIsDark(!isDark)}
-            aria-label="Toggle color mode"
-            className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
-            style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
-          >
-            {isDark ? "☀" : "☾"}
-          </button>
+          {!hideThemeToggle && (
+            <button
+              type="button"
+              onClick={() => setIsDark(!isDark)}
+              aria-label="Toggle color mode"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
+              style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
+            >
+              {isDark ? "☀" : "☾"}
+            </button>
+          )}
         </div>
 
         {children}
