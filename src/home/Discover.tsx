@@ -119,7 +119,9 @@ export function DiscoverPage() {
     setSearch("");
   };
 
-  const stickyBg = isDark ? "rgba(6,28,39,0.82)" : "rgba(240,235,216,0.9)";
+  // Fully opaque so the editorial waveform doesn't bleed through and crush
+  // contrast in light mode (cream-on-cream "Hello, Friend" was unreadable).
+  const stickyBg = isDark ? "#061C27" : "#F0EBD8";
   const subtle = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
 
   return (
@@ -196,8 +198,7 @@ export function DiscoverPage() {
         className="sticky top-0 z-30 px-5 pb-3 pt-2"
         style={{
           backgroundColor: stickyBg,
-          backdropFilter: "saturate(140%) blur(14px)",
-          WebkitBackdropFilter: "saturate(140%) blur(14px)",
+          borderBottom: `1px solid ${borderCol}`,
         }}
       >
         <SearchBar value={search} onChange={setSearch} />
@@ -361,16 +362,10 @@ export function DiscoverPage() {
       )}
       {filterSheetOpen && (
         <Sheet onClose={() => setFilterSheetOpen(false)} title="Filters">
-          <p
-            style={{
-              fontFamily: SANS_STACK,
-              fontSize: 14,
-              color: text,
-              opacity: 0.6,
-            }}
-          >
-            Advanced filters are coming soon. Use the chips above for now.
-          </p>
+          <SheetSubhead text={text}>
+            Refine by service, price, distance, and availability.
+          </SheetSubhead>
+          <SheetComingSoon text={text} label="Advanced filters" hint="Use the chips above the feed for quick filtering in the meantime." />
         </Sheet>
       )}
       {prefSheetOpen && (
@@ -378,16 +373,16 @@ export function DiscoverPage() {
           onClose={() => setPrefSheetOpen(null)}
           title={prefSheetOpen === "now" ? "Book now" : "Schedule later"}
         >
-          <p
-            style={{
-              fontFamily: SANS_STACK,
-              fontSize: 14,
-              color: text,
-              opacity: 0.6,
-            }}
-          >
-            Preference sheet (when, what, where) coming soon.
-          </p>
+          <SheetSubhead text={text}>
+            {prefSheetOpen === "now"
+              ? "Tell us what you need today and we'll match you with a pro who's online right now."
+              : "Pick a date, a service, and a place — we'll find the right pro and confirm in minutes."}
+          </SheetSubhead>
+          <SheetComingSoon
+            text={text}
+            label={prefSheetOpen === "now" ? "Instant matching" : "Scheduling flow"}
+            hint="The full preference flow (when, what, where) lands next."
+          />
         </Sheet>
       )}
       <span hidden>{bg}</span>
@@ -953,20 +948,23 @@ function Sheet({
       <div
         role="dialog"
         aria-label={title}
-        className="relative max-h-[80vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
+        className="relative max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
         style={{
           backgroundColor: sheetBg,
           borderColor: borderCol,
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 24px)",
+          minHeight: 320,
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 28px)",
         }}
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between">
           <h3
             style={{
               fontFamily: FRAUNCES,
               fontWeight: 400,
-              fontSize: 22,
+              fontSize: 26,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
               color: text,
               margin: 0,
             }}
@@ -976,7 +974,7 @@ function Sheet({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full"
+            className="grid h-8 w-8 place-items-center rounded-full text-lg"
             style={{ color: text, opacity: 0.6 }}
           >
             ×
@@ -984,6 +982,73 @@ function Sheet({
         </div>
         {children}
       </div>
+    </div>
+  );
+}
+
+function SheetSubhead({ children, text }: { children: React.ReactNode; text: string }) {
+  return (
+    <p
+      style={{
+        fontFamily: SANS_STACK,
+        fontSize: 14,
+        lineHeight: 1.5,
+        color: text,
+        opacity: 0.7,
+        marginTop: 0,
+        marginBottom: 20,
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function SheetComingSoon({ text, label, hint }: { text: string; label: string; hint: string }) {
+  return (
+    <div
+      className="rounded-2xl border px-4 py-5"
+      style={{
+        borderColor: "rgba(255,130,63,0.35)",
+        backgroundColor: "rgba(255,130,63,0.08)",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 10,
+          letterSpacing: "1.6px",
+          textTransform: "uppercase",
+          color: "#FF823F",
+          fontWeight: 600,
+        }}
+      >
+        Coming soon
+      </div>
+      <div
+        style={{
+          fontFamily: FRAUNCES,
+          fontWeight: 400,
+          fontSize: 20,
+          lineHeight: 1.15,
+          color: text,
+          marginTop: 6,
+        }}
+      >
+        {label}
+      </div>
+      <p
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 13,
+          lineHeight: 1.5,
+          color: text,
+          opacity: 0.65,
+          marginTop: 8,
+        }}
+      >
+        {hint}
+      </p>
     </div>
   );
 }
