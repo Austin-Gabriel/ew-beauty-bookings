@@ -12,6 +12,7 @@ export default function WelcomePage() {
 }
 
 function WelcomeBody() {
+  const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
 
   return (
