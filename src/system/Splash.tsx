@@ -37,7 +37,7 @@ export function Splash() {
 
       <div className="relative z-10 flex flex-col items-center px-8">
         <div className="animate-[fadeUp_700ms_ease-out_both]">
-          <EwaLockup height={72} />
+          <EwaLockup size={88} />
         </div>
         <p className="mt-7 animate-[fadeUp_700ms_ease-out_180ms_both] font-display text-[15px] italic tracking-tight text-muted-foreground">
           Beauty, on your time.
