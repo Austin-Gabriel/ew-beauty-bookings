@@ -1,21 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { EwaLockup } from "@/components/EwaLogo";
-import { EwaRibbons } from "@/components/EwaRibbons";
+import { AuthShell, useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
+import { EwaLockup } from "@/components/ewa-logo";
 import { useDevState } from "@/dev-state/devState";
 
 /**
- * Splash — first touch. Editorial surface, brand-forward.
- * Drifting bagel-toned ribbons (same visual language as Ewà Biz),
- * official lockup centered, warm tagline.
+ * Splash — first touch. Uses the same editorial AuthShell as Welcome
+ * (drifting bagel squiggles, warm glow, grain) so the visual language
+ * is consistent across the pre-auth funnel. Theme is driven by the
+ * global dev-state (and AuthShell's top-right toggle writes back to it).
  *
  * Auto-routes after a brief moment based on dev-state user session:
  *   - new       → /welcome
  *   - returning → /discover
  */
 export function Splash() {
+  return (
+    <AuthShell glowBoost={1.15}>
+      <SplashBody />
+    </AuthShell>
+  );
+}
+
+function SplashBody() {
   const navigate = useNavigate();
   const { state } = useDevState();
+  const { isDark, text } = useAuthTheme();
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
@@ -29,28 +39,28 @@ export function Splash() {
   }, [navigate, state.userState]);
 
   return (
-    <main
-      className={`relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background text-foreground transition-opacity duration-500 ${
-        leaving ? "opacity-0" : "opacity-100"
-      }`}
+    <div
+      className="relative z-[1] flex flex-1 flex-col items-center justify-center px-8 transition-opacity duration-500"
+      style={{ opacity: leaving ? 0 : 1 }}
     >
-      <EwaRibbons />
-
-      <div className="relative z-10 flex flex-col items-center px-8">
-        <div className="animate-[fadeUp_900ms_ease-out_both]">
-          <EwaLockup height={56} />
+      <div className="ewa-mark-in">
+        <div className="ewa-breathe">
+          <EwaLockup isDark={isDark} markSize={64} />
         </div>
-        <p className="mt-6 animate-[fadeUp_900ms_ease-out_220ms_both] font-display text-[15px] italic tracking-tight text-muted-foreground">
-          Beauty, on your time.
-        </p>
       </div>
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </main>
+      <p
+        className="ewa-rise mt-6 text-center"
+        style={{
+          fontFamily: SANS_STACK,
+          fontSize: 14,
+          letterSpacing: "0.01em",
+          color: text,
+          opacity: 0.62,
+          animationDelay: "300ms",
+        }}
+      >
+        Beauty, on your time.
+      </p>
+    </div>
   );
 }
