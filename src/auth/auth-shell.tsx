@@ -34,9 +34,27 @@ export interface AuthShellProps {
   onBack?: () => void;
   glowBoost?: number;
   quietSquiggles?: boolean;
+  /**
+   * Fully removes the decorative bagel squiggle layers AND the warm glow.
+   * Use on form/working surfaces (signup steps, signin, face id, discover) —
+   * squiggles are an editorial accent reserved for celebratory/marketing
+   * moments (welcome, splash, signup-done).
+   */
+  noSquiggles?: boolean;
+  /** Hide the top-right theme toggle (used on screens that already have
+   *  their own chrome). */
+  hideThemeToggle?: boolean;
 }
 
-export function AuthShell({ children, topLabel, onBack, glowBoost = 1, quietSquiggles = false }: AuthShellProps) {
+export function AuthShell({
+  children,
+  topLabel,
+  onBack,
+  glowBoost = 1,
+  quietSquiggles = false,
+  noSquiggles = false,
+  hideThemeToggle = false,
+}: AuthShellProps) {
   // Bridge AuthShell theme to global dev-state so the floating dev toggle
   // controls dark/light here too. The local "setIsDark" updates the dev state.
   const { resolvedTheme, set } = useDevState();
