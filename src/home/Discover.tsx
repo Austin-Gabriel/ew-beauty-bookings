@@ -198,8 +198,7 @@ export function DiscoverPage() {
         className="sticky top-0 z-30 px-5 pb-3 pt-2"
         style={{
           backgroundColor: stickyBg,
-          backdropFilter: "saturate(140%) blur(14px)",
-          WebkitBackdropFilter: "saturate(140%) blur(14px)",
+          borderBottom: `1px solid ${borderCol}`,
         }}
       >
         <SearchBar value={search} onChange={setSearch} />
