@@ -1,124 +1,164 @@
 import { useState } from "react";
-import { useDevState, type DevState } from "./devState";
+import { useDevState, type ThemeMode, type UserState } from "./devState";
 
 /**
- * Floating dev-only toggle. Hidden in production builds via import.meta.env.PROD.
- * Tap the badge to expand. Add a row per new field as features land.
+ * Floating dev-only panel — quiet, functional, dismissable.
+ * Hidden in production via import.meta.env.PROD.
+ *
+ * Tap the badge to open a bottom sheet with the current dev fields.
+ * Add a row per new field as features land.
  */
 export function DevStateToggle() {
-  const { state, set, reset } = useDevState();
+  const { state, set, reset, resolvedTheme } = useDevState();
   const [open, setOpen] = useState(false);
 
   if (import.meta.env.PROD) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] font-sans text-xs">
-      {open ? (
-        <div className="w-64 rounded-2xl border border-hairline bg-popover p-3 text-popover-foreground shadow-2xl">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-semibold tracking-tight">Dev state</span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={reset}
-                className="rounded-md px-2 py-0.5 text-muted-foreground hover:bg-muted"
-              >
-                reset
-              </button>
-              <button
-                onClick={() => setOpen(false)}
-                className="rounded-md px-2 py-0.5 text-muted-foreground hover:bg-muted"
-              >
-                ×
-              </button>
-            </div>
-          </div>
+    <>
+      {/* Floating launcher */}
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Open dev state panel"
+        className="fixed bottom-4 right-4 z-[9998] flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-popover px-3 font-mono text-[11px] font-medium text-popover-foreground shadow-lg backdrop-blur"
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-bagel" />
+        dev
+      </button>
 
-          <div className="space-y-2">
-            <Row
-              label="Theme"
-              value={state.theme}
-              options={["light", "dark"] as const}
-              onChange={(v) => set("theme", v as DevState["theme"])}
-            />
-            <Toggle
-              label="Authenticated"
-              value={state.authed}
-              onChange={(v) => set("authed", v)}
-            />
-            <Toggle
-              label="Has bookings"
-              value={state.hasBookings}
-              onChange={(v) => set("hasBookings", v)}
-            />
+      {/* Backdrop + sheet */}
+      {open && (
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center">
+          <button
+            aria-label="Close dev state panel"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 bg-midnight/40 backdrop-blur-sm"
+          />
+          <div
+            role="dialog"
+            aria-label="Dev state"
+            className="relative w-full max-w-[420px] rounded-t-3xl border border-hairline bg-popover p-5 text-popover-foreground shadow-2xl sm:rounded-3xl"
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-foreground/15 sm:hidden" />
+
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                  Dev state
+                </p>
+                <h2 className="text-base font-semibold">Preview controls</h2>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={reset}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="grid h-7 w-7 place-items-center rounded-full text-muted-foreground hover:bg-muted"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Field
+                label="Theme override"
+                hint={state.themeMode === "system" ? `System (${resolvedTheme})` : undefined}
+              >
+                <Segmented<ThemeMode>
+                  value={state.themeMode}
+                  options={[
+                    { value: "system", label: "System" },
+                    { value: "light", label: "Light" },
+                    { value: "dark", label: "Dark" },
+                  ]}
+                  onChange={(v) => set("themeMode", v)}
+                />
+              </Field>
+
+              <Field
+                label="User state"
+                hint={
+                  state.userState === "new"
+                    ? "Splash → Welcome"
+                    : "Splash → Discover"
+                }
+              >
+                <Segmented<UserState>
+                  value={state.userState}
+                  options={[
+                    { value: "new", label: "New user" },
+                    { value: "returning", label: "Returning" },
+                  ]}
+                  onChange={(v) => set("userState", v)}
+                />
+              </Field>
+            </div>
+
+            <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted-foreground">
+              Dev only — hidden in production builds.
+            </p>
           </div>
         </div>
-      ) : (
-        <button
-          onClick={() => setOpen(true)}
-          className="rounded-full bg-bagel px-3 py-1.5 font-semibold text-bagel-foreground shadow-lg"
-        >
-          dev
-        </button>
       )}
+    </>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <span className="text-[12px] font-medium text-foreground">{label}</span>
+        {hint && (
+          <span className="font-mono text-[10px] text-muted-foreground">{hint}</span>
+        )}
+      </div>
+      {children}
     </div>
   );
 }
 
-function Row<T extends string>({
-  label,
+function Segmented<T extends string>({
   value,
   options,
   onChange,
 }: {
-  label: string;
   value: T;
-  options: readonly T[];
+  options: { value: T; label: string }[];
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground">{label}</span>
-      <div className="flex rounded-md border border-hairline p-0.5">
-        {options.map((opt) => (
+    <div className="flex w-full rounded-xl border border-hairline bg-muted/40 p-0.5">
+      {options.map((opt) => {
+        const active = opt.value === value;
+        return (
           <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={`rounded px-2 py-0.5 capitalize ${
-              value === opt ? "bg-foreground text-background" : "text-muted-foreground"
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`flex-1 rounded-lg px-2.5 py-1.5 text-[12px] font-medium transition-colors ${
+              active
+                ? "bg-foreground text-background shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {opt}
+            {opt.label}
           </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Toggle({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground">{label}</span>
-      <button
-        onClick={() => onChange(!value)}
-        className={`relative h-5 w-9 rounded-full transition-colors ${
-          value ? "bg-bagel" : "bg-muted"
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-all ${
-            value ? "left-[18px]" : "left-0.5"
-          }`}
-        />
-      </button>
+        );
+      })}
     </div>
   );
 }

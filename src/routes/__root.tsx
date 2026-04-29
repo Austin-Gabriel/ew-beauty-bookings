@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, ScriptOnce, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { DevStateProvider } from "../dev-state/devState";
@@ -53,13 +53,31 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
 });
 
+/**
+ * Pre-hydration script — reads dev-state from localStorage and applies the
+ * dark class to <html> BEFORE React hydrates. Eliminates the FOUC where the
+ * page would render light then flip to dark on mount.
+ */
+const themeBootstrap = `(function(){try{
+  var raw = localStorage.getItem("ewa.devstate.v1");
+  var mode = "system";
+  if (raw) { try { mode = (JSON.parse(raw).themeMode) || "system"; } catch(e){} }
+  var resolved = mode === "system"
+    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : mode;
+  var root = document.documentElement;
+  if (resolved === "dark") root.classList.add("dark"); else root.classList.remove("dark");
+  root.style.colorScheme = resolved;
+}catch(e){}})();`;
+
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
+        <ScriptOnce>{themeBootstrap}</ScriptOnce>
         {children}
         <Scripts />
       </body>
@@ -75,3 +93,4 @@ function RootComponent() {
     </DevStateProvider>
   );
 }
+
