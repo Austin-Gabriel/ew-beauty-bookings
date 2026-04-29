@@ -18,9 +18,10 @@ export function PlaceholderTab({
       <header className="px-6 pt-6">
         <h1
           style={{
-            fontFamily: SANS_STACK,
-            fontWeight: 600,
-            fontSize: 26,
+            fontFamily: FRAUNCES,
+            fontWeight: 400,
+            fontSize: 38,
+            lineHeight: 1.05,
             letterSpacing: "-0.02em",
             color: text,
             margin: 0,
