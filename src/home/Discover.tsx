@@ -954,20 +954,23 @@ function Sheet({
       <div
         role="dialog"
         aria-label={title}
-        className="relative max-h-[80vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
+        className="relative max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
         style={{
           backgroundColor: sheetBg,
           borderColor: borderCol,
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 24px)",
+          minHeight: 320,
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 28px)",
         }}
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-5 flex items-center justify-between">
           <h3
             style={{
               fontFamily: FRAUNCES,
               fontWeight: 400,
-              fontSize: 22,
+              fontSize: 26,
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
               color: text,
               margin: 0,
             }}
@@ -977,7 +980,7 @@ function Sheet({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full"
+            className="grid h-8 w-8 place-items-center rounded-full text-lg"
             style={{ color: text, opacity: 0.6 }}
           >
             ×
