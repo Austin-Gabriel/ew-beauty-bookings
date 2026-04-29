@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useDevState } from "@/dev-state/devState";
 
 const SANS = '"Uncut Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif';
 
@@ -36,12 +37,14 @@ export interface AuthShellProps {
 }
 
 export function AuthShell({ children, topLabel, onBack, glowBoost = 1, quietSquiggles = false }: AuthShellProps) {
-  const [isDark, setIsDark] = useState(true);
+  // Bridge AuthShell theme to global dev-state so the floating dev toggle
+  // controls dark/light here too. The local "setIsDark" updates the dev state.
+  const { resolvedTheme, set } = useDevState();
+  const isDark = resolvedTheme === "dark";
+  const setIsDark = (v: boolean) => set("themeMode", v ? "dark" : "light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: light)");
-    if (mq.matches) setIsDark(false);
     setMounted(true);
   }, []);
 
