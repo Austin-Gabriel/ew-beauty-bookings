@@ -1,15 +1,15 @@
 import { SignupProvider, useSignup } from "./signupState";
 import {
-  StepIdentifier,
+  StepAccount,
   StepVerify,
-  StepName,
   StepAddress,
+  StepReview,
   StepDone,
 } from "./signupSteps";
 
 /**
- * SignupFlow — provider + step router. Smooth horizontal transition between
- * steps, single mount per step so input state isn't lost.
+ * SignupFlow — provider + step router. Single mount per step so input state
+ * is preserved as the user moves forward and back.
  */
 export function SignupFlow() {
   return (
@@ -21,14 +21,12 @@ export function SignupFlow() {
 
 function Switcher() {
   const { step } = useSignup();
-
-  // Keyed wrapper so each step gets a fresh mount (anim + autofocus).
   return (
     <div key={step} className="ewa-rise">
-      {step === "identifier" && <StepIdentifier />}
+      {step === "account" && <StepAccount />}
       {step === "verify" && <StepVerify />}
-      {step === "name" && <StepName />}
       {step === "address" && <StepAddress />}
+      {step === "review" && <StepReview />}
       {step === "done" && <StepDone />}
     </div>
   );
