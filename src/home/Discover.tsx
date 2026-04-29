@@ -151,7 +151,9 @@ export function DiscoverPage() {
         <button
           type="button"
           aria-label="Favourites"
-          onClick={() => setNeighborhoodOpen(true)}
+          onClick={() => {
+            // returning users → saved pros (placeholder route); for now, a noop
+          }}
           className="grid h-9 w-9 place-items-center rounded-full border transition-colors"
           style={{ borderColor: borderCol, color: text, backgroundColor: subtle }}
         >
