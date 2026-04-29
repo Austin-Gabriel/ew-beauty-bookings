@@ -14,9 +14,13 @@ import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SplashRouteImport } from './routes/splash'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -43,9 +47,24 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRoute = BookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BiometricEnrollRoute = BiometricEnrollRouteImport.update({
@@ -58,80 +77,113 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProProIdRoute = ProProIdRouteImport.update({
+  id: '/pro/$proId',
+  path: '/pro/$proId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
+  '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/pro/$proId': typeof ProProIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
+  '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/pro/$proId': typeof ProProIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
+  '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/pro/$proId': typeof ProProIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/biometric-enroll'
+    | '/bookings'
     | '/discover'
+    | '/messages'
+    | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/pro/$proId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/biometric-enroll'
+    | '/bookings'
     | '/discover'
+    | '/messages'
+    | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/pro/$proId'
   id:
     | '__root__'
     | '/'
     | '/biometric-enroll'
+    | '/bookings'
     | '/discover'
+    | '/messages'
+    | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/pro/$proId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BiometricEnrollRoute: typeof BiometricEnrollRoute
+  BookingsRoute: typeof BookingsRoute
   DiscoverRoute: typeof DiscoverRoute
+  MessagesRoute: typeof MessagesRoute
+  ProfileRoute: typeof ProfileRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
+  ProProIdRoute: typeof ProProIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -171,11 +223,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discover': {
       id: '/discover'
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings': {
+      id: '/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof BookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/biometric-enroll': {
@@ -192,18 +265,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pro/$proId': {
+      id: '/pro/$proId'
+      path: '/pro/$proId'
+      fullPath: '/pro/$proId'
+      preLoaderRoute: typeof ProProIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
+  BookingsRoute: BookingsRoute,
   DiscoverRoute: DiscoverRoute,
+  MessagesRoute: MessagesRoute,
+  ProfileRoute: ProfileRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
+  ProProIdRoute: ProProIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
