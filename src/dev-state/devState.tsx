@@ -45,6 +45,12 @@ export type LocationArea = "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "out-o
 /** How many pros are online right now. */
 export type AvailabilityMix = "many" | "few" | "none";
 
+/** Seeded favorites/collections in the Favorites tab. */
+export type FavoritesSeed = "empty" | "few" | "many";
+
+/** Notifications & Offers density. */
+export type NotificationsState = "none" | "few" | "many";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -54,6 +60,8 @@ export type DevState = {
   discoverDensity: DiscoverDensity;
   location: LocationArea;
   availabilityMix: AvailabilityMix;
+  favoritesSeed: FavoritesSeed;
+  notificationsState: NotificationsState;
 };
 
 const DEFAULTS: DevState = {
@@ -65,6 +73,8 @@ const DEFAULTS: DevState = {
   discoverDensity: "rich",
   location: "Bed-Stuy",
   availabilityMix: "many",
+  favoritesSeed: "few",
+  notificationsState: "few",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
