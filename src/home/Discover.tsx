@@ -500,34 +500,18 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 /* ───────────────────────── Pro cards ───────────────────────── */
 
 function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
+  const { text } = useAuthTheme();
   return (
     <button
       type="button"
       onClick={onTap}
-      className="mt-4 block w-full overflow-hidden rounded-3xl border text-left transition-transform active:scale-[0.99]"
-      style={{ borderColor: borderCol, backgroundColor: cardBg }}
+      className="mx-5 block overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.99]"
+      style={{ width: "calc(100% - 40px)" }}
     >
       <div
         className="relative aspect-[5/4] w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
       >
-        {pro.online && (
-          <span
-            className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 11,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Available now
-          </span>
-        )}
         <button
           type="button"
           aria-label="Save"
@@ -540,12 +524,12 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
           </svg>
         </button>
       </div>
-      <div className="px-5 pb-5 pt-4">
+      <div className="pt-4">
         <h3
           style={{
             fontFamily: FRAUNCES,
             fontWeight: 400,
-            fontSize: 26,
+            fontSize: 24,
             lineHeight: 1.1,
             letterSpacing: "-0.02em",
             color: text,
