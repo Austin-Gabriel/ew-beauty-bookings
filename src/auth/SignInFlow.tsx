@@ -320,16 +320,6 @@ export function BiometricEnroll() {
   const navigate = useNavigate();
   const { set } = useDevState();
   const { text } = useAuthTheme();
-  if (typeof window !== "undefined") {
-    setTimeout(() => {
-      const h1 = document.querySelector("section h1");
-      if (h1) {
-        const cs = getComputedStyle(h1);
-        // eslint-disable-next-line no-console
-        console.log("[H1 DEBUG]", { color: cs.color, opacity: cs.opacity, fontSize: cs.fontSize, animation: cs.animationName, visibility: cs.visibility, transform: cs.transform });
-      }
-    }, 1500);
-  }
   const enroll = () => {
     set("authState", "biometric-enrolled");
     navigate({ to: "/discover" });
