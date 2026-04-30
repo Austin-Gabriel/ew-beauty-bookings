@@ -430,75 +430,70 @@ function FilterChipRow({
   );
 }
 
-function SectionEyebrow({ children }: { children: React.ReactNode }) {
-  const { text } = useAuthTheme();
+/**
+ * SectionCard — card-based section grouping. White on dark mode,
+ * cream-elevated on light mode. Header inside the card, sans semibold.
+ */
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  const { text, borderCol, isDark } = useAuthTheme();
+  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE"; // cream-elevated on light
+  const cardText = isDark ? "#061C27" : text;
   return (
-    <div
+    <section
+      className="overflow-hidden rounded-3xl border"
       style={{
-        fontFamily: SANS_STACK,
-        fontSize: 10,
-        letterSpacing: "1.6px",
-        textTransform: "uppercase",
-        color: text,
-        opacity: 0.5,
-        fontWeight: 600,
+        backgroundColor: cardBg,
+        borderColor: isDark ? "transparent" : borderCol,
+        boxShadow: isDark
+          ? "0 1px 0 rgba(0,0,0,0.04)"
+          : "0 1px 2px rgba(6,28,39,0.04)",
       }}
     >
+      <h2
+        className="px-5 pt-5"
+        style={{
+          fontFamily: SANS_STACK,
+          fontWeight: 600,
+          fontSize: 15,
+          letterSpacing: "-0.01em",
+          color: cardText,
+          margin: 0,
+        }}
+      >
+        {title}
+      </h2>
+      <div className="pb-5 pt-4" style={{ color: cardText }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/** Horizontal scroll inside a SectionCard — keeps left padding aligned. */
+function HScrollInCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
       {children}
     </div>
   );
 }
-function SectionTitle({ children }: { children: React.ReactNode }) {
+
+/** Section header rendered OUTSIDE a card (used for the All-pros feed). */
+function SectionHeading({ children }: { children: React.ReactNode }) {
   const { text } = useAuthTheme();
   return (
     <h2
       style={{
-        fontFamily: FRAUNCES,
-        fontWeight: 400,
-        fontSize: 24,
-        lineHeight: 1.1,
-        letterSpacing: "-0.02em",
+        fontFamily: SANS_STACK,
+        fontWeight: 600,
+        fontSize: 15,
+        letterSpacing: "-0.01em",
         color: text,
         margin: 0,
-        marginTop: 6,
       }}
     >
       {children}
     </h2>
-  );
-}
-
-function HScroll({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-4 flex gap-3 overflow-x-auto px-5 pb-2 [&::-webkit-scrollbar]:hidden">
-      {children}
-    </div>
-  );
-}
-
-function CuratedRow({
-  eyebrow,
-  title,
-  pros,
-  onTap,
-}: {
-  eyebrow: string;
-  title: string;
-  pros: Pro[];
-  onTap: (id: string) => void;
-}) {
-  return (
-    <section className="pt-8">
-      <div className="px-5">
-        <SectionEyebrow>{eyebrow}</SectionEyebrow>
-        <SectionTitle>{title}</SectionTitle>
-      </div>
-      <HScroll>
-        {pros.map((p) => (
-          <CompactProCard key={p.id} pro={p} onTap={() => onTap(p.id)} />
-        ))}
-      </HScroll>
-    </section>
   );
 }
 
