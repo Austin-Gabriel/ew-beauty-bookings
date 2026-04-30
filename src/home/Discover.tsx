@@ -533,6 +533,38 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Small uppercase eyebrow heading sitting on the page background. */
+function EyebrowHeading({ children }: { children: React.ReactNode }) {
+  const { text, isDark } = useAuthTheme();
+  return (
+    <h2
+      className="px-1"
+      style={{
+        fontFamily: SANS_STACK,
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "1.6px",
+        textTransform: "uppercase",
+        color: text,
+        opacity: isDark ? 0.55 : 0.5,
+        margin: 0,
+        marginBottom: 12,
+      }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+/** Horizontal scroll row of standalone cards on the page background. */
+function HScrollRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="-mx-5 flex gap-2.5 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
+      {children}
+    </div>
+  );
+}
+
 /* ───────────────────────── Pro cards ───────────────────────── */
 
 function SpotlightCard({
