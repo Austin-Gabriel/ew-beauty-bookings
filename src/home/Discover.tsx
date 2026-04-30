@@ -632,16 +632,25 @@ function ProCard({
   favorited: boolean;
   onToggleFavorite: () => void;
 }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
+  const { isDark, borderCol } = useAuthTheme();
+  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE";
+  const cardText = "#061C27";
+  const metaText = "rgba(6,28,39,0.6)";
   return (
     <button
       type="button"
       onClick={onTap}
-      className="block w-full overflow-hidden rounded-2xl border text-left transition-transform active:scale-[0.99]"
-      style={{ borderColor: borderCol, backgroundColor: cardBg }}
+      className="block w-full overflow-hidden rounded-3xl text-left transition-transform active:scale-[0.99]"
+      style={{
+        backgroundColor: cardBg,
+        border: isDark ? "none" : `1px solid ${borderCol}`,
+        boxShadow: isDark ? "none" : "0 1px 2px rgba(6,28,39,0.04)",
+      }}
     >
-      <div className="relative aspect-[16/10] w-full bg-center bg-cover" style={{ backgroundImage: `url(${pro.portfolio[0]})` }}>
+      <div
+        className="relative aspect-[5/4] w-full bg-center bg-cover"
+        style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
+      >
         <button
           type="button"
           aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
@@ -649,65 +658,51 @@ function ProCard({
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className="absolute right-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full transition-transform active:scale-95"
+          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-95"
           style={{ backgroundColor: "rgba(6,28,39,0.55)", color: favorited ? "#FF823F" : "#F0EBD8" }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
       </div>
-      <div className="flex items-start gap-3 px-4 pb-4 pt-3">
-        <div
-          className="-mt-7 h-12 w-12 shrink-0 rounded-full bg-center bg-cover"
-          style={{ backgroundImage: `url(${pro.avatar})`, border: `2px solid ${cardBg}` }}
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3
-              className="truncate"
-              style={{
-                fontFamily: SANS_STACK,
-                fontSize: 15,
-                fontWeight: 600,
-                color: text,
-              }}
-            >
-              {pro.name}
-            </h3>
-            <span
-              className="tabular shrink-0"
-              style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: text, opacity: 0.75 }}
-            >
-              From ${pro.priceFrom}
-            </span>
-          </div>
-          <p
+      <div className="px-5 pb-5 pt-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3
             className="truncate"
             style={{
               fontFamily: SANS_STACK,
-              fontSize: 12.5,
-              color: text,
-              opacity: 0.65,
-              marginTop: 2,
+              fontSize: 20,
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
+              color: cardText,
+              margin: 0,
             }}
           >
-            {pro.headline}
-          </p>
-          <div
-            className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5"
-            style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: text, opacity: 0.6 }}
+            {pro.name}
+          </h3>
+          <span
+            className="tabular shrink-0"
+            style={{ fontFamily: SANS_STACK, fontSize: 13, color: metaText, fontWeight: 500 }}
           >
-            <span className="tabular">★ {pro.rating.toFixed(1)} · {pro.reviewCount}</span>
-            <span>·</span>
-            <span>{pro.neighborhood} · {pro.travelRadiusMi}mi</span>
-            {pro.certified && (
-              <>
-                <span>·</span>
-                <span style={{ color: "#FF823F", fontWeight: 500 }}>Licensed</span>
-              </>
-            )}
-          </div>
+            From ${pro.priceFrom}
+          </span>
+        </div>
+        <div
+          className="mt-1.5 flex flex-wrap items-center gap-x-1.5"
+          style={{ fontFamily: SANS_STACK, fontSize: 13, color: metaText }}
+        >
+          <span>{pro.category}</span>
+          <span>·</span>
+          <span>{pro.neighborhood}</span>
+          <span>·</span>
+          <span className="tabular">{pro.rating.toFixed(1)} ★</span>
+          {pro.certified && (
+            <>
+              <span>·</span>
+              <span style={{ color: "#FF823F", fontWeight: 600 }}>Licensed</span>
+            </>
+          )}
         </div>
       </div>
     </button>
