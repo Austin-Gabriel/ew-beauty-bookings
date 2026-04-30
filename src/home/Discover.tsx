@@ -150,15 +150,15 @@ export function DiscoverPage() {
 
   const handleTrendingTap = (label: string) => {
     if (label === "Knotless braids") {
-      setActiveChip("Braider" as ChipId);
+      setActiveChip("Hairdresser");
       setSearch("knotless");
-      toast("Showing braiders for knotless");
+      toast("Showing hairdressers for knotless");
     } else if (label === "Silk press") {
-      setActiveChip("Stylist" as ChipId);
+      setActiveChip("Hairdresser");
       setSearch("silk press");
-      toast("Showing stylists for silk press");
+      toast("Showing hairdressers for silk press");
     } else if (label === "Locs") {
-      setActiveChip("Loctician" as ChipId);
+      setActiveChip("Loctician");
       setSearch("");
       toast("Showing locticians");
     } else {
