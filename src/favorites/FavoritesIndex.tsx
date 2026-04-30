@@ -184,7 +184,7 @@ function EmptyState({
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       </div>
-      <p className="mt-4" style={{ fontFamily: FRAUNCES, fontSize: 24, fontWeight: 400, letterSpacing: "-0.01em", color: text }}>
+      <p className="mt-4" style={{ fontFamily: SANS_STACK, fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em", color: text }}>
         Nothing favorited yet
       </p>
       <p className="mt-1.5" style={{ fontSize: 13.5, color: muted, maxWidth: 280 }}>
