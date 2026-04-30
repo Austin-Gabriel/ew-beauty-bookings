@@ -334,7 +334,6 @@ export function BiometricEnroll() {
       <section className="mt-20 flex-1">
         <AuthEyebrow>One-time setup</AuthEyebrow>
         <h1
-          className="ewa-rise"
           style={{
             fontFamily: SANS_STACK,
             fontWeight: 500,
@@ -344,7 +343,6 @@ export function BiometricEnroll() {
             color: text,
             margin: 0,
             marginTop: 14,
-            animationDelay: "120ms",
           }}
         >
           Skip the code{" "}
