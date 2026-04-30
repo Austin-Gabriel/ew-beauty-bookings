@@ -15,13 +15,16 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
+import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
+import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -53,9 +56,14 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiscoverRoute = DiscoverRouteImport.update({
@@ -88,36 +96,52 @@ const ProProIdRoute = ProProIdRouteImport.update({
   path: '/pro/$proId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FavoritesCollectionIdRoute = FavoritesCollectionIdRouteImport.update({
+  id: '/$collectionId',
+  path: '/$collectionId',
+  getParentRoute: () => FavoritesRoute,
+} as any)
+const FavoritesSharedShareIdRoute = FavoritesSharedShareIdRouteImport.update({
+  id: '/shared/$shareId',
+  path: '/shared/$shareId',
+  getParentRoute: () => FavoritesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
-  '/messages': typeof MessagesRoute
+  '/favorites': typeof FavoritesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
-  '/messages': typeof MessagesRoute
+  '/favorites': typeof FavoritesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,15 +149,18 @@ export interface FileRoutesById {
   '/biometric-enroll': typeof BiometricEnrollRoute
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
-  '/messages': typeof MessagesRoute
+  '/favorites': typeof FavoritesRouteWithChildren
+  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,45 +169,54 @@ export interface FileRouteTypes {
     | '/biometric-enroll'
     | '/bookings'
     | '/discover'
-    | '/messages'
+    | '/favorites'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/biometric-enroll'
     | '/bookings'
     | '/discover'
-    | '/messages'
+    | '/favorites'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites/shared/$shareId'
   id:
     | '__root__'
     | '/'
     | '/biometric-enroll'
     | '/bookings'
     | '/discover'
-    | '/messages'
+    | '/favorites'
+    | '/notifications'
     | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,7 +224,8 @@ export interface RootRouteChildren {
   BiometricEnrollRoute: typeof BiometricEnrollRoute
   BookingsRoute: typeof BookingsRoute
   DiscoverRoute: typeof DiscoverRoute
-  MessagesRoute: typeof MessagesRoute
+  FavoritesRoute: typeof FavoritesRouteWithChildren
+  NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
@@ -243,11 +280,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/discover': {
@@ -292,15 +336,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProProIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favorites/$collectionId': {
+      id: '/favorites/$collectionId'
+      path: '/$collectionId'
+      fullPath: '/favorites/$collectionId'
+      preLoaderRoute: typeof FavoritesCollectionIdRouteImport
+      parentRoute: typeof FavoritesRoute
+    }
+    '/favorites/shared/$shareId': {
+      id: '/favorites/shared/$shareId'
+      path: '/shared/$shareId'
+      fullPath: '/favorites/shared/$shareId'
+      preLoaderRoute: typeof FavoritesSharedShareIdRouteImport
+      parentRoute: typeof FavoritesRoute
+    }
   }
 }
+
+interface FavoritesRouteChildren {
+  FavoritesCollectionIdRoute: typeof FavoritesCollectionIdRoute
+  FavoritesSharedShareIdRoute: typeof FavoritesSharedShareIdRoute
+}
+
+const FavoritesRouteChildren: FavoritesRouteChildren = {
+  FavoritesCollectionIdRoute: FavoritesCollectionIdRoute,
+  FavoritesSharedShareIdRoute: FavoritesSharedShareIdRoute,
+}
+
+const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
+  FavoritesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
   BookingsRoute: BookingsRoute,
   DiscoverRoute: DiscoverRoute,
-  MessagesRoute: MessagesRoute,
+  FavoritesRoute: FavoritesRouteWithChildren,
+  NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
