@@ -48,7 +48,7 @@ export function SharedCollection({ shareId }: { shareId: string }) {
           <p className="mt-6" style={{ fontSize: 14, color: muted }}>Loading…</p>
         ) : !data.collection ? (
           <div className="mt-8 rounded-2xl px-5 py-8 text-center" style={{ backgroundColor: subtleSurface, border: `1px solid ${subtleBorder}` }}>
-            <p style={{ fontFamily: FRAUNCES, fontSize: 24, fontWeight: 400 }}>Collection not found</p>
+            <p style={{ fontFamily: SANS_STACK, fontSize: 20, fontWeight: 700 }}>Collection not found</p>
             <p className="mt-1" style={{ fontSize: 13, color: muted }}>This share link is no longer available.</p>
             <Link
               to="/discover"
