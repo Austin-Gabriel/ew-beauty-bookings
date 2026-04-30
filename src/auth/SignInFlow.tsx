@@ -139,6 +139,14 @@ function SignInIdentifier({
 }
 
 function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () => void }) {
+  return (
+    <AuthFrame onBack={onBack}>
+      <SignInVerifyBody identifier={identifier} onBack={onBack} />
+    </AuthFrame>
+  );
+}
+
+function SignInVerifyBody({ identifier, onBack }: { identifier: string; onBack: () => void }) {
   const navigate = useNavigate();
   const { state, set } = useDevState();
   const { text } = useAuthTheme();
@@ -169,7 +177,7 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
   };
 
   return (
-    <AuthFrame onBack={onBack}>
+    <>
       <section className="mt-12 flex-1">
         <AuthHeadline>
           Enter your <span style={{ fontStyle: "italic" }}>code</span>.
@@ -232,7 +240,7 @@ function SignInVerify({ identifier, onBack }: { identifier: string; onBack: () =
           Verify
         </PrimaryCta>
       </footer>
-    </AuthFrame>
+    </>
   );
 }
 

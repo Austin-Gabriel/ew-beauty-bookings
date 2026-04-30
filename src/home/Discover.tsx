@@ -15,7 +15,6 @@ import {
 const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
 type QuickFilter =
-  | "available-now"
   | "today"
   | "this-week"
   | "top-rated"
@@ -24,7 +23,6 @@ type QuickFilter =
   | "200-plus";
 
 const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
-  { id: "available-now", label: "Available now" },
   { id: "today", label: "Today" },
   { id: "this-week", label: "This week" },
   { id: "top-rated", label: "Top rated" },
@@ -79,7 +77,6 @@ export function DiscoverPage() {
     if (activeCategories.size > 0) {
       pros = pros.filter((p) => activeCategories.has(p.category));
     }
-    if (activeFilters.has("available-now")) pros = pros.filter((p) => p.online);
     if (activeFilters.has("top-rated")) pros = pros.filter((p) => p.rating >= 4.85);
     if (activeFilters.has("under-100")) pros = pros.filter((p) => p.priceFrom < 100);
     if (activeFilters.has("100-200")) pros = pros.filter((p) => p.priceFrom >= 100 && p.priceFrom < 200);
@@ -92,7 +89,6 @@ export function DiscoverPage() {
 
   const spotlight = filteredPros[0];
   const restPros = filteredPros.slice(1);
-  const onlinePros = filteredPros.filter((p) => p.online);
   const topRated = [...filteredPros].sort((a, b) => b.rating - a.rating).slice(0, 6);
   const newPros = filteredPros.filter((p) => p.newOnEwa);
   const rebookPros = customer.pastBookingProIds
@@ -165,37 +161,9 @@ export function DiscoverPage() {
         </button>
       </header>
 
-      {/* PAGE TITLE */}
-      <div className="px-5 pt-5 pb-3">
-        <h1
-          style={{
-            fontFamily: FRAUNCES,
-            fontWeight: 400,
-            fontSize: 34,
-            lineHeight: 1.05,
-            letterSpacing: "-0.02em",
-            color: text,
-            margin: 0,
-          }}
-        >
-          Hello, <span style={{ fontStyle: "italic" }}>{customer.name}</span>.
-        </h1>
-        <p
-          style={{
-            fontFamily: SANS_STACK,
-            fontSize: 13,
-            color: text,
-            opacity: 0.6,
-            marginTop: 6,
-          }}
-        >
-          Beauty, where you are.
-        </p>
-      </div>
-
       {/* STICKY: search + filter row */}
       <div
-        className="sticky top-0 z-30 px-5 pb-3 pt-2"
+        className="sticky top-0 z-30 px-5 pb-3 pt-3"
         style={{
           backgroundColor: stickyBg,
           borderBottom: `1px solid ${borderCol}`,
@@ -211,7 +179,7 @@ export function DiscoverPage() {
       </div>
 
       {/* ACTION CTAs */}
-      <div className="grid grid-cols-2 gap-3 px-5 pt-4">
+      <div className="grid grid-cols-2 gap-3 px-5 pt-5">
         <PrimaryCta onClick={() => setPrefSheetOpen("now")}>Book now</PrimaryCta>
         <GhostCta onClick={() => setPrefSheetOpen("later")}>Schedule later</GhostCta>
       </div>
@@ -225,23 +193,18 @@ export function DiscoverPage() {
       ) : filteredPros.length === 0 ? (
         <NoResults onClear={clearFilters} />
       ) : (
-        <>
+        <div className="flex flex-col gap-5 px-5 pt-6">
           {/* Editorial spotlight */}
           {spotlight && (
-            <section className="px-5 pt-8">
-              <SectionEyebrow>Spotlight</SectionEyebrow>
+            <SectionCard title="Spotlight">
               <SpotlightCard pro={spotlight} onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })} />
-            </section>
+            </SectionCard>
           )}
 
           {/* Quick rebook (returning users only) */}
           {rebookPros.length > 0 && (
-            <section className="pt-8">
-              <div className="px-5">
-                <SectionEyebrow>Book again</SectionEyebrow>
-                <SectionTitle>Pros you've worked with</SectionTitle>
-              </div>
-              <HScroll>
+            <SectionCard title="Book again">
+              <HScrollInCard>
                 {rebookPros.map((p) => (
                   <RebookCard
                     key={p.id}
@@ -249,17 +212,13 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScroll>
-            </section>
+              </HScrollInCard>
+            </SectionCard>
           )}
 
           {/* Service categories chip row */}
-          <section className="pt-8">
-            <div className="px-5">
-              <SectionEyebrow>Browse</SectionEyebrow>
-              <SectionTitle>By service</SectionTitle>
-            </div>
-            <HScroll>
+          <SectionCard title="Browse by service">
+            <HScrollInCard>
               {SERVICE_CATEGORIES.map((cat) => {
                 const active = activeCategories.has(cat);
                 return (
@@ -281,44 +240,43 @@ export function DiscoverPage() {
                   </button>
                 );
               })}
-            </HScroll>
-          </section>
-
-          {/* Available now */}
-          {onlinePros.length > 0 && state.availabilityMix !== "none" && (
-            <CuratedRow
-              eyebrow="Right now"
-              title="Available now"
-              pros={onlinePros}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
-          )}
+            </HScrollInCard>
+          </SectionCard>
 
           {/* Top rated */}
           {topRated.length > 0 && (
-            <CuratedRow
-              eyebrow="Trusted"
-              title="Top rated near you"
-              pros={topRated}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
+            <SectionCard title="Top rated near you">
+              <HScrollInCard>
+                {topRated.map((p) => (
+                  <CompactProCard
+                    key={p.id}
+                    pro={p}
+                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
+                  />
+                ))}
+              </HScrollInCard>
+            </SectionCard>
           )}
 
           {/* New on Ewà */}
           {newPros.length > 0 && (
-            <CuratedRow
-              eyebrow="Fresh"
-              title="New on Ewà"
-              pros={newPros}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
+            <SectionCard title="New on Ewà">
+              <HScrollInCard>
+                {newPros.map((p) => (
+                  <CompactProCard
+                    key={p.id}
+                    pro={p}
+                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
+                  />
+                ))}
+              </HScrollInCard>
+            </SectionCard>
           )}
 
-          {/* All Pros feed */}
-          <section className="px-5 pt-10">
-            <SectionEyebrow>All pros</SectionEyebrow>
-            <SectionTitle>Near {neighborhood}</SectionTitle>
-            <div className="mt-5 flex flex-col gap-5">
+          {/* All Pros feed — header outside, each pro is its own card */}
+          <section className="pt-2">
+            <SectionHeading>All pros near {neighborhood}</SectionHeading>
+            <div className="mt-4 flex flex-col gap-4">
               {restPros.map((p) => (
                 <ProCard
                   key={p.id}
@@ -328,7 +286,7 @@ export function DiscoverPage() {
               ))}
             </div>
           </section>
-        </>
+        </div>
       )}
 
       {/* SHEETS */}
@@ -471,37 +429,66 @@ function FilterChipRow({
   );
 }
 
-function SectionEyebrow({ children }: { children: React.ReactNode }) {
-  const { text } = useAuthTheme();
+/**
+ * SectionCard — card-based section grouping. White on dark mode,
+ * cream-elevated on light mode. Header inside the card, sans semibold.
+ */
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  const { text, borderCol, isDark } = useAuthTheme();
+  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE"; // cream-elevated on light
+  const cardText = isDark ? "#061C27" : text;
   return (
-    <div
+    <section
+      className="overflow-hidden rounded-3xl border"
       style={{
-        fontFamily: SANS_STACK,
-        fontSize: 10,
-        letterSpacing: "1.6px",
-        textTransform: "uppercase",
-        color: text,
-        opacity: 0.5,
-        fontWeight: 600,
+        backgroundColor: cardBg,
+        borderColor: isDark ? "transparent" : borderCol,
+        boxShadow: isDark
+          ? "0 1px 0 rgba(0,0,0,0.04)"
+          : "0 1px 2px rgba(6,28,39,0.04)",
       }}
     >
+      <h2
+        className="px-5 pt-5"
+        style={{
+          fontFamily: SANS_STACK,
+          fontWeight: 600,
+          fontSize: 15,
+          letterSpacing: "-0.01em",
+          color: cardText,
+          margin: 0,
+        }}
+      >
+        {title}
+      </h2>
+      <div className="pb-5 pt-4" style={{ color: cardText }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/** Horizontal scroll inside a SectionCard — keeps left padding aligned. */
+function HScrollInCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
       {children}
     </div>
   );
 }
-function SectionTitle({ children }: { children: React.ReactNode }) {
+
+/** Section header rendered OUTSIDE a card (used for the All-pros feed). */
+function SectionHeading({ children }: { children: React.ReactNode }) {
   const { text } = useAuthTheme();
   return (
     <h2
       style={{
-        fontFamily: FRAUNCES,
-        fontWeight: 400,
-        fontSize: 24,
-        lineHeight: 1.1,
-        letterSpacing: "-0.02em",
+        fontFamily: SANS_STACK,
+        fontWeight: 600,
+        fontSize: 15,
+        letterSpacing: "-0.01em",
         color: text,
         margin: 0,
-        marginTop: 6,
       }}
     >
       {children}
@@ -509,71 +496,20 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function HScroll({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-4 flex gap-3 overflow-x-auto px-5 pb-2 [&::-webkit-scrollbar]:hidden">
-      {children}
-    </div>
-  );
-}
-
-function CuratedRow({
-  eyebrow,
-  title,
-  pros,
-  onTap,
-}: {
-  eyebrow: string;
-  title: string;
-  pros: Pro[];
-  onTap: (id: string) => void;
-}) {
-  return (
-    <section className="pt-8">
-      <div className="px-5">
-        <SectionEyebrow>{eyebrow}</SectionEyebrow>
-        <SectionTitle>{title}</SectionTitle>
-      </div>
-      <HScroll>
-        {pros.map((p) => (
-          <CompactProCard key={p.id} pro={p} onTap={() => onTap(p.id)} />
-        ))}
-      </HScroll>
-    </section>
-  );
-}
-
 /* ───────────────────────── Pro cards ───────────────────────── */
 
 function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
   return (
     <button
       type="button"
       onClick={onTap}
-      className="mt-4 block w-full overflow-hidden rounded-3xl border text-left transition-transform active:scale-[0.99]"
-      style={{ borderColor: borderCol, backgroundColor: cardBg }}
+      className="mx-5 block overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.99]"
+      style={{ width: "calc(100% - 40px)" }}
     >
       <div
         className="relative aspect-[5/4] w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
       >
-        {pro.online && (
-          <span
-            className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 11,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Available now
-          </span>
-        )}
         <button
           type="button"
           aria-label="Save"
@@ -586,15 +522,15 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
           </svg>
         </button>
       </div>
-      <div className="px-5 pb-5 pt-4">
+      <div className="pt-4">
         <h3
           style={{
             fontFamily: FRAUNCES,
             fontWeight: 400,
-            fontSize: 26,
+            fontSize: 24,
             lineHeight: 1.1,
             letterSpacing: "-0.02em",
-            color: text,
+            color: "currentColor",
             margin: 0,
           }}
         >
@@ -604,7 +540,7 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
           style={{
             fontFamily: SANS_STACK,
             fontSize: 13.5,
-            color: text,
+            color: "currentColor",
             opacity: 0.7,
             marginTop: 4,
           }}
@@ -613,7 +549,7 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         </p>
         <div
           className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"
-          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: text, opacity: 0.75 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: "currentColor", opacity: 0.75 }}
         >
           <span className="tabular">★ {pro.rating.toFixed(2)}</span>
           <span>·</span>
@@ -648,21 +584,6 @@ function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
-        {pro.online && (
-          <span
-            className="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 10.5,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Online
-          </span>
-        )}
       </div>
       <div className="flex items-start gap-3 px-4 pb-4 pt-3">
         <div
@@ -722,7 +643,7 @@ function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
 }
 
 function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text, borderCol, isDark } = useAuthTheme();
+  const { borderCol, isDark } = useAuthTheme();
   const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
   return (
     <button
@@ -732,25 +653,9 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
       style={{ borderColor: borderCol, backgroundColor: cardBg }}
     >
       <div
-        className="relative aspect-[4/3] w-full bg-center bg-cover"
+        className="aspect-[4/3] w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
-      >
-        {pro.online && (
-          <span
-            className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 9.5,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Online
-          </span>
-        )}
-      </div>
+      />
       <div className="px-3 py-3">
         <div
           className="truncate"
@@ -758,20 +663,20 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
             fontFamily: SANS_STACK,
             fontSize: 13.5,
             fontWeight: 600,
-            color: text,
+            color: "currentColor",
           }}
         >
           {pro.name}
         </div>
         <div
           className="mt-0.5 truncate"
-          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: text, opacity: 0.6 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: "currentColor", opacity: 0.6 }}
         >
           {pro.headline}
         </div>
         <div
           className="mt-1.5 flex items-center justify-between"
-          style={{ fontFamily: SANS_STACK, fontSize: 11, color: text, opacity: 0.7 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11, color: "currentColor", opacity: 0.7 }}
         >
           <span className="tabular">★ {pro.rating.toFixed(1)}</span>
           <span className="tabular">From ${pro.priceFrom}</span>
