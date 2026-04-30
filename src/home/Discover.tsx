@@ -221,17 +221,18 @@ export function DiscoverPage() {
 
           {/* Quick rebook (returning users only) */}
           {rebookPros.length > 0 && (
-            <SectionCard title="Book again">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>Book again</EyebrowHeading>
+              <HScrollRow>
                 {rebookPros.map((p) => (
-                  <RebookCard
+                  <CompactProCard
                     key={p.id}
                     pro={p}
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* Service categories chip row */}
@@ -265,8 +266,9 @@ export function DiscoverPage() {
 
           {/* Top rated */}
           {topRated.length > 0 && (
-            <SectionCard title="Top rated near you">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>Top rated near you</EyebrowHeading>
+              <HScrollRow>
                 {topRated.map((p) => (
                   <CompactProCard
                     key={p.id}
@@ -274,14 +276,15 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* New on Ewà */}
           {newPros.length > 0 && (
-            <SectionCard title="New on Ewà">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>New on Ewà</EyebrowHeading>
+              <HScrollRow>
                 {newPros.map((p) => (
                   <CompactProCard
                     key={p.id}
@@ -289,8 +292,8 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* All Pros feed — header outside, each pro is its own card */}
@@ -530,6 +533,38 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Small uppercase eyebrow heading sitting on the page background. */
+function EyebrowHeading({ children }: { children: React.ReactNode }) {
+  const { text, isDark } = useAuthTheme();
+  return (
+    <h2
+      className="px-1"
+      style={{
+        fontFamily: SANS_STACK,
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "1.6px",
+        textTransform: "uppercase",
+        color: text,
+        opacity: isDark ? 0.55 : 0.5,
+        margin: 0,
+        marginBottom: 12,
+      }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+/** Horizontal scroll row of standalone cards on the page background. */
+function HScrollRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="-mx-5 flex gap-2.5 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
+      {children}
+    </div>
+  );
+}
+
 /* ───────────────────────── Pro cards ───────────────────────── */
 
 function SpotlightCard({
@@ -718,7 +753,7 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
     <button
       type="button"
       onClick={onTap}
-      className="w-[170px] shrink-0 overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.98]"
+      className="w-[130px] shrink-0 overflow-hidden rounded-xl text-left transition-transform active:scale-[0.98]"
       style={{
         backgroundColor: cardBg,
         border: isDark ? "none" : `1px solid ${borderCol}`,
@@ -729,13 +764,13 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         className="aspect-square w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
       />
-      <div className="px-3 py-3">
+      <div className="px-2.5 py-2.5">
         <div
           className="truncate"
           style={{
             fontFamily: SANS_STACK,
-            fontSize: 14,
-            fontWeight: 700,
+            fontSize: 13,
+            fontWeight: 600,
             color: cardText,
             letterSpacing: "-0.01em",
           }}
@@ -744,7 +779,7 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         </div>
         <div
           className="mt-0.5 truncate tabular"
-          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: metaText }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: metaText }}
         >
           {pro.category} · ${pro.priceFrom}
         </div>
