@@ -221,17 +221,18 @@ export function DiscoverPage() {
 
           {/* Quick rebook (returning users only) */}
           {rebookPros.length > 0 && (
-            <SectionCard title="Book again">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>Book again</EyebrowHeading>
+              <HScrollRow>
                 {rebookPros.map((p) => (
-                  <RebookCard
+                  <CompactProCard
                     key={p.id}
                     pro={p}
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* Service categories chip row */}
