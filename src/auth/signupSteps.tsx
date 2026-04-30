@@ -174,7 +174,7 @@ function StepVerifyBody() {
           Verify
         </PrimaryCta>
       </FooterStack>
-    </AuthFrame>
+    </>
   );
 }
 
