@@ -38,6 +38,14 @@ export function DiscoverPage() {
   const { state } = useDevState();
   const { text, borderCol, isDark, bg } = useAuthTheme();
   const navigate = useNavigate();
+  const favorites = useFavorites();
+
+  const handleToggleFavorite = (pro: Pro) => {
+    const nowFavorite = favorites.toggle(pro.id);
+    toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`, {
+      description: nowFavorite ? "Find them in your favorites." : undefined,
+    });
+  };
 
   // Dev-state controlled customer profile
   const customer: CustomerProfile =
