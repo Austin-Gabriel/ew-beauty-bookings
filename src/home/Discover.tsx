@@ -753,7 +753,7 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
     <button
       type="button"
       onClick={onTap}
-      className="w-[170px] shrink-0 overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.98]"
+      className="w-[130px] shrink-0 overflow-hidden rounded-xl text-left transition-transform active:scale-[0.98]"
       style={{
         backgroundColor: cardBg,
         border: isDark ? "none" : `1px solid ${borderCol}`,
