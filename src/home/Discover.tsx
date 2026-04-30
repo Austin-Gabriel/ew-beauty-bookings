@@ -212,7 +212,12 @@ export function DiscoverPage() {
           {/* Editorial spotlight */}
           {spotlight && (
             <SectionCard title="Spotlight">
-              <SpotlightCard pro={spotlight} onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })} />
+              <SpotlightCard
+                pro={spotlight}
+                favorited={favorites.isFavorite(spotlight.id)}
+                onToggleFavorite={() => handleToggleFavorite(spotlight)}
+                onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })}
+              />
             </SectionCard>
           )}
 
