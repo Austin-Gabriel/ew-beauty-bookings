@@ -15,13 +15,19 @@ const ThemeContext = createContext<ThemeCtx | null>(null);
 
 export function useAuthTheme(): ThemeCtx {
   const ctx = useContext(ThemeContext);
+  // Always-call hook so order is stable; only used when no Provider above.
+  const { resolvedTheme } = useDevState();
   if (ctx) return ctx;
+  // Fallback path: components that call useAuthTheme() in their own body
+  // (i.e. ABOVE the AuthShell they then render as children) would otherwise
+  // get a stale dark default. Mirror the same theme the AuthShell will pick.
+  const isDark = resolvedTheme === "dark";
   return {
-    isDark: true,
+    isDark,
     setIsDark: () => {},
-    text: "#F0EBD8",
-    bg: "#061C27",
-    borderCol: "rgba(240,235,216,0.18)",
+    text: isDark ? "#F0EBD8" : "#061C27",
+    bg: isDark ? "#061C27" : "#F0EBD8",
+    borderCol: isDark ? "rgba(240,235,216,0.18)" : "rgba(6,28,39,0.18)",
     sans: SANS,
   };
 }
@@ -71,7 +77,7 @@ export function AuthShell({
   const glowBase = (isDark ? 0.14 : 0.09) * glowBoost;
   const borderCol = isDark ? "rgba(240,235,216,0.18)" : "rgba(6,28,39,0.18)";
   const squiggleOpacity = quietSquiggles ? (isDark ? 0.06 : 0.07) : (isDark ? 0.08 : 0.12);
-  const grainOpacity = isDark ? 0.18 : 0.22;
+  const grainOpacity = isDark ? 0.18 : 0.18;
 
   return (
     <ThemeContext.Provider value={{ isDark, setIsDark, text, bg, borderCol, sans: SANS }}>
