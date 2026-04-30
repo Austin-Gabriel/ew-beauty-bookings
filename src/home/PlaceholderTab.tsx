@@ -15,14 +15,14 @@ export function PlaceholderTab({
   const { text } = useAuthTheme();
   return (
     <AppShell topLabel={pageTitle.toUpperCase()}>
-      <header className="px-6 pt-6">
+      <header className="px-5 pt-5">
         <h1
           style={{
-            fontFamily: FRAUNCES,
-            fontWeight: 400,
-            fontSize: 38,
-            lineHeight: 1.05,
-            letterSpacing: "-0.02em",
+            fontFamily: SANS_STACK,
+            fontWeight: 700,
+            fontSize: 30,
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
             color: text,
             margin: 0,
           }}
