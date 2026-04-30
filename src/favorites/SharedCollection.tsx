@@ -9,7 +9,6 @@ import {
   type FavItem,
 } from "./store";
 
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 const ORANGE = "#FF823F";
 
 /**
@@ -49,7 +48,7 @@ export function SharedCollection({ shareId }: { shareId: string }) {
           <p className="mt-6" style={{ fontSize: 14, color: muted }}>Loading…</p>
         ) : !data.collection ? (
           <div className="mt-8 rounded-2xl px-5 py-8 text-center" style={{ backgroundColor: subtleSurface, border: `1px solid ${subtleBorder}` }}>
-            <p style={{ fontFamily: FRAUNCES, fontSize: 24, fontWeight: 400 }}>Collection not found</p>
+            <p style={{ fontFamily: SANS_STACK, fontSize: 20, fontWeight: 700 }}>Collection not found</p>
             <p className="mt-1" style={{ fontSize: 13, color: muted }}>This share link is no longer available.</p>
             <Link
               to="/discover"
@@ -61,7 +60,7 @@ export function SharedCollection({ shareId }: { shareId: string }) {
           </div>
         ) : (
           <>
-            <h1 style={{ fontFamily: FRAUNCES, fontWeight: 400, fontSize: 36, lineHeight: 1.05, letterSpacing: "-0.02em", margin: 0, marginTop: 8 }}>
+            <h1 style={{ fontFamily: SANS_STACK, fontWeight: 700, fontSize: 30, lineHeight: 1.1, letterSpacing: "-0.01em", margin: 0, marginTop: 8, color: text }}>
               {data.collection.name}
             </h1>
             <p className="mt-1.5" style={{ fontSize: 13, color: muted }}>
@@ -71,9 +70,9 @@ export function SharedCollection({ shareId }: { shareId: string }) {
             {data.items.length === 0 ? (
               <p className="mt-8" style={{ fontSize: 14, color: muted }}>Nothing here yet.</p>
             ) : (
-              <ul className="mt-5 grid grid-cols-2 gap-3">
+              <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {data.items.map((it) => (
-                  <li key={it.id} className="overflow-hidden rounded-2xl bg-card text-card-foreground" style={{ border: `1px solid ${subtleBorder}` }}>
+                  <li key={it.id} className="overflow-hidden rounded-2xl bg-card text-card-foreground transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ border: `1px solid ${subtleBorder}` }}>
                     <div className="aspect-square w-full">
                       {it.thumbnailUrl ? (
                         <img src={it.thumbnailUrl} alt="" className="h-full w-full object-cover" />

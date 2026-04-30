@@ -13,9 +13,10 @@ import {
 } from "./store";
 import { ItemActionSheet } from "./ItemActionSheet";
 import { MoveToCollectionSheet } from "./MoveToCollectionSheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 const ORANGE = "#FF823F";
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+
 
 export function CollectionDetail({ collectionId }: { collectionId: string }) {
   const { isDark, text } = useAuthTheme();
@@ -32,6 +33,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
 
   const [actionItem, setActionItem] = useState<FavItem | null>(null);
   const [moveItemState, setMoveItemState] = useState<FavItem | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<FavItem | null>(null);
 
   if (!collection) {
     return (
@@ -126,7 +128,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
       </header>
 
       <div className="px-5" style={{ fontFamily: SANS_STACK, color: text }}>
-        <h1 style={{ fontFamily: FRAUNCES, fontWeight: 400, fontSize: 34, lineHeight: 1.05, letterSpacing: "-0.02em", margin: 0 }}>
+        <h1 style={{ fontFamily: SANS_STACK, fontWeight: 700, fontSize: 30, lineHeight: 1.1, letterSpacing: "-0.01em", margin: 0, color: text }}>
           {collection.name}
         </h1>
         <p className="mt-1" style={{ fontSize: 13, color: muted }}>
@@ -147,7 +149,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
             </Link>
           </div>
         ) : (
-          <ul className="mt-5 grid grid-cols-2 gap-3 pb-6">
+          <ul className="mt-5 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
             {items.map((it) => (
               <li key={it.id}>
                 <FavoriteCard
@@ -155,8 +157,12 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
                   muted={muted}
                   subtleBorder={subtleBorder}
                   onTap={() => {
-                    if (it.type === "pro") navigate({ to: "/pro/$proId", params: { proId: it.refId } });
-                    else if (it.meta?.proId) navigate({ to: "/pro/$proId", params: { proId: it.meta.proId } });
+                    if (it.type === "pro") {
+                      navigate({ to: "/pro/$proId", params: { proId: it.refId } });
+                    } else {
+                      // Look: open lightbox; "View pro" lives inside it
+                      setLightboxItem(it);
+                    }
                   }}
                   onMore={() => setActionItem(it)}
                 />
@@ -165,6 +171,15 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
           </ul>
         )}
       </div>
+
+      <LookLightbox
+        item={lightboxItem}
+        onClose={() => setLightboxItem(null)}
+        onViewPro={(proId) => {
+          setLightboxItem(null);
+          navigate({ to: "/pro/$proId", params: { proId } });
+        }}
+      />
 
       <ItemActionSheet
         item={actionItem}
@@ -233,7 +248,7 @@ function FavoriteCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl bg-card text-card-foreground"
+      className="relative overflow-hidden rounded-2xl bg-card text-card-foreground transition-all hover:-translate-y-0.5 hover:shadow-md"
       style={{ border: `1px solid ${subtleBorder}` }}
     >
       <button
@@ -284,5 +299,54 @@ function FavoriteCard({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" /></svg>
       </button>
     </div>
+  );
+}
+
+function LookLightbox({
+  item,
+  onClose,
+  onViewPro,
+}: {
+  item: FavItem | null;
+  onClose: () => void;
+  onViewPro: (proId: string) => void;
+}) {
+  const proId = item?.meta?.proId;
+  return (
+    <Sheet open={!!item} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <SheetContent side="bottom" className="rounded-t-3xl p-0">
+        <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-5" style={{ fontFamily: SANS_STACK }}>
+          {item?.thumbnailUrl ? (
+            <img
+              src={item.thumbnailUrl}
+              alt={item.meta?.name ?? "Look"}
+              className="mx-auto max-h-[60vh] w-full rounded-2xl object-contain"
+            />
+          ) : null}
+          <div className="mt-4 flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate" style={{ fontSize: 16, fontWeight: 700, color: "var(--foreground)" }}>
+                {item?.meta?.name ?? "Saved look"}
+              </p>
+              {item?.meta?.subtitle && (
+                <p className="truncate" style={{ fontSize: 13, color: "var(--muted-foreground)", marginTop: 2 }}>
+                  {item.meta.subtitle}
+                </p>
+              )}
+            </div>
+            {proId && (
+              <button
+                type="button"
+                onClick={() => onViewPro(proId)}
+                className="shrink-0 rounded-full px-4 py-2.5 transition-transform active:scale-95"
+                style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 13, fontWeight: 700 }}
+              >
+                View pro
+              </button>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

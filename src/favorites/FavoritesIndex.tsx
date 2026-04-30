@@ -82,7 +82,7 @@ export function FavoritesIndex() {
             subtleBorder={subtleBorder}
           />
         ) : (
-          <ul className="grid grid-cols-2 gap-3">
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {collections.map((c) => {
               const n = count(c.id);
               const previews = preview(c.id);
@@ -91,7 +91,7 @@ export function FavoritesIndex() {
                   <Link
                     to="/favorites/$collectionId"
                     params={{ collectionId: c.id }}
-                    className="group block overflow-hidden rounded-2xl bg-card text-card-foreground transition-transform active:scale-[0.98]"
+                    className="group block overflow-hidden rounded-2xl bg-card text-card-foreground transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
                     style={{ border: `1px solid ${subtleBorder}` }}
                   >
                     <CollectionPreview previews={previews} muted={muted} />
