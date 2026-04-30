@@ -78,7 +78,6 @@ export function DiscoverPage() {
     if (activeCategories.size > 0) {
       pros = pros.filter((p) => activeCategories.has(p.category));
     }
-    if (activeFilters.has("available-now")) pros = pros.filter((p) => p.online);
     if (activeFilters.has("top-rated")) pros = pros.filter((p) => p.rating >= 4.85);
     if (activeFilters.has("under-100")) pros = pros.filter((p) => p.priceFrom < 100);
     if (activeFilters.has("100-200")) pros = pros.filter((p) => p.priceFrom >= 100 && p.priceFrom < 200);
@@ -91,7 +90,6 @@ export function DiscoverPage() {
 
   const spotlight = filteredPros[0];
   const restPros = filteredPros.slice(1);
-  const onlinePros = filteredPros.filter((p) => p.online);
   const topRated = [...filteredPros].sort((a, b) => b.rating - a.rating).slice(0, 6);
   const newPros = filteredPros.filter((p) => p.newOnEwa);
   const rebookPros = customer.pastBookingProIds
