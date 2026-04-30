@@ -247,7 +247,7 @@ function FavoriteCard({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl bg-card text-card-foreground"
+      className="relative overflow-hidden rounded-2xl bg-card text-card-foreground transition-all hover:-translate-y-0.5 hover:shadow-md"
       style={{ border: `1px solid ${subtleBorder}` }}
     >
       <button
