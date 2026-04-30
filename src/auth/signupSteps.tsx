@@ -83,7 +83,16 @@ export function StepAccount() {
 /* ───────────────────────── Screen 2 — Verify your number ───────────────────────── */
 
 export function StepVerify() {
-  const { phoneDisplay, back, next, index, total, goTo } = useSignup();
+  const { back, index, total } = useSignup();
+  return (
+    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Verify">
+      <StepVerifyBody />
+    </AuthFrame>
+  );
+}
+
+function StepVerifyBody() {
+  const { phoneDisplay, next, goTo } = useSignup();
   const [code, setCode] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const { text } = useAuthTheme();
@@ -102,7 +111,7 @@ export function StepVerify() {
   };
 
   return (
-    <AuthFrame onBack={back} progress={(index + 1) / total} topRightLabel="Verify">
+    <>
       <section className="mt-10 flex-1">
         <AuthHeadline>
           Enter your <span style={{ fontStyle: "italic" }}>code</span>.
