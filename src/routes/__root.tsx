@@ -3,6 +3,7 @@ import { Outlet, Link, ScriptOnce, createRootRoute, HeadContent, Scripts } from 
 import appCss from "../styles.css?url";
 import { DevStateProvider } from "../dev-state/devState";
 import { DevStateToggle } from "../dev-state/DevStateToggle";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -96,6 +97,7 @@ function RootComponent() {
     <DevStateProvider>
       <Outlet />
       <DevStateToggle />
+      <Toaster />
     </DevStateProvider>
   );
 }

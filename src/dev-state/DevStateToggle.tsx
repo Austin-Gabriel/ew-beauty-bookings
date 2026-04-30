@@ -279,7 +279,23 @@ export function DevStateToggle() {
               </Field>
             </div>
 
-            <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted-foreground">
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="h-11 w-full rounded-full bg-bagel text-[14px] font-semibold text-bagel-foreground shadow-sm transition-opacity hover:opacity-90"
+              >
+                Done
+              </button>
+              <button
+                type="button"
+                onClick={reset}
+                className="h-9 w-full text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Reset to default
+              </button>
+            </div>
+            <p className="mt-3 font-mono text-[10px] leading-relaxed text-muted-foreground">
               Dev only — hidden in production builds.
             </p>
           </div>

@@ -1,7 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { AppShell } from "./AppShell";
 import { TAB_BAR_HEIGHT_PX } from "./TabBar";
+import { useFavorites } from "./useFavorites";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { PrimaryCta, GhostCta } from "@/auth/AuthFrame";
 import { useDevState } from "@/dev-state/devState";
@@ -36,6 +38,14 @@ export function DiscoverPage() {
   const { state } = useDevState();
   const { text, borderCol, isDark, bg } = useAuthTheme();
   const navigate = useNavigate();
+  const favorites = useFavorites();
+
+  const handleToggleFavorite = (pro: Pro) => {
+    const nowFavorite = favorites.toggle(pro.id);
+    toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`, {
+      description: nowFavorite ? "Find them in your favorites." : undefined,
+    });
+  };
 
   // Dev-state controlled customer profile
   const customer: CustomerProfile =
@@ -151,12 +161,17 @@ export function DiscoverPage() {
           type="button"
           aria-label="Favourites"
           onClick={() => {
-            // returning users → saved pros (placeholder route); for now, a noop
+            toast("Your favorites", {
+              description:
+                favorites.count > 0
+                  ? `${favorites.count} pro${favorites.count === 1 ? "" : "s"} saved. Full list coming soon.`
+                  : "Tap the heart on any pro to save them.",
+            });
           }}
           className="grid h-9 w-9 place-items-center rounded-full border transition-colors"
           style={{ borderColor: borderCol, color: text, backgroundColor: subtle }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill={favorites.count > 0 ? "#FF823F" : "none"} stroke={favorites.count > 0 ? "#FF823F" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
@@ -197,7 +212,12 @@ export function DiscoverPage() {
           {/* Editorial spotlight */}
           {spotlight && (
             <SectionCard title="Spotlight">
-              <SpotlightCard pro={spotlight} onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })} />
+              <SpotlightCard
+                pro={spotlight}
+                favorited={favorites.isFavorite(spotlight.id)}
+                onToggleFavorite={() => handleToggleFavorite(spotlight)}
+                onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })}
+              />
             </SectionCard>
           )}
 
@@ -283,6 +303,8 @@ export function DiscoverPage() {
                 <ProCard
                   key={p.id}
                   pro={p}
+                  favorited={favorites.isFavorite(p.id)}
+                  onToggleFavorite={() => handleToggleFavorite(p)}
                   onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                 />
               ))}
@@ -512,7 +534,17 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 /* ───────────────────────── Pro cards ───────────────────────── */
 
-function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
+function SpotlightCard({
+  pro,
+  onTap,
+  favorited,
+  onToggleFavorite,
+}: {
+  pro: Pro;
+  onTap: () => void;
+  favorited: boolean;
+  onToggleFavorite: () => void;
+}) {
   return (
     <button
       type="button"
@@ -526,12 +558,15 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
       >
         <button
           type="button"
-          aria-label="Save"
-          onClick={(e) => e.stopPropagation()}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full"
-          style={{ backgroundColor: "rgba(6,28,39,0.6)", color: "#F0EBD8" }}
+          aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite();
+          }}
+          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-95"
+          style={{ backgroundColor: "rgba(6,28,39,0.6)", color: favorited ? "#FF823F" : "#F0EBD8" }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
@@ -576,7 +611,17 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
   );
 }
 
-function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
+function ProCard({
+  pro,
+  onTap,
+  favorited,
+  onToggleFavorite,
+}: {
+  pro: Pro;
+  onTap: () => void;
+  favorited: boolean;
+  onToggleFavorite: () => void;
+}) {
   const { text, borderCol, isDark } = useAuthTheme();
   const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
   return (
@@ -589,12 +634,15 @@ function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
       <div className="relative aspect-[16/10] w-full bg-center bg-cover" style={{ backgroundImage: `url(${pro.portfolio[0]})` }}>
         <button
           type="button"
-          aria-label="Save"
-          onClick={(e) => e.stopPropagation()}
-          className="absolute right-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full"
-          style={{ backgroundColor: "rgba(6,28,39,0.55)", color: "#F0EBD8" }}
+          aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite();
+          }}
+          className="absolute right-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full transition-transform active:scale-95"
+          style={{ backgroundColor: "rgba(6,28,39,0.55)", color: favorited ? "#FF823F" : "#F0EBD8" }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
