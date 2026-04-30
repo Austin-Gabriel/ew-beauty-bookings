@@ -209,16 +209,14 @@ export function DiscoverPage() {
         <NoResults onClear={clearFilters} />
       ) : (
         <div className="flex flex-col gap-5 px-5 pt-6">
-          {/* Editorial spotlight */}
+          {/* Editorial spotlight — standalone framed card */}
           {spotlight && (
-            <SectionCard title="Spotlight">
-              <SpotlightCard
-                pro={spotlight}
-                favorited={favorites.isFavorite(spotlight.id)}
-                onToggleFavorite={() => handleToggleFavorite(spotlight)}
-                onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })}
-              />
-            </SectionCard>
+            <SpotlightCard
+              pro={spotlight}
+              favorited={favorites.isFavorite(spotlight.id)}
+              onToggleFavorite={() => handleToggleFavorite(spotlight)}
+              onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })}
+            />
           )}
 
           {/* Quick rebook (returning users only) */}
