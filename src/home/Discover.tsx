@@ -40,7 +40,7 @@ const RADIUS_OPTIONS: { value: RadiusMi; label: string }[] = [
 
 export function DiscoverPage() {
   const { state } = useDevState();
-  const { isDark, text, borderCol } = useAuthTheme();
+  const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const favorites = useFavorites();
   const scrollRef = useRef<HTMLDivElement | null>(null);
