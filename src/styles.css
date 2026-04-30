@@ -94,7 +94,8 @@
   --surface: var(--cream);
   --surface-elevated: var(--cream-elevated);
 
-  --card: var(--cream-elevated);
+  /* Cards are white in BOTH modes per brand brief */
+  --card: oklch(1 0 0);
   --card-foreground: var(--midnight);
 
   --popover: var(--cream-elevated);

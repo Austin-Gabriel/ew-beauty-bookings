@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 
 type Tab = {
-  to: "/discover" | "/bookings" | "/messages" | "/profile";
+  to: "/discover" | "/bookings" | "/favorites" | "/profile";
   label: string;
   icon: (active: boolean) => React.ReactNode;
 };
@@ -35,11 +35,14 @@ const TABS: Tab[] = [
     ),
   },
   {
-    to: "/messages",
-    label: "Messages",
-    icon: () => (
+    to: "/favorites",
+    label: "Favorites",
+    icon: (active) => (
       <Stroke>
-        <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" />
+        <path
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          fill={active ? "currentColor" : "none"}
+        />
       </Stroke>
     ),
   },

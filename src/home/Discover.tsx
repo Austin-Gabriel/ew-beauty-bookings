@@ -52,8 +52,6 @@ export function DiscoverPage() {
   const [search, setSearch] = useState("");
 
   // Sheet open state
-  const [savedSheetOpen, setSavedSheetOpen] = useState(false);
-  const [notifSheetOpen, setNotifSheetOpen] = useState(false);
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [radiusSheetOpen, setRadiusSheetOpen] = useState(false);
 
@@ -122,14 +120,13 @@ export function DiscoverPage() {
   const goToPro = (pro: Pro) => navigate({ to: "/pro/$proId", params: { proId: pro.id } });
 
   const handleFavorite = (pro: Pro) => {
-    const nowFavorite = favorites.toggle(pro.id);
-    toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`);
+    const nowFavorite = favorites.toggle(pro.id, {
+      name: pro.name,
+      thumbnail: pro.portfolio[0],
+      subtitle: `${pro.category} · ${pro.neighborhood}`,
+    });
+    toast(nowFavorite ? `Favorited ${pro.name}` : `Removed ${pro.name}`);
   };
-
-  const savedPros = useMemo(
-    () => MOCK_PROS.filter((p) => favorites.isFavorite(p.id)),
-    [favorites],
-  );
 
   // Notifications — keyed off mock data so taps go to real pros
   const allNotifications = useMemo(
@@ -176,20 +173,8 @@ export function DiscoverPage() {
           <EwaMark size={32} />
           <div className="flex items-center gap-2">
             <IconButton
-              ariaLabel="Saved"
-              onClick={() => setSavedSheetOpen(true)}
-              bg={subtleSurface}
-              border={subtleBorder}
-              color={text}
-              dot={favorites.count > 0}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-            </IconButton>
-            <IconButton
-              ariaLabel="Notifications"
-              onClick={() => setNotifSheetOpen(true)}
+              ariaLabel="Notifications & offers"
+              onClick={() => navigate({ to: "/notifications" })}
               bg={subtleSurface}
               border={subtleBorder}
               color={text}
@@ -436,31 +421,6 @@ export function DiscoverPage() {
       </div>
 
       {/* SHEETS ------------------------------------------------------------ */}
-      <SavedSheet
-        open={savedSheetOpen}
-        onOpenChange={setSavedSheetOpen}
-        savedPros={savedPros}
-        onUnfavorite={(p) => favorites.toggle(p.id)}
-        onTapPro={(p) => {
-          setSavedSheetOpen(false);
-          goToPro(p);
-        }}
-      />
-      <NotificationsSheet
-        open={notifSheetOpen}
-        onOpenChange={setNotifSheetOpen}
-        notifications={allNotifications}
-        onMarkAllRead={() =>
-          setReadNotifIds(new Set(allNotifications.map((n) => n.id)))
-        }
-        onTapNotif={(n) => {
-          setReadNotifIds((prev) => new Set(prev).add(n.id));
-          setNotifSheetOpen(false);
-          if (n.route === "bookings") navigate({ to: "/bookings" });
-          else if (n.route === "messages") navigate({ to: "/messages" });
-          else if (n.route === "pro" && n.proId) navigate({ to: "/pro/$proId", params: { proId: n.proId } });
-        }}
-      />
       <FiltersSheet
         open={filtersSheetOpen}
         onOpenChange={setFiltersSheetOpen}
