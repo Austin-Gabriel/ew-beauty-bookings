@@ -655,25 +655,9 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
       style={{ borderColor: borderCol, backgroundColor: cardBg }}
     >
       <div
-        className="relative aspect-[4/3] w-full bg-center bg-cover"
+        className="aspect-[4/3] w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
-      >
-        {pro.online && (
-          <span
-            className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 9.5,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1 w-1 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Online
-          </span>
-        )}
-      </div>
+      />
       <div className="px-3 py-3">
         <div
           className="truncate"
