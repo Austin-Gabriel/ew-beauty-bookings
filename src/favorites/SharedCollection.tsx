@@ -9,7 +9,6 @@ import {
   type FavItem,
 } from "./store";
 
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 const ORANGE = "#FF823F";
 
 /**
