@@ -162,37 +162,9 @@ export function DiscoverPage() {
         </button>
       </header>
 
-      {/* PAGE TITLE */}
-      <div className="px-5 pt-5 pb-3">
-        <h1
-          style={{
-            fontFamily: FRAUNCES,
-            fontWeight: 400,
-            fontSize: 34,
-            lineHeight: 1.05,
-            letterSpacing: "-0.02em",
-            color: text,
-            margin: 0,
-          }}
-        >
-          Hello, <span style={{ fontStyle: "italic" }}>{customer.name}</span>.
-        </h1>
-        <p
-          style={{
-            fontFamily: SANS_STACK,
-            fontSize: 13,
-            color: text,
-            opacity: 0.6,
-            marginTop: 6,
-          }}
-        >
-          Beauty, where you are.
-        </p>
-      </div>
-
       {/* STICKY: search + filter row */}
       <div
-        className="sticky top-0 z-30 px-5 pb-3 pt-2"
+        className="sticky top-0 z-30 px-5 pb-3 pt-3"
         style={{
           backgroundColor: stickyBg,
           borderBottom: `1px solid ${borderCol}`,
@@ -208,7 +180,7 @@ export function DiscoverPage() {
       </div>
 
       {/* ACTION CTAs */}
-      <div className="grid grid-cols-2 gap-3 px-5 pt-4">
+      <div className="grid grid-cols-2 gap-3 px-5 pt-5">
         <PrimaryCta onClick={() => setPrefSheetOpen("now")}>Book now</PrimaryCta>
         <GhostCta onClick={() => setPrefSheetOpen("later")}>Schedule later</GhostCta>
       </div>
@@ -222,23 +194,18 @@ export function DiscoverPage() {
       ) : filteredPros.length === 0 ? (
         <NoResults onClear={clearFilters} />
       ) : (
-        <>
+        <div className="flex flex-col gap-5 px-5 pt-6">
           {/* Editorial spotlight */}
           {spotlight && (
-            <section className="px-5 pt-8">
-              <SectionEyebrow>Spotlight</SectionEyebrow>
+            <SectionCard title="Spotlight">
               <SpotlightCard pro={spotlight} onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })} />
-            </section>
+            </SectionCard>
           )}
 
           {/* Quick rebook (returning users only) */}
           {rebookPros.length > 0 && (
-            <section className="pt-8">
-              <div className="px-5">
-                <SectionEyebrow>Book again</SectionEyebrow>
-                <SectionTitle>Pros you've worked with</SectionTitle>
-              </div>
-              <HScroll>
+            <SectionCard title="Book again">
+              <HScrollInCard>
                 {rebookPros.map((p) => (
                   <RebookCard
                     key={p.id}
@@ -246,17 +213,13 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScroll>
-            </section>
+              </HScrollInCard>
+            </SectionCard>
           )}
 
           {/* Service categories chip row */}
-          <section className="pt-8">
-            <div className="px-5">
-              <SectionEyebrow>Browse</SectionEyebrow>
-              <SectionTitle>By service</SectionTitle>
-            </div>
-            <HScroll>
+          <SectionCard title="Browse by service">
+            <HScrollInCard>
               {SERVICE_CATEGORIES.map((cat) => {
                 const active = activeCategories.has(cat);
                 return (
@@ -278,44 +241,43 @@ export function DiscoverPage() {
                   </button>
                 );
               })}
-            </HScroll>
-          </section>
-
-          {/* Available now */}
-          {onlinePros.length > 0 && state.availabilityMix !== "none" && (
-            <CuratedRow
-              eyebrow="Right now"
-              title="Available now"
-              pros={onlinePros}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
-          )}
+            </HScrollInCard>
+          </SectionCard>
 
           {/* Top rated */}
           {topRated.length > 0 && (
-            <CuratedRow
-              eyebrow="Trusted"
-              title="Top rated near you"
-              pros={topRated}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
+            <SectionCard title="Top rated near you">
+              <HScrollInCard>
+                {topRated.map((p) => (
+                  <CompactProCard
+                    key={p.id}
+                    pro={p}
+                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
+                  />
+                ))}
+              </HScrollInCard>
+            </SectionCard>
           )}
 
           {/* New on Ewà */}
           {newPros.length > 0 && (
-            <CuratedRow
-              eyebrow="Fresh"
-              title="New on Ewà"
-              pros={newPros}
-              onTap={(id) => navigate({ to: "/pro/$proId", params: { proId: id } })}
-            />
+            <SectionCard title="New on Ewà">
+              <HScrollInCard>
+                {newPros.map((p) => (
+                  <CompactProCard
+                    key={p.id}
+                    pro={p}
+                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
+                  />
+                ))}
+              </HScrollInCard>
+            </SectionCard>
           )}
 
-          {/* All Pros feed */}
-          <section className="px-5 pt-10">
-            <SectionEyebrow>All pros</SectionEyebrow>
-            <SectionTitle>Near {neighborhood}</SectionTitle>
-            <div className="mt-5 flex flex-col gap-5">
+          {/* All Pros feed — header outside, each pro is its own card */}
+          <section className="pt-2">
+            <SectionHeading>All pros near {neighborhood}</SectionHeading>
+            <div className="mt-4 flex flex-col gap-4">
               {restPros.map((p) => (
                 <ProCard
                   key={p.id}
@@ -325,7 +287,7 @@ export function DiscoverPage() {
               ))}
             </div>
           </section>
-        </>
+        </div>
       )}
 
       {/* SHEETS */}
