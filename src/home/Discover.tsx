@@ -586,21 +586,6 @@ function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
         </button>
-        {pro.online && (
-          <span
-            className="absolute left-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5"
-            style={{
-              backgroundColor: "rgba(6,28,39,0.7)",
-              color: "#F0EBD8",
-              fontFamily: SANS_STACK,
-              fontSize: 10.5,
-              fontWeight: 500,
-            }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#3DDC97" }} />
-            Online
-          </span>
-        )}
       </div>
       <div className="flex items-start gap-3 px-4 pb-4 pt-3">
         <div
