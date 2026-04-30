@@ -9,6 +9,8 @@ import {
   type DiscoverDensity,
   type LocationArea,
   type AvailabilityMix,
+  type FavoritesSeed,
+  type NotificationsState,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
@@ -273,6 +275,30 @@ export function DevStateToggle() {
                     { value: "none", label: "None" },
                   ]}
                   onChange={(v) => set("availabilityMix", v)}
+                />
+              </Field>
+
+              <Field label="Favorites seed" hint="Resets the Favorites tab on change">
+                <Segmented<FavoritesSeed>
+                  value={state.favoritesSeed}
+                  options={[
+                    { value: "empty", label: "Empty" },
+                    { value: "few", label: "Few" },
+                    { value: "many", label: "Many" },
+                  ]}
+                  onChange={(v) => set("favoritesSeed", v)}
+                />
+              </Field>
+
+              <Field label="Notifications" hint="How busy the bell + Notifications page feel">
+                <Segmented<NotificationsState>
+                  value={state.notificationsState}
+                  options={[
+                    { value: "none", label: "None" },
+                    { value: "few", label: "Few" },
+                    { value: "many", label: "Many" },
+                  ]}
+                  onChange={(v) => set("notificationsState", v)}
                 />
               </Field>
             </div>
