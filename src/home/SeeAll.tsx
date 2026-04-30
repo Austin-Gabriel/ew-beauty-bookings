@@ -44,10 +44,12 @@ export function SeeAllPage() {
   const navigate = useNavigate();
   const favorites = useFavorites();
 
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.10)";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.55)";
-  const faint = isDark ? "rgba(240,235,216,0.40)" : "rgba(6,28,39,0.40)";
+  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
+  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
+  const muted = isDark ? "rgba(240,235,216,0.55)" : "#6B7684";
+  const faint = isDark ? "rgba(240,235,216,0.40)" : "#C7CDD4";
+  const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
+  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
 
   const meta = TITLE_MAP[cat];
 
@@ -133,13 +135,13 @@ export function SeeAllPage() {
 
       {/* BODY -------------------------------------------------------------- */}
       {cat === "online" && (
-        <OnlineNowList pros={onlinePros} muted={muted} text={text} onTap={goToPro} onFavorite={handleFavorite} favorites={favorites} />
+        <OnlineNowList pros={onlinePros} muted={muted} text={text} onTap={goToPro} onFavorite={handleFavorite} favorites={favorites} cardShadow={cardShadow} onlineBorder={onlineBorder} />
       )}
       {cat === "available" && (
-        <AvailableTodayList pros={availablePros} muted={muted} text={text} subtleSurface={subtleSurface} subtleBorder={subtleBorder} onTap={goToPro} onFavorite={handleFavorite} favorites={favorites} />
+        <AvailableTodayList pros={availablePros} muted={muted} text={text} subtleSurface={subtleSurface} subtleBorder={subtleBorder} onTap={goToPro} onFavorite={handleFavorite} favorites={favorites} cardShadow={cardShadow} cardBorder={!isDark ? subtleBorder : undefined} />
       )}
       {cat === "new" && (
-        <NewStylistsGrid pros={newPros} muted={muted} text={text} onTap={goToPro} onFavorite={handleFavorite} />
+        <NewStylistsGrid pros={newPros} muted={muted} text={text} onTap={goToPro} onFavorite={handleFavorite} cardShadow={cardShadow} cardBorder={!isDark ? subtleBorder : undefined} />
       )}
       {cat === "trending" && <TrendingStyles muted={muted} text={text} navigate={navigate} />}
     </AppShell>
@@ -312,6 +314,8 @@ function OnlineNowList({
   onTap,
   onFavorite,
   favorites,
+  cardShadow,
+  onlineBorder,
 }: {
   pros: Pro[];
   muted: string;
@@ -319,6 +323,8 @@ function OnlineNowList({
   onTap: (p: Pro) => void;
   onFavorite: (p: Pro) => void;
   favorites: ReturnType<typeof useFavorites>;
+  cardShadow: string;
+  onlineBorder: string;
 }) {
   return (
     <>
@@ -335,6 +341,8 @@ function OnlineNowList({
               onFavorite={() => onFavorite(pro)}
               favorited={favorites.isFavorite(pro.id)}
               when={idx === 0 ? "Now" : `${(idx + 1) * 30} min`}
+              shadow={cardShadow}
+              border={onlineBorder}
             />
           ))
         )}
@@ -349,12 +357,16 @@ function OnlineCardSplit({
   onFavorite,
   favorited,
   when,
+  shadow = "none",
+  border = "rgba(22,163,74,0.30)",
 }: {
   pro: Pro;
   onTap: () => void;
   onFavorite: () => void;
   favorited: boolean;
   when: string;
+  shadow?: string;
+  border?: string;
 }) {
   return (
     <div
@@ -365,7 +377,8 @@ function OnlineCardSplit({
       className="flex cursor-pointer overflow-hidden rounded-2xl"
       style={{
         backgroundColor: CARD_BG,
-        border: "1.5px solid rgba(22,163,74,0.30)",
+        border: `1.5px solid ${border}`,
+        boxShadow: shadow,
         fontFamily: SANS_STACK,
       }}
     >
@@ -410,7 +423,7 @@ function OnlineCardSplit({
             {pro.category} · {pro.headline}
           </div>
           <div className="mt-1 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
-            <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+            <span style={{ color: "#F5A623", fontSize: 10 }}>★</span>
             <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
             <span>· {pro.reviewCount} reviews</span>
           </div>
@@ -438,6 +451,8 @@ function AvailableTodayList({
   onTap,
   onFavorite,
   favorites,
+  cardShadow,
+  cardBorder,
 }: {
   pros: Pro[];
   muted: string;
@@ -447,6 +462,8 @@ function AvailableTodayList({
   onTap: (p: Pro) => void;
   onFavorite: (p: Pro) => void;
   favorites: ReturnType<typeof useFavorites>;
+  cardShadow: string;
+  cardBorder?: string;
 }) {
   const [view, setView] = useState<"list" | "map">("list");
   return (
@@ -481,6 +498,8 @@ function AvailableTodayList({
                 onFavorite={() => onFavorite(pro)}
                 isTop={idx === 0}
                 slot={["2:00 PM", "4:30 PM", "6:00 PM", "Tomorrow 9:00 AM", "Tomorrow 11:00 AM"][idx % 5]!}
+                shadow={cardShadow}
+                border={cardBorder}
               />
             ))
           )}
@@ -553,6 +572,8 @@ function HeroResultCard({
   onFavorite,
   isTop,
   slot,
+  shadow = "none",
+  border,
 }: {
   pro: Pro;
   favorited: boolean;
@@ -560,6 +581,8 @@ function HeroResultCard({
   onFavorite: () => void;
   isTop: boolean;
   slot: string;
+  shadow?: string;
+  border?: string;
 }) {
   return (
     <div
@@ -568,7 +591,7 @@ function HeroResultCard({
       onClick={onTap}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
       className="cursor-pointer overflow-hidden rounded-3xl"
-      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK }}
+      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK, boxShadow: shadow, border: border ? `1px solid ${border}` : undefined }}
     >
       <div className="relative h-[200px] overflow-hidden">
         <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -626,7 +649,7 @@ function HeroResultCard({
               {pro.certified && <VerifiedTick small />}
             </div>
             <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
-              <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+              <span style={{ color: "#F5A623", fontSize: 10 }}>★</span>
               <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
               <span className="truncate">· {pro.reviewCount} reviews · {pro.headline}</span>
             </div>
@@ -665,12 +688,16 @@ function NewStylistsGrid({
   text,
   onTap,
   onFavorite,
+  cardShadow,
+  cardBorder,
 }: {
   pros: Pro[];
   muted: string;
   text: string;
   onTap: (p: Pro) => void;
   onFavorite: (p: Pro) => void;
+  cardShadow: string;
+  cardBorder?: string;
 }) {
   return (
     <>
@@ -684,7 +711,7 @@ function NewStylistsGrid({
           </div>
         ) : (
           pros.map((pro) => (
-            <NewStylistTile key={pro.id} pro={pro} onTap={() => onTap(pro)} onFavorite={() => onFavorite(pro)} />
+            <NewStylistTile key={pro.id} pro={pro} onTap={() => onTap(pro)} onFavorite={() => onFavorite(pro)} shadow={cardShadow} border={cardBorder} />
           ))
         )}
       </div>
@@ -692,7 +719,7 @@ function NewStylistsGrid({
   );
 }
 
-function NewStylistTile({ pro, onTap, onFavorite }: { pro: Pro; onTap: () => void; onFavorite: () => void }) {
+function NewStylistTile({ pro, onTap, onFavorite, shadow = "none", border }: { pro: Pro; onTap: () => void; onFavorite: () => void; shadow?: string; border?: string }) {
   return (
     <div
       role="button"
@@ -700,7 +727,7 @@ function NewStylistTile({ pro, onTap, onFavorite }: { pro: Pro; onTap: () => voi
       onClick={onTap}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
       className="cursor-pointer overflow-hidden rounded-2xl"
-      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK }}
+      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK, boxShadow: shadow, border: border ? `1px solid ${border}` : undefined }}
     >
       <div className="relative aspect-square overflow-hidden">
         <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -743,7 +770,7 @@ function NewStylistTile({ pro, onTap, onFavorite }: { pro: Pro; onTap: () => voi
           {pro.certified && <VerifiedTick small />}
         </div>
         <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11, color: INK_500 }}>
-          <span style={{ color: "#FFC107", fontSize: 9 }}>★</span>
+          <span style={{ color: "#F5A623", fontSize: 9 }}>★</span>
           <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
           <span>· {pro.reviewCount} reviews</span>
         </div>

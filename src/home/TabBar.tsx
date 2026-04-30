@@ -61,7 +61,7 @@ const TABS: Tab[] = [
 export function TabBar() {
   const { text, borderCol, bg, isDark } = useAuthTheme();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const barBg = isDark ? "rgba(6,28,39,0.85)" : "rgba(240,235,216,0.92)";
+  const barBg = isDark ? "rgba(6,28,39,0.85)" : "rgba(255,255,255,0.92)";
 
   return (
     <nav
@@ -94,13 +94,14 @@ export function TabBar() {
                 to={t.to}
                 aria-current={active ? "page" : undefined}
                 className="flex h-12 flex-col items-center justify-center gap-0.5 transition-all"
-                style={{ color, opacity }}
+                style={{ color, opacity, fontFamily: SANS_STACK }}
               >
                 {t.icon(active)}
                 <span
                   style={{
-                    fontSize: 10,
-                    letterSpacing: "0.06em",
+                    fontFamily: SANS_STACK,
+                    fontSize: 11,
+                    letterSpacing: "0.02em",
                     fontWeight: active ? 600 : 500,
                   }}
                 >

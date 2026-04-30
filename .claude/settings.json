@@ -21,7 +21,22 @@
       "Bash(/usr/bin/grep -n \"Toggle color\\\\|paddingTop: 14\\\\|hideThemeToggle\\\\|topLabel\" src/auth/auth-shell.tsx)",
       "Bash(git fetch *)",
       "Bash(/usr/bin/head -40)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(/usr/bin/grep -rn \"favorite\\\\|Favorite\" src/routes/)",
+      "Bash(/usr/bin/grep -n \"favorites\" src/routeTree.gen.ts)",
+      "Bash(/usr/bin/grep -nE \"FavoritesRoute|favorites\" src/routeTree.gen.ts)",
+      "Bash(/usr/bin/grep -iE \"Outlet|Children|children|component\")",
+      "Bash(/usr/bin/grep -n \"DEFAULT_COLLECTION_ID\\\\s*=\" src/favorites/store.ts)",
+      "Bash(/usr/bin/head -3)",
+      "Bash(/usr/bin/grep -rEn \"#FF6B35|#FF7A29|#FF823F\" src/)",
+      "Bash(/usr/bin/grep -n \"subtleSurface\\\\|subtleBorder\\\\|muted =\\\\|faint =\\\\|FFC107\\\\|cardShadow\\\\|boxShadow\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -n 'header className=\"px-5\\\\|HEADER\\\\|<header' src/home/Discover.tsx)",
+      "Bash(/usr/bin/head -5)",
+      "Bash(/usr/bin/grep -n \"function HeroCard\\\\|function OnlineCard\\\\|function CompactCard\\\\|function TrendingTile\\\\|<HeroCard\\\\|<OnlineCard\\\\|<CompactCard\\\\|<TrendingTile\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -n \"LIVE CONTEXT\\\\|stylists ready in\\\\|rgba\\(22,163,74,0.10\\)\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -n \"subtleSurface = isDark\\\\|subtleBorder = isDark\\\\|muted = isDark\\\\|FFC107\\\\|cardShadow\\\\|onlineBorder\" src/home/SeeAll.tsx)",
+      "Bash(/usr/bin/grep -n \"function OnlineCardSplit\\\\|function HeroResultCard\\\\|function NewStylistTile\\\\|function StyleTile\\\\|<OnlineCardSplit\\\\|<HeroResultCard\\\\|<NewStylistTile\\\\|<StyleTile\" src/home/SeeAll.tsx)",
+      "Bash(/usr/bin/grep -n \"<OnlineNowList\\\\|<AvailableTodayList\\\\|<NewStylistsGrid\\\\|<TrendingStyles\" src/home/SeeAll.tsx)"
     ]
   }
 }

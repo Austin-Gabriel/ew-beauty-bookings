@@ -139,11 +139,17 @@ export function DiscoverPage() {
   );
   const unreadCount = allNotifications.filter((n) => n.unread).length;
 
-  // Theme tokens
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#FFFFFF";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.14)";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.62)";
-  const faint = isDark ? "rgba(240,235,216,0.32)" : "rgba(6,28,39,0.42)";
+  // Theme tokens — light mode is white-on-white with surface-muted chrome (per design system)
+  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
+  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
+  const muted = isDark ? "rgba(240,235,216,0.55)" : "#6B7684";
+  const faint = isDark ? "rgba(240,235,216,0.32)" : "#C7CDD4";
+  // Card shadow lifts white cards off the white page in light mode; no shadow on dark
+  const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
+  // Online card border — bumped to 50% opacity in light mode so the live signal stays strong on white
+  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
+  // Header bottom border — visible separator between sticky chrome and scrollable content in light mode
+  const headerBottomBorder = isDark ? "transparent" : "#EEF1F4";
 
   const handleTrendingTap = (label: string) => {
     if (label === "Knotless braids") {
@@ -168,7 +174,7 @@ export function DiscoverPage() {
   return (
     <AppShell editorial>
       {/* HEADER ------------------------------------------------------------ */}
-      <header className="px-5 pt-4">
+      <header className="px-5 pt-4 pb-3" style={{ borderBottom: `1px solid ${headerBottomBorder}` }}>
         <div className="mb-2.5 flex items-center justify-between">
           <EwaMark size={32} />
           <div className="flex items-center gap-2">
@@ -301,7 +307,7 @@ export function DiscoverPage() {
         <div
           className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
           style={{
-            backgroundColor: "rgba(22,163,74,0.10)",
+            backgroundColor: isDark ? "rgba(22,163,74,0.10)" : "#DCFCE7",
             color: SUCCESS,
             fontFamily: SANS_STACK,
             fontSize: 11.5,
@@ -355,6 +361,8 @@ export function DiscoverPage() {
                   favorited={favorites.isFavorite(pro.id)}
                   onTap={() => goToPro(pro)}
                   onFavorite={() => handleFavorite(pro)}
+                  shadow={cardShadow}
+                  border={onlineBorder}
                 />
               ))}
             </div>
@@ -377,6 +385,8 @@ export function DiscoverPage() {
               favorited={favorites.isFavorite(spotlight.id)}
               onTap={() => goToPro(spotlight)}
               onFavorite={() => handleFavorite(spotlight)}
+              shadow={cardShadow}
+              border={!isDark ? subtleBorder : undefined}
             />
           </Section>
         )}
@@ -400,6 +410,8 @@ export function DiscoverPage() {
                   favorited={favorites.isFavorite(pro.id)}
                   onTap={() => goToPro(pro)}
                   onFavorite={() => handleFavorite(pro)}
+                  shadow={cardShadow}
+                  border={!isDark ? subtleBorder : undefined}
                 />
               ))}
             </div>
@@ -710,11 +722,15 @@ function HeroCard({
   favorited,
   onTap,
   onFavorite,
+  shadow = "none",
+  border,
 }: {
   pro: Pro;
   favorited: boolean;
   onTap: () => void;
   onFavorite: () => void;
+  shadow?: string;
+  border?: string;
 }) {
   return (
     <div
@@ -723,7 +739,7 @@ function HeroCard({
       onClick={onTap}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
       className="cursor-pointer overflow-hidden rounded-3xl"
-      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK }}
+      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK, boxShadow: shadow, border: border ? `1px solid ${border}` : undefined }}
     >
       <div className="relative h-[220px] overflow-hidden">
         <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -759,7 +775,7 @@ function HeroCard({
               {pro.certified && <VerifiedTick />}
             </div>
             <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 12, color: INK_500 }}>
-              <span style={{ color: "#FFC107" }}>★</span>
+              <span style={{ color: "#F5A623" }}>★</span>
               <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
               <span>· {pro.reviewCount} reviews · {pro.headline}</span>
             </div>
@@ -795,11 +811,15 @@ function OnlineCard({
   favorited,
   onTap,
   onFavorite,
+  shadow = "none",
+  border = "rgba(22,163,74,0.30)",
 }: {
   pro: Pro;
   favorited: boolean;
   onTap: () => void;
   onFavorite: () => void;
+  shadow?: string;
+  border?: string;
 }) {
   return (
     <div
@@ -811,7 +831,8 @@ function OnlineCard({
       style={{
         backgroundColor: CARD_BG,
         width: 220,
-        border: `1.5px solid rgba(22,163,74,0.3)`,
+        border: `1.5px solid ${border}`,
+        boxShadow: shadow,
         fontFamily: SANS_STACK,
       }}
     >
@@ -839,7 +860,7 @@ function OnlineCard({
           {pro.certified && <VerifiedTick small />}
         </div>
         <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
-          <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+          <span style={{ color: "#F5A623", fontSize: 10 }}>★</span>
           <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
           <span className="truncate">· {pro.reviewCount} reviews · {pro.category}</span>
         </div>
@@ -860,11 +881,15 @@ function CompactCard({
   favorited,
   onTap,
   onFavorite,
+  shadow = "none",
+  border,
 }: {
   pro: Pro;
   favorited: boolean;
   onTap: () => void;
   onFavorite: () => void;
+  shadow?: string;
+  border?: string;
 }) {
   return (
     <div
@@ -873,7 +898,7 @@ function CompactCard({
       onClick={onTap}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
       className="shrink-0 cursor-pointer overflow-hidden rounded-2xl"
-      style={{ backgroundColor: CARD_BG, width: 200, fontFamily: SANS_STACK }}
+      style={{ backgroundColor: CARD_BG, width: 200, fontFamily: SANS_STACK, boxShadow: shadow, border: border ? `1px solid ${border}` : undefined }}
     >
       <div className="relative h-36 overflow-hidden">
         <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -885,7 +910,7 @@ function CompactCard({
           {pro.certified && <VerifiedTick small />}
         </div>
         <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
-          <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+          <span style={{ color: "#F5A623", fontSize: 10 }}>★</span>
           <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
           <span>· {pro.reviewCount} reviews</span>
           <span className="ml-auto" style={{ color: INK_900, fontWeight: 700 }}>${pro.priceFrom}+</span>
@@ -1169,7 +1194,7 @@ function SavedSheet({
                         <span>{p.neighborhood}</span>
                       </div>
                       <div className="mt-0.5 flex items-center gap-1.5" style={{ fontSize: 12 }}>
-                        <span style={{ color: "#FFC107" }}>★</span>
+                        <span style={{ color: "#F5A623" }}>★</span>
                         <span style={{ fontWeight: 600 }}>{p.rating.toFixed(1)}</span>
                         <span style={{ color: "var(--muted-foreground)" }}>· from ${p.priceFrom}</span>
                       </div>

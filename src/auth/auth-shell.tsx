@@ -72,12 +72,13 @@ export function AuthShell({
     setMounted(true);
   }, []);
 
-  const text = isDark ? "#F0EBD8" : "#061C27";
-  const bg = isDark ? "#061C27" : "#F0EBD8";
-  const glowBase = (isDark ? 0.14 : 0.09) * glowBoost;
-  const borderCol = isDark ? "rgba(240,235,216,0.18)" : "rgba(6,28,39,0.18)";
-  const squiggleOpacity = quietSquiggles ? (isDark ? 0.06 : 0.07) : (isDark ? 0.08 : 0.12);
-  const grainOpacity = isDark ? 0.18 : 0.18;
+  const text = isDark ? "#F0EBD8" : "#0B1220";
+  const bg = isDark ? "#061C27" : "#FFFFFF";
+  // Light mode is intentionally clean — no waveform/glow/grain. Dark mode keeps editorial richness.
+  const glowBase = (isDark ? 0.14 : 0) * glowBoost;
+  const borderCol = isDark ? "rgba(240,235,216,0.18)" : "rgba(11,18,32,0.10)";
+  const squiggleOpacity = isDark ? (quietSquiggles ? 0.06 : 0.08) : 0;
+  const grainOpacity = isDark ? 0.18 : 0;
 
   return (
     <ThemeContext.Provider value={{ isDark, setIsDark, text, bg, borderCol, sans: SANS }}>
@@ -149,7 +150,7 @@ export function AuthShell({
               style={{
                 background: isDark
                   ? "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.35) 100%)"
-                  : "radial-gradient(ellipse at center, transparent 60%, rgba(6,28,39,0.06) 100%)",
+                  : "transparent",
                 transition: "background 600ms ease",
               }}
             />

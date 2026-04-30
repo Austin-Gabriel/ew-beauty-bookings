@@ -21,6 +21,7 @@ import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
@@ -86,6 +87,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FavoritesIndexRoute = FavoritesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FavoritesRoute,
+} as any)
 const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
   id: '/see-all/$category',
   path: '/see-all/$category',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites/': typeof FavoritesIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesByTo {
@@ -130,7 +137,6 @@ export interface FileRoutesByTo {
   '/biometric-enroll': typeof BiometricEnrollRoute
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
-  '/favorites': typeof FavoritesRouteWithChildren
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
@@ -141,6 +147,7 @@ export interface FileRoutesByTo {
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites': typeof FavoritesIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesById {
@@ -160,6 +167,7 @@ export interface FileRoutesById {
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/favorites/': typeof FavoritesIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRouteTypes {
@@ -180,6 +188,7 @@ export interface FileRouteTypes {
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites/'
     | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -187,7 +196,6 @@ export interface FileRouteTypes {
     | '/biometric-enroll'
     | '/bookings'
     | '/discover'
-    | '/favorites'
     | '/notifications'
     | '/profile'
     | '/signin'
@@ -198,6 +206,7 @@ export interface FileRouteTypes {
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites'
     | '/favorites/shared/$shareId'
   id:
     | '__root__'
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/see-all/$category'
+    | '/favorites/'
     | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
 }
@@ -322,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favorites/': {
+      id: '/favorites/'
+      path: '/'
+      fullPath: '/favorites/'
+      preLoaderRoute: typeof FavoritesIndexRouteImport
+      parentRoute: typeof FavoritesRoute
+    }
     '/see-all/$category': {
       id: '/see-all/$category'
       path: '/see-all/$category'
@@ -355,11 +372,13 @@ declare module '@tanstack/react-router' {
 
 interface FavoritesRouteChildren {
   FavoritesCollectionIdRoute: typeof FavoritesCollectionIdRoute
+  FavoritesIndexRoute: typeof FavoritesIndexRoute
   FavoritesSharedShareIdRoute: typeof FavoritesSharedShareIdRoute
 }
 
 const FavoritesRouteChildren: FavoritesRouteChildren = {
   FavoritesCollectionIdRoute: FavoritesCollectionIdRoute,
+  FavoritesIndexRoute: FavoritesIndexRoute,
   FavoritesSharedShareIdRoute: FavoritesSharedShareIdRoute,
 }
 

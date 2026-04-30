@@ -185,6 +185,13 @@ export function useCollectionItems(collectionId: string) {
   );
 }
 
+/** All saved items across every collection (newest first). Used by the Saved
+ *  tab to surface Stylists + Inspiration aggregated views. */
+export function useAllItems() {
+  const { items } = useFavStore();
+  return useMemo(() => [...items].sort((a, b) => b.addedAt - a.addedAt), [items]);
+}
+
 /**
  * Pro-level favoriting (back-compat with /src/home/useFavorites).
  * A pro is "favorited" if there's at least one pro item with refId == proId
