@@ -6,11 +6,9 @@ import {
   type AuthState,
   type OnboardingProgress,
   type CustomerState,
-  type DiscoverDensity,
-  type LocationArea,
-  type AvailabilityMix,
   type FavoritesSeed,
-  type NotificationsState,
+  type BookingsSeed,
+  type ActiveBookingStage,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
@@ -241,43 +239,6 @@ export function DevStateToggle() {
                 />
               </Field>
 
-              <Field label="Discover density" hint="Pool size for the feed">
-                <Segmented<DiscoverDensity>
-                  value={state.discoverDensity}
-                  options={[
-                    { value: "empty", label: "Empty" },
-                    { value: "sparse", label: "Sparse" },
-                    { value: "rich", label: "Rich" },
-                  ]}
-                  onChange={(v) => set("discoverDensity", v)}
-                />
-              </Field>
-
-              <Field label="Location" hint="Filters by neighborhood">
-                <Stacked<LocationArea>
-                  value={state.location}
-                  options={[
-                    { value: "Bed-Stuy", label: "Bed-Stuy" },
-                    { value: "Crown Heights", label: "Crown Heights" },
-                    { value: "Fort Greene", label: "Fort Greene" },
-                    { value: "out-of-coverage", label: "Out-of-coverage" },
-                  ]}
-                  onChange={(v) => set("location", v)}
-                />
-              </Field>
-
-              <Field label="Availability mix" hint="How many pros are online now">
-                <Segmented<AvailabilityMix>
-                  value={state.availabilityMix}
-                  options={[
-                    { value: "many", label: "Many" },
-                    { value: "few", label: "Few" },
-                    { value: "none", label: "None" },
-                  ]}
-                  onChange={(v) => set("availabilityMix", v)}
-                />
-              </Field>
-
               <Field label="Favorites seed" hint="Resets the Favorites tab on change">
                 <Segmented<FavoritesSeed>
                   value={state.favoritesSeed}
@@ -290,15 +251,29 @@ export function DevStateToggle() {
                 />
               </Field>
 
-              <Field label="Notifications" hint="How busy the bell + Notifications page feel">
-                <Segmented<NotificationsState>
-                  value={state.notificationsState}
+              <Field label="Bookings seed" hint="Volume of cards in the Bookings tab">
+                <Segmented<BookingsSeed>
+                  value={state.bookingsSeed}
                   options={[
-                    { value: "none", label: "None" },
+                    { value: "empty", label: "Empty" },
                     { value: "few", label: "Few" },
                     { value: "many", label: "Many" },
                   ]}
-                  onChange={(v) => set("notificationsState", v)}
+                  onChange={(v) => set("bookingsSeed", v)}
+                />
+              </Field>
+
+              <Field label="Active booking" hint="Drives the 'happening now' hero card">
+                <Stacked<ActiveBookingStage>
+                  value={state.activeBooking}
+                  options={[
+                    { value: "none", label: "None — no active booking" },
+                    { value: "getting-ready", label: "Getting ready (on-demand prep)" },
+                    { value: "enroute", label: "Enroute — on the way" },
+                    { value: "arrived", label: "Arrived — PIN entry" },
+                    { value: "in-progress", label: "In progress" },
+                  ]}
+                  onChange={(v) => set("activeBooking", v)}
                 />
               </Field>
             </div>

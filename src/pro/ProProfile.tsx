@@ -5,6 +5,8 @@ import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useFavorites } from "@/favorites/store";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
+import { formatProLocation, getLocationContext } from "@/lib/location";
+import { TAB_BAR_HEIGHT_PX } from "@/home/TabBar";
 
 const ORANGE = "#FF823F";
 const SUCCESS = "#16A34A";
@@ -50,7 +52,7 @@ export function ProProfile({ proId }: { proId: string }) {
   const stats = mockStats(pro);
   const ratingBreakdown = mockBreakdown();
   const reviews = mockReviews(pro);
-  const distance = (pro.travelRadiusMi * 0.4).toFixed(1);
+  const locationLabel = formatProLocation(pro, getLocationContext());
   const initials = initialsOf(pro.name);
 
   // Pull a hero gradient out of the first portfolio image's hue. Fallback to
@@ -255,23 +257,21 @@ export function ProProfile({ proId }: { proId: string }) {
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
                 <circle cx="12" cy="9" r="2.5" />
               </svg>
-              {distance} mi away
-            </span>
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full"
-              style={{ padding: "5px 10px", backgroundColor: subtleSurface, color: INK_700, fontSize: 11.5, fontWeight: 500 }}
-            >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={INK_500} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              </svg>
-              Mobile · comes to you
+              {locationLabel}
             </span>
           </div>
         </div>
       </div>
 
       {/* SECTIONS ---------------------------------------------------------- */}
-      <div className="px-5" style={{ paddingBottom: 110 /* booking bar height + nav */ }}>
+      <div
+        className="px-5"
+        style={{
+          // Reserve room for the sticky booking bar PLUS the tab bar so the
+          // last review never hides behind either of them.
+          paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX + 96}px)`,
+        }}
+      >
         {/* Services */}
         <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => toast("Full services list coming soon")} />
         <ul className="flex flex-col gap-2">
@@ -409,7 +409,8 @@ export function ProProfile({ proId }: { proId: string }) {
       <div
         className="fixed left-0 right-0 z-30"
         style={{
-          bottom: 76, // sits above the tab bar
+          // Sits flush against the top of the tab bar regardless of safe-area inset
+          bottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX}px)`,
           backgroundColor: surfaceBg,
           borderTop: `1px solid ${subtleBorder}`,
           padding: "12px 20px",

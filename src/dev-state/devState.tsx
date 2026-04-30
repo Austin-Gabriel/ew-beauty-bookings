@@ -36,20 +36,20 @@ export type OnboardingProgress =
 /** Customer history density — drives Quick Rebook + greeting. */
 export type CustomerState = "new" | "returning" | "power";
 
-/** How many pros + categories appear in Discover. */
-export type DiscoverDensity = "empty" | "sparse" | "rich";
-
-/** Current location (drives feed + empty state). */
-export type LocationArea = "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "out-of-coverage";
-
-/** How many pros are online right now. */
-export type AvailabilityMix = "many" | "few" | "none";
-
 /** Seeded favorites/collections in the Favorites tab. */
 export type FavoritesSeed = "empty" | "few" | "many";
 
-/** Notifications & Offers density. */
-export type NotificationsState = "none" | "few" | "many";
+/** Seeded bookings volume in the Bookings tab. */
+export type BookingsSeed = "empty" | "few" | "many";
+
+/** Lifecycle stage of the "happening now" booking — lets us preview each
+ *  state of the active-booking hero card without faking timestamps. */
+export type ActiveBookingStage =
+  | "none"
+  | "getting-ready"
+  | "enroute"
+  | "arrived"
+  | "in-progress";
 
 export type DevState = {
   themeMode: ThemeMode;
@@ -57,11 +57,9 @@ export type DevState = {
   authState: AuthState;
   onboardingProgress: OnboardingProgress;
   customerState: CustomerState;
-  discoverDensity: DiscoverDensity;
-  location: LocationArea;
-  availabilityMix: AvailabilityMix;
   favoritesSeed: FavoritesSeed;
-  notificationsState: NotificationsState;
+  bookingsSeed: BookingsSeed;
+  activeBooking: ActiveBookingStage;
 };
 
 const DEFAULTS: DevState = {
@@ -70,11 +68,9 @@ const DEFAULTS: DevState = {
   authState: "signed-in",
   onboardingProgress: "complete",
   customerState: "returning",
-  discoverDensity: "rich",
-  location: "Bed-Stuy",
-  availabilityMix: "many",
   favoritesSeed: "few",
-  notificationsState: "few",
+  bookingsSeed: "many",
+  activeBooking: "enroute",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";

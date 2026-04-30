@@ -18,7 +18,12 @@ export type Pro = {
   avatar: string;
   portfolio: string[];
   headline: string;
-  neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene";
+  neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "Newark Central" | "Atlanta West End";
+  /** Broader area used by the search/distance system (city + state). */
+  area: { city: string; state: string };
+  /** Mock straight-line distance from this pro to the area's center, in miles.
+   *  Used by formatProLocation to render "1.2 mi" / "0.8 mi from search area". */
+  distanceMi: number;
   travelRadiusMi: number;
   specializations: string[];
   /** Pro type — what they ARE (drives the Discover chip filter). */
@@ -57,6 +62,8 @@ export const MOCK_PROS: Pro[] = [
     ],
     headline: "Knotless braids in Brooklyn",
     neighborhood: "Bed-Stuy",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 1.2,
     travelRadiusMi: 5,
     specializations: ["Knotless braids", "Box braids", "Color"],
     professionalType: "Hairdresser",
@@ -75,6 +82,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "joelle-pierre",
     name: "Joelle Pierre",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 2.8,
     avatar: PHOTO("1544005313-94ddf0286df2"),
     portfolio: [
       PHOTO("1503342217505-b0a15ec3261c"),
@@ -100,6 +109,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "marcus-bell",
     name: "Marcus Bell",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 0.8,
     avatar: PHOTO("1500648767791-00dcc994a43e"),
     portfolio: [
       PHOTO("1605497788044-5a32c7078486"),
@@ -125,6 +136,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "kemi-adesanya",
     name: "Kemi Adesanya",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 3.4,
     avatar: PHOTO("1438761681033-6461ffad8d80"),
     portfolio: [
       PHOTO("1605497788044-5a32c7078486"),
@@ -150,6 +163,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "dani-rivera",
     name: "Dani Rivera",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 2.1,
     avatar: PHOTO("1502685104226-ee32379fefbe"),
     portfolio: [
       PHOTO("1604654894610-df63bc536371"),
@@ -175,6 +190,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "tomi-balogun",
     name: "Tomi Balogun",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 4.2,
     avatar: PHOTO("1487412720507-e7ab37603c6f"),
     portfolio: [
       PHOTO("1522335789203-aabd1fc54bc9"),
@@ -200,6 +217,8 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "ife-johnson",
     name: "Ife Johnson",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 1.9,
     avatar: PHOTO("1524504388940-b1c1722653e1"),
     portfolio: [
       PHOTO("1554519515-242161756769"),
@@ -225,13 +244,15 @@ export const MOCK_PROS: Pro[] = [
   {
     id: "naima-davis",
     name: "Naima Davis",
+    area: { city: "Newark", state: "NJ" },
+    distanceMi: 0.6,
     avatar: PHOTO("1534528741775-53994a69daeb"),
     portfolio: [
       PHOTO("1520975916090-3105956dac38"),
       PHOTO("1559599101-f09722fb4948"),
     ],
     headline: "Boho braids & curated styles",
-    neighborhood: "Crown Heights",
+    neighborhood: "Newark Central",
     travelRadiusMi: 7,
     specializations: ["Boho braids", "Goddess locs", "Twists"],
     professionalType: "Hairdresser",

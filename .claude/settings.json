@@ -44,7 +44,14 @@
       "Bash(/usr/bin/grep -cE \"<Link \" src/favorites/CollectionDetail.tsx)",
       "Bash(/usr/bin/wc -l 'src/routes/pro.$proId.tsx' src/routes/bookings.tsx)",
       "Bash(/usr/bin/head -30 'src/routes/pro.$proId.tsx')",
-      "Bash(/usr/bin/head -30 src/routes/bookings.tsx)"
+      "Bash(/usr/bin/head -30 src/routes/bookings.tsx)",
+      "Bash(/usr/bin/grep -nE \"name: \\\\\"|travelRadiusMi:\" src/data/mock-pros.ts)",
+      "Bash(/usr/bin/grep -nE \"travelRadiusMi|\\\\.4\\\\\\)\\\\.toFixed|mi$|\\\\\\\\\\\\$\\\\\\\\{\\\\\\\\\\(pro\\\\\\\\.travelRadius\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -nE \"Now · |0\\\\\\\\.8 mi|Available now ·\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -nE \"Available now|· [0-9]\" src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -nE \"travelRadiusMi\" src/home/SeeAll.tsx src/home/Discover.tsx)",
+      "Bash(/usr/bin/grep -rn \"themeMode\\\\|onboardingProgress\\\\|favoritesSeed\\\\|notificationsState\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(/usr/bin/grep -rn \"DiscoverDensity\\\\|LocationArea\\\\|AvailabilityMix\\\\|NotificationsState\" src/ --include=\"*.tsx\" --include=\"*.ts\")"
     ]
   }
 }

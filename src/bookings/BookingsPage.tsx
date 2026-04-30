@@ -37,7 +37,34 @@ export function BookingsPage() {
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
 
-  const all = state.customerState === "new" ? [] : MOCK_BOOKINGS;
+  // Derive the visible bookings from dev-state seed + active stage.
+  const all = useMemo(() => {
+    if (state.customerState === "new" || state.bookingsSeed === "empty") return [];
+
+    // Volume — "few" = next-up scheduled + 1 past; "many" = the full set
+    let pool: Booking[] =
+      state.bookingsSeed === "few"
+        ? MOCK_BOOKINGS.filter((b) => ["bk-jordan-sat", "bk-past-amara-apr"].includes(b.id))
+        : MOCK_BOOKINGS;
+
+    // Active booking stage — patch the in-flight Amara booking to whichever
+    // lifecycle stage the dev-state toggle selected (or remove it entirely).
+    pool = pool
+      .map((b): Booking | null => {
+        if (!ACTIVE_STATUSES.includes(b.status)) return b;
+        if (state.activeBooking === "none") return null;
+        const patched: Booking = { ...b, status: state.activeBooking };
+        // Tweak time-sensitive fields per stage so the hero copy reads right
+        if (state.activeBooking === "getting-ready") patched.etaMinutes = 5;
+        else if (state.activeBooking === "enroute") patched.etaMinutes = 12;
+        else if (state.activeBooking === "in-progress") patched.startedAt = Date.now() - 8 * 60 * 1000;
+        return patched;
+      })
+      .filter((b): b is Booking => b !== null);
+
+    return pool;
+  }, [state.customerState, state.bookingsSeed, state.activeBooking]);
+
   const active = all.find((b) => ACTIVE_STATUSES.includes(b.status));
   const upcomingRest = all.filter(
     (b) => !PAST_STATUSES.includes(b.status) && !ACTIVE_STATUSES.includes(b.status),
@@ -961,7 +988,8 @@ function formatDateAndTime(ts: number): string {
 }
 
 function locationLabel(b: Booking): string {
-  if (b.location.type === "mobile") return `Mobile · ${b.location.label.toLowerCase()}`;
+  // All Ewà bookings come to the customer — no need to label "Mobile" anywhere
+  if (b.location.type === "mobile") return b.location.label;
   return `${b.location.label} · ${b.location.distanceMi} mi`;
 }
 

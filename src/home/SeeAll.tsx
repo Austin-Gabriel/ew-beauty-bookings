@@ -5,6 +5,7 @@ import { AppShell } from "./AppShell";
 import { useFavorites } from "./useFavorites";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
+import { formatProLocation, getLocationContext } from "@/lib/location";
 
 const ORANGE = "#FF823F";
 const SUCCESS = "#16A34A";
@@ -431,7 +432,7 @@ function OnlineCardSplit({
         <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
           <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
             <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
-            {when} · {(pro.travelRadiusMi * 0.4).toFixed(1)} mi
+            {when} · {formatProLocation(pro, getLocationContext())}
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
         </div>
@@ -666,7 +667,7 @@ function HeroResultCard({
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {(pro.travelRadiusMi * 0.4).toFixed(1)} mi
+            {formatProLocation(pro, getLocationContext())}
           </span>
           <span className="ml-auto" style={{ fontSize: 14, fontWeight: 700, color: INK_900 }}>
             <span style={{ fontSize: 10, fontWeight: 500, color: INK_500, textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 3 }}>

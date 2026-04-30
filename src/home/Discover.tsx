@@ -6,6 +6,7 @@ import { useFavorites } from "./useFavorites";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { EwaMark } from "@/components/ewa-logo";
 import { MOCK_PROS, PROFESSIONAL_TYPES, type Pro } from "@/data/mock-pros";
+import { formatProLocation, getLocationContext } from "@/lib/location";
 import { useDevState } from "@/dev-state/devState";
 import {
   NEW_CUSTOMER,
@@ -792,7 +793,7 @@ function HeroCard({
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {pro.travelRadiusMi - 3.8 < 0 ? "1.2" : (pro.travelRadiusMi - 3.8).toFixed(1)} mi
+            {formatProLocation(pro, getLocationContext())}
           </span>
           <span className="ml-auto" style={{ fontSize: 14, fontWeight: 700, color: INK_900 }}>
             <span style={{ fontSize: 10, fontWeight: 500, color: INK_500, textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 3 }}>
