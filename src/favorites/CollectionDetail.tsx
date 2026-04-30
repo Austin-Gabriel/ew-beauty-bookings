@@ -15,7 +15,7 @@ import { ItemActionSheet } from "./ItemActionSheet";
 import { MoveToCollectionSheet } from "./MoveToCollectionSheet";
 
 const ORANGE = "#FF823F";
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+
 
 export function CollectionDetail({ collectionId }: { collectionId: string }) {
   const { isDark, text } = useAuthTheme();
@@ -32,6 +32,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
 
   const [actionItem, setActionItem] = useState<FavItem | null>(null);
   const [moveItemState, setMoveItemState] = useState<FavItem | null>(null);
+  const [lightboxItem, setLightboxItem] = useState<FavItem | null>(null);
 
   if (!collection) {
     return (
@@ -126,7 +127,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
       </header>
 
       <div className="px-5" style={{ fontFamily: SANS_STACK, color: text }}>
-        <h1 style={{ fontFamily: FRAUNCES, fontWeight: 400, fontSize: 34, lineHeight: 1.05, letterSpacing: "-0.02em", margin: 0 }}>
+        <h1 style={{ fontFamily: SANS_STACK, fontWeight: 700, fontSize: 30, lineHeight: 1.1, letterSpacing: "-0.01em", margin: 0, color: text }}>
           {collection.name}
         </h1>
         <p className="mt-1" style={{ fontSize: 13, color: muted }}>
@@ -147,7 +148,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
             </Link>
           </div>
         ) : (
-          <ul className="mt-5 grid grid-cols-2 gap-3 pb-6">
+          <ul className="mt-5 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
             {items.map((it) => (
               <li key={it.id}>
                 <FavoriteCard
@@ -155,8 +156,12 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
                   muted={muted}
                   subtleBorder={subtleBorder}
                   onTap={() => {
-                    if (it.type === "pro") navigate({ to: "/pro/$proId", params: { proId: it.refId } });
-                    else if (it.meta?.proId) navigate({ to: "/pro/$proId", params: { proId: it.meta.proId } });
+                    if (it.type === "pro") {
+                      navigate({ to: "/pro/$proId", params: { proId: it.refId } });
+                    } else {
+                      // Look: open lightbox; "View pro" lives inside it
+                      setLightboxItem(it);
+                    }
                   }}
                   onMore={() => setActionItem(it)}
                 />
@@ -165,6 +170,15 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
           </ul>
         )}
       </div>
+
+      <LookLightbox
+        item={lightboxItem}
+        onClose={() => setLightboxItem(null)}
+        onViewPro={(proId) => {
+          setLightboxItem(null);
+          navigate({ to: "/pro/$proId", params: { proId } });
+        }}
+      />
 
       <ItemActionSheet
         item={actionItem}
