@@ -13,6 +13,7 @@ import {
 } from "./store";
 import { ItemActionSheet } from "./ItemActionSheet";
 import { MoveToCollectionSheet } from "./MoveToCollectionSheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 const ORANGE = "#FF823F";
 
