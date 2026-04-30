@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderTab } from "@/home/PlaceholderTab";
+import { BookingsPage } from "@/bookings/BookingsPage";
 
 export const Route = createFileRoute("/bookings")({
   head: () => ({
@@ -8,11 +8,5 @@ export const Route = createFileRoute("/bookings")({
       { name: "description", content: "Your upcoming and past Ewà bookings." },
     ],
   }),
-  component: () => (
-    <PlaceholderTab
-      pageTitle="Bookings"
-      headline="Bookings, on the way."
-      subhead="Your upcoming sessions, past bookings, and rebook shortcuts will live here."
-    />
-  ),
+  component: BookingsPage,
 });

@@ -36,7 +36,15 @@
       "Bash(/usr/bin/grep -n \"LIVE CONTEXT\\\\|stylists ready in\\\\|rgba\\(22,163,74,0.10\\)\" src/home/Discover.tsx)",
       "Bash(/usr/bin/grep -n \"subtleSurface = isDark\\\\|subtleBorder = isDark\\\\|muted = isDark\\\\|FFC107\\\\|cardShadow\\\\|onlineBorder\" src/home/SeeAll.tsx)",
       "Bash(/usr/bin/grep -n \"function OnlineCardSplit\\\\|function HeroResultCard\\\\|function NewStylistTile\\\\|function StyleTile\\\\|<OnlineCardSplit\\\\|<HeroResultCard\\\\|<NewStylistTile\\\\|<StyleTile\" src/home/SeeAll.tsx)",
-      "Bash(/usr/bin/grep -n \"<OnlineNowList\\\\|<AvailableTodayList\\\\|<NewStylistsGrid\\\\|<TrendingStyles\" src/home/SeeAll.tsx)"
+      "Bash(/usr/bin/grep -n \"<OnlineNowList\\\\|<AvailableTodayList\\\\|<NewStylistsGrid\\\\|<TrendingStyles\" src/home/SeeAll.tsx)",
+      "Bash(/usr/bin/wc -l src/notifications/NotificationsPage.tsx)",
+      "Bash(/usr/bin/grep -n \"recent\\\\|Recent\\\\|Notif\\\\b\\\\|kind:\\\\|notifications =\\\\|return \\(\" src/notifications/NotificationsPage.tsx)",
+      "Bash(/usr/bin/tail -10 src/notifications/NotificationsPage.tsx)",
+      "Bash(/usr/bin/grep -nE \"^import.*Link.*react-router|^import.*Sheet|FullEmptyState|^const ORANGE\" src/favorites/CollectionDetail.tsx)",
+      "Bash(/usr/bin/grep -cE \"<Link \" src/favorites/CollectionDetail.tsx)",
+      "Bash(/usr/bin/wc -l 'src/routes/pro.$proId.tsx' src/routes/bookings.tsx)",
+      "Bash(/usr/bin/head -30 'src/routes/pro.$proId.tsx')",
+      "Bash(/usr/bin/head -30 src/routes/bookings.tsx)"
     ]
   }
 }

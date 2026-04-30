@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useRouter, Link } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
@@ -13,6 +13,7 @@ import {
 } from "./store";
 import { ItemActionSheet } from "./ItemActionSheet";
 import { MoveToCollectionSheet } from "./MoveToCollectionSheet";
+import { FavoriteEmptyState } from "./FavoriteEmptyState";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 const ORANGE = "#FF823F";
@@ -137,17 +138,7 @@ export function CollectionDetail({ collectionId }: { collectionId: string }) {
         </p>
 
         {items.length === 0 ? (
-          <div className="mt-8 rounded-2xl px-5 py-8 text-center" style={{ backgroundColor: subtleSurface, border: `1px solid ${subtleBorder}` }}>
-            <p style={{ fontSize: 14, fontWeight: 600 }}>Empty for now</p>
-            <p className="mt-1" style={{ fontSize: 13, color: muted }}>Heart pros from Discover to add them here.</p>
-            <Link
-              to="/discover"
-              className="mt-4 inline-block rounded-full px-4 py-2"
-              style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 13, fontWeight: 700 }}
-            >
-              Browse pros
-            </Link>
-          </div>
+          <FavoriteEmptyState variant="collection-detail" onCta={() => navigate({ to: "/discover" })} />
         ) : (
           <ul className="mt-5 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
             {items.map((it) => (

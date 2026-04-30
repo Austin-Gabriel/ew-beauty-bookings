@@ -5,6 +5,7 @@ import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useCollections, useAllItems, DEFAULT_COLLECTION_ID, type FavItem } from "./store";
 import { NewCollectionSheet } from "./NewCollectionSheet";
+import { FavoriteEmptyState } from "./FavoriteEmptyState";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 
 const ORANGE = "#FF823F";
@@ -53,11 +54,7 @@ export function FavoritesIndex() {
     inspiration: looks.length,
   };
 
-  const isEmpty =
-    collections.length === 1 &&
-    count(DEFAULT_COLLECTION_ID) === 0 &&
-    savedPros.length === 0 &&
-    looks.length === 0;
+  const goBrowse = () => navigate({ to: "/discover" });
 
   return (
     <AppShell editorial>
@@ -94,9 +91,7 @@ export function FavoritesIndex() {
       </header>
 
       {/* BODY -------------------------------------------------------------- */}
-      {isEmpty ? (
-        <FullEmptyState onBrowse={() => navigate({ to: "/discover" })} text={text} muted={muted} />
-      ) : tab === "collections" ? (
+      {tab === "collections" ? (
         <CollectionsTab
           collections={collections}
           count={count}
@@ -107,6 +102,7 @@ export function FavoritesIndex() {
           muted={muted}
           text={text}
           onNew={() => setNewOpen(true)}
+          onBrowse={goBrowse}
         />
       ) : tab === "stylists" ? (
         <StylistsTab
@@ -117,6 +113,7 @@ export function FavoritesIndex() {
           muted={muted}
           text={text}
           onTap={(pro) => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
+          onBrowse={goBrowse}
         />
       ) : (
         <InspirationTab
@@ -131,6 +128,7 @@ export function FavoritesIndex() {
             if (proId) navigate({ to: "/pro/$proId", params: { proId } });
             else toast("Lightbox coming soon");
           }}
+          onBrowse={goBrowse}
         />
       )}
 
@@ -249,6 +247,7 @@ function CollectionsTab({
   muted,
   text,
   onNew,
+  onBrowse,
 }: {
   collections: ReturnType<typeof useCollections>["collections"];
   count: (id: string) => number;
@@ -259,8 +258,14 @@ function CollectionsTab({
   muted: string;
   text: string;
   onNew: () => void;
+  onBrowse: () => void;
 }) {
   const total = collections.length;
+  // Truly empty = only the default Saved collection AND it has 0 items
+  const isEmpty = total === 1 && count(DEFAULT_COLLECTION_ID) === 0;
+  if (isEmpty) {
+    return <FavoriteEmptyState variant="collections" onCta={onBrowse} />;
+  }
   return (
     <div className="px-5 pb-6 pt-4" style={{ fontFamily: SANS_STACK }}>
       <p style={{ fontSize: 12, color: muted, marginBottom: 14 }}>
@@ -368,6 +373,7 @@ function StylistsTab({
   muted,
   text,
   onTap,
+  onBrowse,
 }: {
   pros: { item: FavItem; pro: Pro }[];
   subtleBorder: string;
@@ -376,6 +382,7 @@ function StylistsTab({
   muted: string;
   text: string;
   onTap: (pro: Pro) => void;
+  onBrowse: () => void;
 }) {
   const [chip, setChip] = useState<StylistChip>("All");
 
@@ -385,6 +392,11 @@ function StylistsTab({
   }, [pros, chip]);
 
   const chips: StylistChip[] = ["All", "Booked before", "Want to try", "Available now"];
+
+  // Truly empty pool → big empty state. Filter-driven empty → small inline message.
+  if (pros.length === 0) {
+    return <FavoriteEmptyState variant="stylists" onCta={onBrowse} />;
+  }
 
   return (
     <div style={{ fontFamily: SANS_STACK }}>
@@ -402,7 +414,7 @@ function StylistsTab({
 
       {list.length === 0 ? (
         <div className="px-5 pb-6">
-          <EmptyCard text={text} muted={muted} subtleBorder={subtleBorder} message="No stylists match this filter." />
+          <FilterEmpty text={text} muted={muted} subtleBorder={subtleBorder} message="No stylists match this filter." onClear={() => setChip("All")} />
         </div>
       ) : (
         <div className="flex flex-col gap-2.5 px-5 pb-6">
@@ -582,6 +594,7 @@ function InspirationTab({
   muted,
   text,
   onTap,
+  onBrowse,
 }: {
   looks: FavItem[];
   subtleSurface: string;
@@ -590,6 +603,7 @@ function InspirationTab({
   muted: string;
   text: string;
   onTap: (item: FavItem) => void;
+  onBrowse: () => void;
 }) {
   const [chip, setChip] = useState<string>("All");
 
@@ -613,6 +627,10 @@ function InspirationTab({
     return cycle[i % cycle.length]!;
   };
 
+  if (looks.length === 0) {
+    return <FavoriteEmptyState variant="inspiration" onCta={onBrowse} />;
+  }
+
   return (
     <div style={{ fontFamily: SANS_STACK }}>
       <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-3 pt-4" style={{ scrollbarWidth: "none" }}>
@@ -629,7 +647,7 @@ function InspirationTab({
 
       {list.length === 0 ? (
         <div className="px-5 pb-6">
-          <EmptyCard text={text} muted={muted} subtleBorder={subtleBorder} message="No looks saved yet." />
+          <FilterEmpty text={text} muted={muted} subtleBorder={subtleBorder} message="No looks match this filter." onClear={() => setChip("All")} />
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 px-5 pb-6">
@@ -683,48 +701,37 @@ function InspirationTile({
   );
 }
 
-/* ───────── Empty states ───────── */
+/* ───────── Filter-driven empty (small inline message, distinct from the
+   true-empty-state hero illustration handled by FavoriteEmptyState) ───────── */
 
-function FullEmptyState({ onBrowse, text, muted }: { onBrowse: () => void; text: string; muted: string }) {
-  return (
-    <div className="flex flex-col items-center px-6 pt-14 text-center" style={{ fontFamily: SANS_STACK }}>
-      <div
-        className="grid h-24 w-24 place-items-center rounded-full"
-        style={{ backgroundColor: "rgba(255,130,63,0.10)", color: ORANGE }}
-      >
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      </div>
-      <h2 style={{ marginTop: 20, fontSize: 18, fontWeight: 700, color: text, letterSpacing: "-0.015em" }}>
-        Start your collection
-      </h2>
-      <p style={{ marginTop: 8, fontSize: 13.5, color: muted, lineHeight: 1.5, maxWidth: 280 }}>
-        Browse stylists and styles, then tap the heart to add them here. Mix hair, makeup, nails — whatever your look needs.
-      </p>
-      <button
-        type="button"
-        onClick={onBrowse}
-        className="mt-6 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 transition-transform active:scale-95"
-        style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 14, fontWeight: 600, fontFamily: SANS_STACK }}
-      >
-        Browse stylists
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-function EmptyCard({ text, muted, subtleBorder, message }: { text: string; muted: string; subtleBorder: string; message: string }) {
+function FilterEmpty({
+  text,
+  muted,
+  subtleBorder,
+  message,
+  onClear,
+}: {
+  text: string;
+  muted: string;
+  subtleBorder: string;
+  message: string;
+  onClear: () => void;
+}) {
   return (
     <div
-      className="grid place-items-center rounded-2xl py-10 text-center"
+      className="grid place-items-center rounded-2xl py-8 text-center"
       style={{ border: `2px dashed ${subtleBorder}`, fontFamily: SANS_STACK }}
     >
       <p style={{ fontSize: 14, fontWeight: 600, color: text }}>{message}</p>
-      <p style={{ fontSize: 12, color: muted, marginTop: 4 }}>Heart a pro or look from Discover to add them.</p>
+      <p style={{ fontSize: 12, color: muted, marginTop: 4 }}>Try clearing the filter to see everything you've saved.</p>
+      <button
+        type="button"
+        onClick={onClear}
+        className="mt-3 rounded-full px-3.5 py-1.5"
+        style={{ backgroundColor: "rgba(255,130,63,0.10)", color: ORANGE, fontSize: 12.5, fontWeight: 600, fontFamily: SANS_STACK }}
+      >
+        Show all
+      </button>
     </div>
   );
 }
