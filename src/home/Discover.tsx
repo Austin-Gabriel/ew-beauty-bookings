@@ -854,39 +854,44 @@ function Sheet({
       <div
         role="dialog"
         aria-label={title}
-        className="relative max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
+        className="relative flex w-full max-w-[420px] flex-col rounded-t-3xl border"
         style={{
           backgroundColor: sheetBg,
           borderColor: borderCol,
+          // Cap height so the sheet never sits behind the tab bar; reserve
+          // the bar height + safe-area inset.
+          maxHeight: `calc(85vh - ${TAB_BAR_HEIGHT_PX}px - env(safe-area-inset-bottom))`,
           minHeight: 320,
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 28px)",
+          marginBottom: `calc(${TAB_BAR_HEIGHT_PX}px + env(safe-area-inset-bottom))`,
         }}
       >
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
-        <div className="mb-5 flex items-center justify-between">
-          <h3
-            style={{
-              fontFamily: FRAUNCES,
-              fontWeight: 400,
-              fontSize: 26,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-              color: text,
-              margin: 0,
-            }}
-          >
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full text-lg"
-            style={{ color: text, opacity: 0.6 }}
-          >
-            ×
-          </button>
+        <div className="px-5 pt-5">
+          <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
+          <div className="mb-5 flex items-center justify-between">
+            <h3
+              style={{
+                fontFamily: FRAUNCES,
+                fontWeight: 400,
+                fontSize: 26,
+                lineHeight: 1.1,
+                letterSpacing: "-0.02em",
+                color: text,
+                margin: 0,
+              }}
+            >
+              {title}
+            </h3>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 place-items-center rounded-full text-lg"
+              style={{ color: text, opacity: 0.6 }}
+            >
+              ×
+            </button>
+          </div>
         </div>
-        {children}
+        <div className="flex-1 overflow-y-auto px-5 pb-6">{children}</div>
       </div>
     </div>
   );
