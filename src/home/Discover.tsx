@@ -15,7 +15,6 @@ import {
 const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
 type QuickFilter =
-  | "available-now"
   | "today"
   | "this-week"
   | "top-rated"
