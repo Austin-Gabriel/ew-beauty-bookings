@@ -543,12 +543,22 @@ function SpotlightCard({
   favorited: boolean;
   onToggleFavorite: () => void;
 }) {
+  const { isDark, borderCol } = useAuthTheme();
+  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE";
+  const cardText = "#061C27";
+  const metaText = "rgba(6,28,39,0.6)";
   return (
     <button
       type="button"
       onClick={onTap}
-      className="mx-5 block overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.99]"
-      style={{ width: "calc(100% - 40px)" }}
+      className="block w-full overflow-hidden rounded-3xl text-left transition-transform active:scale-[0.99]"
+      style={{
+        backgroundColor: cardBg,
+        border: isDark ? "none" : `1px solid ${borderCol}`,
+        boxShadow: isDark
+          ? "0 1px 0 rgba(0,0,0,0.04)"
+          : "0 1px 2px rgba(6,28,39,0.04)",
+      }}
     >
       <div
         className="relative aspect-[5/4] w-full bg-center bg-cover"
@@ -569,40 +579,42 @@ function SpotlightCard({
           </svg>
         </button>
       </div>
-      <div className="pt-4">
+      <div className="px-5 pb-5 pt-4">
+        <div
+          style={{
+            fontFamily: SANS_STACK,
+            fontSize: 10.5,
+            letterSpacing: "1.6px",
+            textTransform: "uppercase",
+            color: "#FF823F",
+            fontWeight: 700,
+          }}
+        >
+          Featured
+        </div>
         <h3
           style={{
-            fontFamily: FRAUNCES,
-            fontWeight: 400,
-            fontSize: 24,
-            lineHeight: 1.1,
+            fontFamily: SANS_STACK,
+            fontWeight: 700,
+            fontSize: 26,
+            lineHeight: 1.15,
             letterSpacing: "-0.02em",
-            color: "currentColor",
+            color: cardText,
             margin: 0,
+            marginTop: 6,
           }}
         >
           {pro.name}
         </h3>
-        <p
-          style={{
-            fontFamily: SANS_STACK,
-            fontSize: 13.5,
-            color: "currentColor",
-            opacity: 0.7,
-            marginTop: 4,
-          }}
-        >
-          {pro.headline}
-        </p>
         <div
-          className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"
-          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: "currentColor", opacity: 0.75 }}
+          className="mt-1.5 flex flex-wrap items-center gap-x-1.5"
+          style={{ fontFamily: SANS_STACK, fontSize: 13.5, color: metaText }}
         >
-          <span className="tabular">★ {pro.rating.toFixed(2)}</span>
+          <span>{pro.headline.split(",")[0].split(" in ")[0]}</span>
           <span>·</span>
           <span>{pro.neighborhood}</span>
           <span>·</span>
-          <span className="tabular">From ${pro.priceFrom}</span>
+          <span className="tabular">{pro.rating.toFixed(1)} ★</span>
         </div>
       </div>
     </button>
