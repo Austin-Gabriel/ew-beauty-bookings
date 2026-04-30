@@ -301,3 +301,52 @@ function FavoriteCard({
     </div>
   );
 }
+
+function LookLightbox({
+  item,
+  onClose,
+  onViewPro,
+}: {
+  item: FavItem | null;
+  onClose: () => void;
+  onViewPro: (proId: string) => void;
+}) {
+  const proId = item?.meta?.proId;
+  return (
+    <Sheet open={!!item} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <SheetContent side="bottom" className="rounded-t-3xl p-0">
+        <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-5" style={{ fontFamily: SANS_STACK }}>
+          {item?.thumbnailUrl ? (
+            <img
+              src={item.thumbnailUrl}
+              alt={item.meta?.name ?? "Look"}
+              className="mx-auto max-h-[60vh] w-full rounded-2xl object-contain"
+            />
+          ) : null}
+          <div className="mt-4 flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate" style={{ fontSize: 16, fontWeight: 700, color: "var(--foreground)" }}>
+                {item?.meta?.name ?? "Saved look"}
+              </p>
+              {item?.meta?.subtitle && (
+                <p className="truncate" style={{ fontSize: 13, color: "var(--muted-foreground)", marginTop: 2 }}>
+                  {item.meta.subtitle}
+                </p>
+              )}
+            </div>
+            {proId && (
+              <button
+                type="button"
+                onClick={() => onViewPro(proId)}
+                className="shrink-0 rounded-full px-4 py-2.5 transition-transform active:scale-95"
+                style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 13, fontWeight: 700 }}
+              >
+                View pro
+              </button>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
