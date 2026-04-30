@@ -116,3 +116,6 @@ export function TabBar() {
 
 /** Bottom padding so content doesn't hide behind the tab bar. */
 export const TAB_BAR_SPACER_PX = 76;
+/** Approximate tab bar height (icons+label+padding) used by sheets to
+ *  reserve room so their content never sits behind the bar. */
+export const TAB_BAR_HEIGHT_PX = 68;

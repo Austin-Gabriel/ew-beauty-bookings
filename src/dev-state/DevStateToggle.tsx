@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useDevState,
   type ThemeMode,
@@ -11,25 +11,107 @@ import {
   type AvailabilityMix,
 } from "./devState";
 
+const POS_KEY = "ewa.devstate.pos.v1";
+const BUTTON_SIZE = 36; // h-9
+const EDGE_PAD = 12;
+
+type Pos = { x: number; y: number };
+
+function readInitialPos(): Pos {
+  if (typeof window === "undefined") return { x: 16, y: 16 };
+  try {
+    const raw = localStorage.getItem(POS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  // Default: top-right, well clear of the bottom tab bar.
+  const x = window.innerWidth - 70;
+  return { x, y: 80 };
+}
+
 /**
  * Floating dev-only panel — quiet, functional, dismissable.
  * Hidden in production via import.meta.env.PROD.
  *
- * Tap the badge to open a bottom sheet with the current dev fields.
- * Add a row per new field as features land.
+ * The badge is draggable so it never has to overlap live UI (e.g. the
+ * Profile tab in the bottom tab bar). Position persists in localStorage.
  */
 export function DevStateToggle() {
   const { state, set, reset, resolvedTheme } = useDevState();
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<Pos>({ x: 16, y: 16 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    origX: number;
+    origY: number;
+    moved: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    setPos(readInitialPos());
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(POS_KEY, JSON.stringify(pos));
+    } catch {}
+  }, [pos]);
 
   if (import.meta.env.PROD) return null;
+
+  const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: pos.x,
+      origY: pos.y,
+      moved: false,
+    };
+    setDragging(true);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = e.clientX - d.startX;
+    const dy = e.clientY - d.startY;
+    if (Math.abs(dx) + Math.abs(dy) > 4) d.moved = true;
+    const maxX = window.innerWidth - BUTTON_SIZE - EDGE_PAD;
+    const maxY = window.innerHeight - BUTTON_SIZE - EDGE_PAD;
+    setPos({
+      x: Math.max(EDGE_PAD, Math.min(maxX, d.origX + dx)),
+      y: Math.max(EDGE_PAD, Math.min(maxY, d.origY + dy)),
+    });
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = dragRef.current;
+    setDragging(false);
+    dragRef.current = null;
+    if (d && !d.moved) {
+      // Treat as a tap.
+      setOpen(true);
+    }
+    try {
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+  };
 
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
-        aria-label="Open dev state panel"
-        className="fixed bottom-4 right-4 z-[9998] flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-popover px-3 font-mono text-[11px] font-medium text-popover-foreground shadow-lg backdrop-blur"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        aria-label="Open dev state panel (drag to move)"
+        className="fixed z-[9998] flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-popover px-3 font-mono text-[11px] font-medium text-popover-foreground shadow-lg backdrop-blur"
+        style={{
+          left: pos.x,
+          top: pos.y,
+          touchAction: "none",
+          cursor: dragging ? "grabbing" : "grab",
+          userSelect: "none",
+        }}
       >
         <span className="h-1.5 w-1.5 rounded-full bg-bagel" />
         dev

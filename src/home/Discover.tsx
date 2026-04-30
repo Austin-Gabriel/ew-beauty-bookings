@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { AppShell } from "./AppShell";
+import { TAB_BAR_HEIGHT_PX } from "./TabBar";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { PrimaryCta, GhostCta } from "@/auth/AuthFrame";
 import { useDevState } from "@/dev-state/devState";
@@ -169,12 +170,11 @@ export function DiscoverPage() {
           borderBottom: `1px solid ${borderCol}`,
         }}
       >
-        <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={search} onChange={setSearch} onOpenFilters={() => setFilterSheetOpen(true)} />
         <FilterChipRow
           filters={QUICK_FILTERS}
           active={activeFilters}
           onToggle={toggleFilter}
-          onOpenSheet={() => setFilterSheetOpen(true)}
         />
       </div>
 
@@ -228,9 +228,11 @@ export function DiscoverPage() {
                     onClick={() => toggleCategory(cat)}
                     className="shrink-0 rounded-full border px-4 py-2 transition-colors"
                     style={{
-                      borderColor: active ? "#FF823F" : borderCol,
-                      backgroundColor: active ? "rgba(255,130,63,0.12)" : subtle,
-                      color: active ? "#FF823F" : text,
+                      // Card forces dark foreground via `currentColor`; chip
+                      // tones derive from it so contrast holds in both modes.
+                      borderColor: active ? "#FF823F" : "rgba(6,28,39,0.18)",
+                      backgroundColor: active ? "rgba(255,130,63,0.12)" : "rgba(6,28,39,0.04)",
+                      color: active ? "#FF823F" : "currentColor",
                       fontFamily: SANS_STACK,
                       fontSize: 13,
                       fontWeight: 500,
@@ -350,12 +352,20 @@ export function DiscoverPage() {
 
 /* ───────────────────────── Sub-components ───────────────────────── */
 
-function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function SearchBar({
+  value,
+  onChange,
+  onOpenFilters,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onOpenFilters: () => void;
+}) {
   const { text, borderCol, isDark } = useAuthTheme();
   const fieldBg = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.04)";
   return (
     <div
-      className="flex h-11 items-center gap-2.5 rounded-full border px-4"
+      className="flex h-11 items-center gap-2.5 rounded-full border pl-4 pr-1.5"
       style={{ borderColor: borderCol, backgroundColor: fieldBg }}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={text} strokeOpacity="0.55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -374,6 +384,23 @@ function SearchBar({ value, onChange }: { value: string; onChange: (v: string) =
           color: text,
         }}
       />
+      <button
+        type="button"
+        onClick={onOpenFilters}
+        aria-label="Open filters"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors"
+        style={{ color: text, backgroundColor: "transparent" }}
+      >
+        {/* Sliders icon — universal filter affordance */}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="20" y2="18" />
+          <circle cx="9" cy="6" r="2" fill={fieldBg} />
+          <circle cx="15" cy="12" r="2" fill={fieldBg} />
+          <circle cx="7" cy="18" r="2" fill={fieldBg} />
+        </svg>
+      </button>
     </div>
   );
 }
@@ -382,12 +409,10 @@ function FilterChipRow({
   filters,
   active,
   onToggle,
-  onOpenSheet,
 }: {
   filters: { id: QuickFilter; label: string }[];
   active: Set<QuickFilter>;
   onToggle: (id: QuickFilter) => void;
-  onOpenSheet: () => void;
 }) {
   const { text, borderCol, isDark } = useAuthTheme();
   const subtle = isDark ? "rgba(240,235,216,0.05)" : "rgba(6,28,39,0.04)";
@@ -414,17 +439,6 @@ function FilterChipRow({
           </button>
         );
       })}
-      <button
-        type="button"
-        onClick={onOpenSheet}
-        aria-label="Open all filters"
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full border"
-        style={{ borderColor: borderCol, backgroundColor: subtle, color: text }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 6h18M6 12h12M10 18h4" />
-        </svg>
-      </button>
     </div>
   );
 }
@@ -853,39 +867,44 @@ function Sheet({
       <div
         role="dialog"
         aria-label={title}
-        className="relative max-h-[85vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl border p-5"
+        className="relative flex w-full max-w-[420px] flex-col rounded-t-3xl border"
         style={{
           backgroundColor: sheetBg,
           borderColor: borderCol,
+          // Cap height so the sheet never sits behind the tab bar; reserve
+          // the bar height + safe-area inset.
+          maxHeight: `calc(85vh - ${TAB_BAR_HEIGHT_PX}px - env(safe-area-inset-bottom))`,
           minHeight: 320,
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 28px)",
+          marginBottom: `calc(${TAB_BAR_HEIGHT_PX}px + env(safe-area-inset-bottom))`,
         }}
       >
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
-        <div className="mb-5 flex items-center justify-between">
-          <h3
-            style={{
-              fontFamily: FRAUNCES,
-              fontWeight: 400,
-              fontSize: 26,
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-              color: text,
-              margin: 0,
-            }}
-          >
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full text-lg"
-            style={{ color: text, opacity: 0.6 }}
-          >
-            ×
-          </button>
+        <div className="px-5 pt-5">
+          <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
+          <div className="mb-5 flex items-center justify-between">
+            <h3
+              style={{
+                fontFamily: FRAUNCES,
+                fontWeight: 400,
+                fontSize: 26,
+                lineHeight: 1.1,
+                letterSpacing: "-0.02em",
+                color: text,
+                margin: 0,
+              }}
+            >
+              {title}
+            </h3>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 place-items-center rounded-full text-lg"
+              style={{ color: text, opacity: 0.6 }}
+            >
+              ×
+            </button>
+          </div>
         </div>
-        {children}
+        <div className="flex-1 overflow-y-auto px-5 pb-6">{children}</div>
       </div>
     </div>
   );
