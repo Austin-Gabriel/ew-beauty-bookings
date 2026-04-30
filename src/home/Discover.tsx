@@ -266,8 +266,9 @@ export function DiscoverPage() {
 
           {/* Top rated */}
           {topRated.length > 0 && (
-            <SectionCard title="Top rated near you">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>Top rated near you</EyebrowHeading>
+              <HScrollRow>
                 {topRated.map((p) => (
                   <CompactProCard
                     key={p.id}
@@ -275,14 +276,15 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* New on Ewà */}
           {newPros.length > 0 && (
-            <SectionCard title="New on Ewà">
-              <HScrollInCard>
+            <section>
+              <EyebrowHeading>New on Ewà</EyebrowHeading>
+              <HScrollRow>
                 {newPros.map((p) => (
                   <CompactProCard
                     key={p.id}
@@ -290,8 +292,8 @@ export function DiscoverPage() {
                     onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                   />
                 ))}
-              </HScrollInCard>
-            </SectionCard>
+              </HScrollRow>
+            </section>
           )}
 
           {/* All Pros feed — header outside, each pro is its own card */}
