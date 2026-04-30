@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { AppShell } from "./AppShell";
+import { TAB_BAR_HEIGHT_PX } from "./TabBar";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { PrimaryCta, GhostCta } from "@/auth/AuthFrame";
 import { useDevState } from "@/dev-state/devState";
