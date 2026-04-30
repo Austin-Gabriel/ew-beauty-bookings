@@ -170,12 +170,11 @@ export function DiscoverPage() {
           borderBottom: `1px solid ${borderCol}`,
         }}
       >
-        <SearchBar value={search} onChange={setSearch} />
+        <SearchBar value={search} onChange={setSearch} onOpenFilters={() => setFilterSheetOpen(true)} />
         <FilterChipRow
           filters={QUICK_FILTERS}
           active={activeFilters}
           onToggle={toggleFilter}
-          onOpenSheet={() => setFilterSheetOpen(true)}
         />
       </div>
 
