@@ -7,7 +7,6 @@ import { useCollections, DEFAULT_COLLECTION_ID } from "./store";
 import { NewCollectionSheet } from "./NewCollectionSheet";
 
 const ORANGE = "#FF823F";
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
 export function FavoritesIndex() {
   const { isDark, text } = useAuthTheme();
@@ -22,38 +21,58 @@ export function FavoritesIndex() {
   const totalCount = collections.reduce((acc, c) => acc + count(c.id), 0);
 
   return (
-    <AppShell editorial>
-      <header className="px-5 pt-5">
-        <div className="flex items-baseline justify-between gap-3">
-          <div>
-            <h1 style={{ fontFamily: FRAUNCES, fontWeight: 400, fontSize: 38, lineHeight: 1.05, letterSpacing: "-0.02em", color: text, margin: 0 }}>
-              Collections
-            </h1>
-            <p className="mt-1.5" style={{ fontFamily: SANS_STACK, fontSize: 13.5, color: muted }}>
-              {totalCount === 0
-                ? "Save the pros and looks you love."
-                : `${totalCount} saved across ${collections.length} ${collections.length === 1 ? "collection" : "collections"}`}
-            </p>
-          </div>
+    <AppShell editorial topLabel="FAVORITES">
+      <header className="px-5 pt-5" style={{ fontFamily: SANS_STACK }}>
+        <h1
+          style={{
+            fontFamily: SANS_STACK,
+            fontWeight: 700,
+            fontSize: 30,
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
+            color: text,
+            margin: 0,
+          }}
+        >
+          Favorites
+        </h1>
+        <p className="mt-1" style={{ fontSize: 13.5, color: muted }}>
+          {totalCount === 0
+            ? "Save the pros and looks you love."
+            : `${totalCount} saved across ${collections.length} ${collections.length === 1 ? "collection" : "collections"}`}
+        </p>
+      </header>
+
+      <div className="px-5 pt-6" style={{ fontFamily: SANS_STACK }}>
+        <div className="mb-3 flex items-center justify-between">
+          <h2
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: text,
+              opacity: 0.55,
+              margin: 0,
+            }}
+          >
+            Collections
+          </h2>
           <button
             type="button"
             onClick={() => setNewOpen(true)}
-            className="shrink-0 rounded-full px-3.5 py-2 transition-transform active:scale-95"
+            className="shrink-0 rounded-full px-3 py-1.5 transition-transform active:scale-95"
             style={{
               backgroundColor: subtleSurface,
               border: `1px solid ${subtleBorder}`,
               color: text,
-              fontFamily: SANS_STACK,
-              fontSize: 13,
+              fontSize: 12.5,
               fontWeight: 600,
             }}
           >
-            + New
+            + New collection
           </button>
         </div>
-      </header>
-
-      <div className="px-5 pt-5" style={{ fontFamily: SANS_STACK }}>
         {collections.length === 1 && count(DEFAULT_COLLECTION_ID) === 0 ? (
           <EmptyState
             onBrowse={() => navigate({ to: "/discover" })}
