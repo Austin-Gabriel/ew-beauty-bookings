@@ -73,11 +73,13 @@ export function DiscoverPage() {
     toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`);
   };
 
-  // Theme tokens — surface chrome (header, chips, pills) lives on the cream/midnight bg
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.10)";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.55)";
-  const faint = isDark ? "rgba(240,235,216,0.32)" : "rgba(6,28,39,0.38)";
+  // Theme tokens — surface chrome (header, chips, pills) lives on the cream/midnight bg.
+  // Light mode uses an opaque cream-elevated so chrome lifts off the page; dark mode
+  // uses a translucent cream wash for the same effect against midnight.
+  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#FFFFFF";
+  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.14)";
+  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.62)";
+  const faint = isDark ? "rgba(240,235,216,0.32)" : "rgba(6,28,39,0.42)";
 
   return (
     <AppShell editorial>
@@ -389,7 +391,7 @@ function ModeSwitch({
             className="inline-flex items-center justify-center gap-1.5 rounded-[9px] px-2 py-2 transition-colors"
             style={{
               backgroundColor: active ? activeBg : "transparent",
-              color: active ? activeColor : "rgba(141,151,163,0.95)",
+              color: active ? activeColor : "var(--muted-foreground)",
               fontSize: 12.5,
               fontWeight: 600,
               boxShadow: active ? (isNow ? "0 1px 3px rgba(22,163,74,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
