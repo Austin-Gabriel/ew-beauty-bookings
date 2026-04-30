@@ -715,17 +715,23 @@ function ProCard({
 }
 
 function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
+  const { isDark, borderCol } = useAuthTheme();
+  const cardBg = "#FFFFFF";
+  const cardText = "#061C27";
+  const metaText = "rgba(6,28,39,0.6)";
   return (
     <button
       type="button"
       onClick={onTap}
-      className="w-[220px] shrink-0 overflow-hidden rounded-2xl border text-left transition-transform active:scale-[0.98]"
-      style={{ borderColor: borderCol, backgroundColor: cardBg }}
+      className="w-[170px] shrink-0 overflow-hidden rounded-2xl text-left transition-transform active:scale-[0.98]"
+      style={{
+        backgroundColor: cardBg,
+        border: isDark ? "none" : `1px solid ${borderCol}`,
+        boxShadow: isDark ? "none" : "0 1px 2px rgba(6,28,39,0.04)",
+      }}
     >
       <div
-        className="aspect-[4/3] w-full bg-center bg-cover"
+        className="aspect-square w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
       />
       <div className="px-3 py-3">
@@ -733,29 +739,29 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
           className="truncate"
           style={{
             fontFamily: SANS_STACK,
-            fontSize: 13.5,
-            fontWeight: 600,
-            color: "currentColor",
+            fontSize: 14,
+            fontWeight: 700,
+            color: cardText,
+            letterSpacing: "-0.01em",
           }}
         >
-          {pro.name}
+          {shortName(pro.name)}
         </div>
         <div
-          className="mt-0.5 truncate"
-          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: "currentColor", opacity: 0.6 }}
+          className="mt-0.5 truncate tabular"
+          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: metaText }}
         >
-          {pro.headline}
-        </div>
-        <div
-          className="mt-1.5 flex items-center justify-between"
-          style={{ fontFamily: SANS_STACK, fontSize: 11, color: "currentColor", opacity: 0.7 }}
-        >
-          <span className="tabular">★ {pro.rating.toFixed(1)}</span>
-          <span className="tabular">From ${pro.priceFrom}</span>
+          {pro.category} · ${pro.priceFrom}
         </div>
       </div>
     </button>
   );
+}
+
+function shortName(full: string): string {
+  const [first, ...rest] = full.split(" ");
+  const last = rest[rest.length - 1];
+  return last ? `${first} ${last[0]}.` : first;
 }
 
 function RebookCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
