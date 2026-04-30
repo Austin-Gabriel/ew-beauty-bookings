@@ -133,6 +133,17 @@ export function DevStateProvider({ children }: { children: ReactNode }) {
     root.style.colorScheme = resolvedTheme;
   }, [state, resolvedTheme, hydrated]);
 
+  // Re-seed favorites when the toggle changes
+  useEffect(() => {
+    if (!hydrated) return;
+    // Lazy import to avoid SSR + circular dep
+    Promise.all([import("@/favorites/store"), import("@/data/mock-pros")]).then(
+      ([{ seedFavorites }, { MOCK_PROS }]) => {
+        seedFavorites(state.favoritesSeed, MOCK_PROS);
+      },
+    );
+  }, [state.favoritesSeed, hydrated]);
+
   const value: Ctx = useMemo(
     () => ({
       state,
