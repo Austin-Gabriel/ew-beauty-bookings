@@ -24,7 +24,6 @@ type QuickFilter =
   | "200-plus";
 
 const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
-  { id: "available-now", label: "Available now" },
   { id: "today", label: "Today" },
   { id: "this-week", label: "This week" },
   { id: "top-rated", label: "Top rated" },
