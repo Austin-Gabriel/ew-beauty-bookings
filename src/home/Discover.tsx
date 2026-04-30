@@ -764,13 +764,13 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         className="aspect-square w-full bg-center bg-cover"
         style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
       />
-      <div className="px-3 py-3">
+      <div className="px-2.5 py-2.5">
         <div
           className="truncate"
           style={{
             fontFamily: SANS_STACK,
-            fontSize: 14,
-            fontWeight: 700,
+            fontSize: 13,
+            fontWeight: 600,
             color: cardText,
             letterSpacing: "-0.01em",
           }}
@@ -779,7 +779,7 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         </div>
         <div
           className="mt-0.5 truncate tabular"
-          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: metaText }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: metaText }}
         >
           {pro.category} · ${pro.priceFrom}
         </div>
