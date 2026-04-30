@@ -352,12 +352,20 @@ export function DiscoverPage() {
 
 /* ───────────────────────── Sub-components ───────────────────────── */
 
-function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function SearchBar({
+  value,
+  onChange,
+  onOpenFilters,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onOpenFilters: () => void;
+}) {
   const { text, borderCol, isDark } = useAuthTheme();
   const fieldBg = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.04)";
   return (
     <div
-      className="flex h-11 items-center gap-2.5 rounded-full border px-4"
+      className="flex h-11 items-center gap-2.5 rounded-full border pl-4 pr-1.5"
       style={{ borderColor: borderCol, backgroundColor: fieldBg }}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={text} strokeOpacity="0.55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -376,6 +384,23 @@ function SearchBar({ value, onChange }: { value: string; onChange: (v: string) =
           color: text,
         }}
       />
+      <button
+        type="button"
+        onClick={onOpenFilters}
+        aria-label="Open filters"
+        className="grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors"
+        style={{ color: text, backgroundColor: "transparent" }}
+      >
+        {/* Sliders icon — universal filter affordance */}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="18" x2="20" y2="18" />
+          <circle cx="9" cy="6" r="2" fill={fieldBg} />
+          <circle cx="15" cy="12" r="2" fill={fieldBg} />
+          <circle cx="7" cy="18" r="2" fill={fieldBg} />
+        </svg>
+      </button>
     </div>
   );
 }
@@ -384,12 +409,10 @@ function FilterChipRow({
   filters,
   active,
   onToggle,
-  onOpenSheet,
 }: {
   filters: { id: QuickFilter; label: string }[];
   active: Set<QuickFilter>;
   onToggle: (id: QuickFilter) => void;
-  onOpenSheet: () => void;
 }) {
   const { text, borderCol, isDark } = useAuthTheme();
   const subtle = isDark ? "rgba(240,235,216,0.05)" : "rgba(6,28,39,0.04)";
@@ -416,17 +439,6 @@ function FilterChipRow({
           </button>
         );
       })}
-      <button
-        type="button"
-        onClick={onOpenSheet}
-        aria-label="Open all filters"
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full border"
-        style={{ borderColor: borderCol, backgroundColor: subtle, color: text }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 6h18M6 12h12M10 18h4" />
-        </svg>
-      </button>
     </div>
   );
 }
