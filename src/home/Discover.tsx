@@ -499,7 +499,6 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 /* ───────────────────────── Pro cards ───────────────────────── */
 
 function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text } = useAuthTheme();
   return (
     <button
       type="button"
@@ -531,7 +530,7 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
             fontSize: 24,
             lineHeight: 1.1,
             letterSpacing: "-0.02em",
-            color: text,
+            color: "currentColor",
             margin: 0,
           }}
         >
@@ -541,7 +540,7 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
           style={{
             fontFamily: SANS_STACK,
             fontSize: 13.5,
-            color: text,
+            color: "currentColor",
             opacity: 0.7,
             marginTop: 4,
           }}
@@ -550,7 +549,7 @@ function SpotlightCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
         </p>
         <div
           className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"
-          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: text, opacity: 0.75 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 12.5, color: "currentColor", opacity: 0.75 }}
         >
           <span className="tabular">★ {pro.rating.toFixed(2)}</span>
           <span>·</span>
@@ -644,7 +643,7 @@ function ProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
 }
 
 function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text, borderCol, isDark } = useAuthTheme();
+  const { borderCol, isDark } = useAuthTheme();
   const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
   return (
     <button
@@ -664,20 +663,20 @@ function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
             fontFamily: SANS_STACK,
             fontSize: 13.5,
             fontWeight: 600,
-            color: text,
+            color: "currentColor",
           }}
         >
           {pro.name}
         </div>
         <div
           className="mt-0.5 truncate"
-          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: text, opacity: 0.6 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: "currentColor", opacity: 0.6 }}
         >
           {pro.headline}
         </div>
         <div
           className="mt-1.5 flex items-center justify-between"
-          style={{ fontFamily: SANS_STACK, fontSize: 11, color: text, opacity: 0.7 }}
+          style={{ fontFamily: SANS_STACK, fontSize: 11, color: "currentColor", opacity: 0.7 }}
         >
           <span className="tabular">★ {pro.rating.toFixed(1)}</span>
           <span className="tabular">From ${pro.priceFrom}</span>
