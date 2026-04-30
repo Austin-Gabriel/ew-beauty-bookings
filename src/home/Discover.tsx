@@ -229,9 +229,11 @@ export function DiscoverPage() {
                     onClick={() => toggleCategory(cat)}
                     className="shrink-0 rounded-full border px-4 py-2 transition-colors"
                     style={{
-                      borderColor: active ? "#FF823F" : borderCol,
-                      backgroundColor: active ? "rgba(255,130,63,0.12)" : subtle,
-                      color: active ? "#FF823F" : text,
+                      // Card forces dark foreground via `currentColor`; chip
+                      // tones derive from it so contrast holds in both modes.
+                      borderColor: active ? "#FF823F" : "rgba(6,28,39,0.18)",
+                      backgroundColor: active ? "rgba(255,130,63,0.12)" : "rgba(6,28,39,0.04)",
+                      color: active ? "#FF823F" : "currentColor",
                       fontFamily: SANS_STACK,
                       fontSize: 13,
                       fontWeight: 500,
