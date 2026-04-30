@@ -391,7 +391,7 @@ function ModeSwitch({
             className="inline-flex items-center justify-center gap-1.5 rounded-[9px] px-2 py-2 transition-colors"
             style={{
               backgroundColor: active ? activeBg : "transparent",
-              color: active ? activeColor : "rgba(6,28,39,0.55)",
+              color: active ? activeColor : "var(--muted-foreground)",
               fontSize: 12.5,
               fontWeight: 600,
               boxShadow: active ? (isNow ? "0 1px 3px rgba(22,163,74,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
