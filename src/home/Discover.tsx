@@ -303,6 +303,8 @@ export function DiscoverPage() {
                 <ProCard
                   key={p.id}
                   pro={p}
+                  favorited={favorites.isFavorite(p.id)}
+                  onToggleFavorite={() => handleToggleFavorite(p)}
                   onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
                 />
               ))}
