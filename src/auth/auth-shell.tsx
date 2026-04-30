@@ -71,7 +71,10 @@ export function AuthShell({
   const glowBase = (isDark ? 0.14 : 0.09) * glowBoost;
   const borderCol = isDark ? "rgba(240,235,216,0.18)" : "rgba(6,28,39,0.18)";
   const squiggleOpacity = quietSquiggles ? (isDark ? 0.06 : 0.07) : (isDark ? 0.08 : 0.12);
-  const grainOpacity = isDark ? 0.18 : 0.22;
+  // Grain noise: only show on dark mode. On light cream, the mix-blend-overlay
+  // grain washes out dark text (especially Fraunces headlines) into ghosted
+  // near-invisible strokes. Keep the surface flat in light mode.
+  const grainOpacity = isDark ? 0.18 : 0;
 
   return (
     <ThemeContext.Provider value={{ isDark, setIsDark, text, bg, borderCol, sans: SANS }}>
