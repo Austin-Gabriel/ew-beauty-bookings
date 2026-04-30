@@ -21,7 +21,7 @@ export function AppShell({
   editorial?: boolean;
 }) {
   return (
-    <AuthShell topLabel={topLabel} noSquiggles={!editorial} quietSquiggles={editorial}>
+    <AuthShell topLabel={topLabel} noSquiggles={!editorial} quietSquiggles={editorial} hideThemeToggle>
       <main
         className="relative z-[1] mx-auto flex w-full max-w-[420px] flex-1 flex-col"
         style={{ paddingBottom: TAB_BAR_SPACER_PX }}

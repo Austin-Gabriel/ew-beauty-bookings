@@ -168,49 +168,51 @@ export function AuthShell({
           }}
         />
 
-        <div className="relative z-10 flex items-center justify-between px-5" style={{ paddingTop: 14 }}>
-          <div className="flex items-center gap-3">
-            {onBack ? (
+        {(onBack || topLabel || !hideThemeToggle) && (
+          <div className="relative z-10 flex items-center justify-between px-5" style={{ paddingTop: 14 }}>
+            <div className="flex items-center gap-3">
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  aria-label="Go back"
+                  className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
+                  style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              ) : null}
+              {topLabel ? (
+                <div
+                  className="ewa-fade"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "1.6px",
+                    textTransform: "uppercase",
+                    color: text,
+                    opacity: 0.45,
+                    fontWeight: 500,
+                  }}
+                >
+                  {topLabel}
+                </div>
+              ) : null}
+            </div>
+            {!hideThemeToggle && (
               <button
                 type="button"
-                onClick={onBack}
-                aria-label="Go back"
+                onClick={() => setIsDark(!isDark)}
+                aria-label="Toggle color mode"
                 className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
-                style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7 }}
+                style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
+                {isDark ? "☀" : "☾"}
               </button>
-            ) : null}
-            {topLabel ? (
-              <div
-                className="ewa-fade"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "1.6px",
-                  textTransform: "uppercase",
-                  color: text,
-                  opacity: 0.45,
-                  fontWeight: 500,
-                }}
-              >
-                {topLabel}
-              </div>
-            ) : null}
+            )}
           </div>
-          {!hideThemeToggle && (
-            <button
-              type="button"
-              onClick={() => setIsDark(!isDark)}
-              aria-label="Toggle color mode"
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 active:scale-95"
-              style={{ border: `1px solid ${borderCol}`, color: text, opacity: 0.7, fontSize: 12 }}
-            >
-              {isDark ? "☀" : "☾"}
-            </button>
-          )}
-        </div>
+        )}
 
         {children}
 

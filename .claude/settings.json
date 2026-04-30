@@ -17,7 +17,11 @@
       "Bash(/usr/bin/grep -nE \"name:|category:\" src/data/mock-pros.ts)",
       "Bash(/usr/bin/grep -n \"SERVICE_CATEGORIES\\\\|NEIGHBORHOODS\\\\|^export\" src/data/mock-pros.ts)",
       "Bash(/usr/bin/head)",
-      "Bash(/usr/bin/grep -n \"SERVICE_CATEGORIES\" src/home/SeeAll.tsx)"
+      "Bash(/usr/bin/grep -n \"SERVICE_CATEGORIES\" src/home/SeeAll.tsx)",
+      "Bash(/usr/bin/grep -n \"Toggle color\\\\|paddingTop: 14\\\\|hideThemeToggle\\\\|topLabel\" src/auth/auth-shell.tsx)",
+      "Bash(git fetch *)",
+      "Bash(/usr/bin/head -40)",
+      "Bash(git pull *)"
     ]
   }
 }
