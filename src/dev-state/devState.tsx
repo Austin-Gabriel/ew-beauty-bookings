@@ -58,10 +58,10 @@ export type DevState = {
 
 const DEFAULTS: DevState = {
   themeMode: "system",
-  userState: "new",
-  authState: "signed-out",
-  onboardingProgress: "none",
-  customerState: "new",
+  userState: "returning",
+  authState: "signed-in",
+  onboardingProgress: "complete",
+  customerState: "returning",
   discoverDensity: "rich",
   location: "Bed-Stuy",
   availabilityMix: "many",

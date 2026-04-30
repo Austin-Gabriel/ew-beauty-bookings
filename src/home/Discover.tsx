@@ -1,464 +1,414 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "./AppShell";
-import { TAB_BAR_HEIGHT_PX } from "./TabBar";
 import { useFavorites } from "./useFavorites";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
-import { PrimaryCta, GhostCta } from "@/auth/AuthFrame";
+import { EwaMark } from "@/components/ewa-logo";
+import { MOCK_PROS, PROFESSIONAL_TYPES, type Pro } from "@/data/mock-pros";
 import { useDevState } from "@/dev-state/devState";
-import { MOCK_PROS, SERVICE_CATEGORIES, NEIGHBORHOODS, type Pro } from "@/data/mock-pros";
 import {
   NEW_CUSTOMER,
   RETURNING_CUSTOMER,
   POWER_CUSTOMER,
-  type CustomerProfile,
 } from "@/data/mock-customer-profile";
 
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
+const ORANGE = "#FF823F";
+const SUCCESS = "#16A34A";
 
-type QuickFilter =
-  | "today"
-  | "this-week"
-  | "top-rated"
-  | "under-100"
-  | "100-200"
-  | "200-plus";
-
-const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
-  { id: "today", label: "Today" },
-  { id: "this-week", label: "This week" },
-  { id: "top-rated", label: "Top rated" },
-  { id: "under-100", label: "Under $100" },
-  { id: "100-200", label: "$100–200" },
-  { id: "200-plus", label: "$200+" },
-];
+type ChipId = "All" | (typeof PROFESSIONAL_TYPES)[number];
 
 export function DiscoverPage() {
   const { state } = useDevState();
-  const { text, borderCol, isDark, bg } = useAuthTheme();
+  const { isDark, text, borderCol } = useAuthTheme();
   const navigate = useNavigate();
   const favorites = useFavorites();
 
-  const handleToggleFavorite = (pro: Pro) => {
-    const nowFavorite = favorites.toggle(pro.id);
-    toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`, {
-      description: nowFavorite ? "Find them in your favorites." : undefined,
-    });
-  };
+  const [mode, setMode] = useState<"now" | "later">("later");
+  const isNow = mode === "now";
+  const accent = isNow ? SUCCESS : ORANGE;
+  const [activeChip, setActiveChip] = useState<ChipId>("All");
+  const [search, setSearch] = useState("");
 
-  // Dev-state controlled customer profile
-  const customer: CustomerProfile =
+  const customer =
     state.customerState === "power"
       ? POWER_CUSTOMER
       : state.customerState === "returning"
         ? RETURNING_CUSTOMER
         : NEW_CUSTOMER;
 
-  const [neighborhood, setNeighborhood] = useState(state.location);
-  const [neighborhoodOpen, setNeighborhoodOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Set<QuickFilter>>(new Set());
-  const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set());
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [prefSheetOpen, setPrefSheetOpen] = useState<null | "now" | "later">(null);
+  const initials = customer.name
+    .split(" ")
+    .map((s) => s[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-  // Density + availability mix shape the visible pool
-  const pool = useMemo(() => shapePool(state.discoverDensity, state.availabilityMix), [
-    state.discoverDensity,
-    state.availabilityMix,
-  ]);
-
-  // Apply filters
-  const filteredPros = useMemo(() => {
-    let pros = pool;
-    if (state.location !== "out-of-coverage" && neighborhood !== "out-of-coverage") {
-      pros = pros.filter((p) => p.neighborhood === neighborhood);
-    }
+  const filtered = useMemo(() => {
+    let list = MOCK_PROS;
+    if (activeChip !== "All") list = list.filter((p) => p.professionalType === activeChip);
     if (search.trim()) {
       const q = search.toLowerCase();
-      pros = pros.filter(
+      list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.headline.toLowerCase().includes(q) ||
-          p.specializations.some((s) => s.toLowerCase().includes(q)) ||
-          p.neighborhood.toLowerCase().includes(q),
+          p.specializations.some((s) => s.toLowerCase().includes(q)),
       );
     }
-    if (activeCategories.size > 0) {
-      pros = pros.filter((p) => activeCategories.has(p.category));
-    }
-    if (activeFilters.has("top-rated")) pros = pros.filter((p) => p.rating >= 4.85);
-    if (activeFilters.has("under-100")) pros = pros.filter((p) => p.priceFrom < 100);
-    if (activeFilters.has("100-200")) pros = pros.filter((p) => p.priceFrom >= 100 && p.priceFrom < 200);
-    if (activeFilters.has("200-plus")) pros = pros.filter((p) => p.priceFrom >= 200);
-    return pros;
-  }, [pool, neighborhood, search, activeFilters, activeCategories, state.location]);
+    return list;
+  }, [activeChip, search]);
 
-  const isOutOfCoverage =
-    state.location === "out-of-coverage" || state.discoverDensity === "empty";
+  const onlineList = useMemo(() => filtered.filter((p) => p.online), [filtered]);
+  const spotlight = useMemo(
+    () => [...filtered].sort((a, b) => b.rating - a.rating)[0],
+    [filtered],
+  );
+  const newInArea = useMemo(() => filtered.filter((p) => p.newOnEwa), [filtered]);
 
-  const spotlight = filteredPros[0];
-  const restPros = filteredPros.slice(1);
-  const topRated = [...filteredPros].sort((a, b) => b.rating - a.rating).slice(0, 6);
-  const newPros = filteredPros.filter((p) => p.newOnEwa);
-  const rebookPros = customer.pastBookingProIds
-    .map((id) => MOCK_PROS.find((p) => p.id === id))
-    .filter(Boolean) as Pro[];
+  const goToPro = (pro: Pro) => navigate({ to: "/pro/$proId", params: { proId: pro.id } });
 
-  const toggleFilter = (id: QuickFilter) => {
-    setActiveFilters((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-  const toggleCategory = (id: string) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-  const clearFilters = () => {
-    setActiveFilters(new Set());
-    setActiveCategories(new Set());
-    setSearch("");
+  const handleFavorite = (pro: Pro) => {
+    const nowFavorite = favorites.toggle(pro.id);
+    toast(nowFavorite ? `Saved ${pro.name}` : `Removed ${pro.name}`);
   };
 
-  // Fully opaque so the editorial waveform doesn't bleed through and crush
-  // contrast in light mode (cream-on-cream "Hello, Friend" was unreadable).
-  const stickyBg = isDark ? "#061C27" : "#F0EBD8";
-  const subtle = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
+  // Theme tokens — surface chrome (header, chips, pills) lives on the cream/midnight bg
+  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.05)";
+  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.10)";
+  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.55)";
+  const faint = isDark ? "rgba(240,235,216,0.32)" : "rgba(6,28,39,0.38)";
 
   return (
     <AppShell editorial>
-      {/* HEADER */}
-      <header className="flex items-center justify-between px-5 pt-4">
-        <button
-          type="button"
-          onClick={() => setNeighborhoodOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-colors"
-          style={{
-            borderColor: borderCol,
-            color: text,
-            fontFamily: SANS_STACK,
-            fontSize: 13,
-            fontWeight: 500,
-            backgroundColor: subtle,
-          }}
+      {/* HEADER ------------------------------------------------------------ */}
+      <header className="px-5 pt-4">
+        <div className="mb-2.5 flex items-center justify-between">
+          <EwaMark size={32} />
+          <div className="flex items-center gap-2">
+            <IconButton
+              ariaLabel="Saved"
+              onClick={() =>
+                toast("Your favorites", {
+                  description:
+                    favorites.count > 0
+                      ? `${favorites.count} saved.`
+                      : "Tap the heart on any pro to save them.",
+                })
+              }
+              bg={subtleSurface}
+              border={subtleBorder}
+              color={text}
+              dot={favorites.count > 0}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </IconButton>
+            <IconButton ariaLabel="Notifications" onClick={() => toast("No new notifications")} bg={subtleSurface} border={subtleBorder} color={text} dot>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </IconButton>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/profile" })}
+              aria-label="Profile"
+              className="grid h-8 w-8 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)",
+                color: "#9A3412",
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              {initials}
+            </button>
+          </div>
+        </div>
+
+        {/* Search bar */}
+        <div
+          className="flex h-11 items-center gap-2.5 rounded-2xl border pl-4 pr-1.5"
+          style={{ borderColor: subtleBorder, backgroundColor: subtleSurface }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
           </svg>
-          {neighborhood === "out-of-coverage" ? "Choose area" : neighborhood}
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          aria-label="Favourites"
-          onClick={() => {
-            toast("Your favorites", {
-              description:
-                favorites.count > 0
-                  ? `${favorites.count} pro${favorites.count === 1 ? "" : "s"} saved. Full list coming soon.`
-                  : "Tap the heart on any pro to save them.",
-            });
-          }}
-          className="grid h-9 w-9 place-items-center rounded-full border transition-colors"
-          style={{ borderColor: borderCol, color: text, backgroundColor: subtle }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill={favorites.count > 0 ? "#FF823F" : "none"} stroke={favorites.count > 0 ? "#FF823F" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search styles, stylists, neighborhoods…"
+            className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
+            style={{
+              color: text,
+              fontFamily: SANS_STACK,
+              fontSize: 13.5,
+              fontWeight: 400,
+              minWidth: 0,
+            }}
+          />
+          <button
+            type="button"
+            aria-label="Filters"
+            onClick={() => toast("Filters coming soon")}
+            className="grid h-8 w-8 place-items-center rounded-xl transition-transform hover:scale-105 active:scale-95"
+            style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="7" y1="12" x2="20" y2="12" />
+              <line x1="10" y1="18" x2="20" y2="18" />
+              <circle cx="7" cy="6" r="2" fill="currentColor" />
+              <circle cx="13" cy="12" r="2" fill="currentColor" />
+              <circle cx="16" cy="18" r="2" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mode switch + compact location */}
+        <div className="flex items-stretch gap-2">
+          <ModeSwitch mode={mode} onChange={setMode} subtleSurface={subtleSurface} subtleBorder={subtleBorder} />
+          <button
+            type="button"
+            onClick={() => toast("Location picker coming soon")}
+            className="inline-flex shrink-0 items-center gap-1 rounded-xl border px-3 transition-transform active:scale-95"
+            style={{
+              borderColor: subtleBorder,
+              backgroundColor: subtleSurface,
+              color: text,
+              fontFamily: SANS_STACK,
+              fontSize: 12,
+              fontWeight: 500,
+            }}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+            5 mi
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={faint} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
       </header>
 
-      {/* STICKY: search + filter row */}
-      <div
-        className="sticky top-0 z-30 px-5 pb-3 pt-3"
-        style={{
-          backgroundColor: stickyBg,
-          borderBottom: `1px solid ${borderCol}`,
-        }}
-      >
-        <SearchBar value={search} onChange={setSearch} onOpenFilters={() => setFilterSheetOpen(true)} />
-        <FilterChipRow
-          filters={QUICK_FILTERS}
-          active={activeFilters}
-          onToggle={toggleFilter}
-        />
-      </div>
-
-      {/* ACTION CTAs */}
-      <div className="grid grid-cols-2 gap-3 px-5 pt-5">
-        <PrimaryCta onClick={() => setPrefSheetOpen("now")}>Book now</PrimaryCta>
-        <GhostCta onClick={() => setPrefSheetOpen("later")}>Schedule later</GhostCta>
-      </div>
-
-      {/* MAIN CONTENT */}
-      {isOutOfCoverage ? (
-        <EmptyArea
-          headline="We're not in your area yet, but we're growing fast."
-          neighborhood={neighborhood === "out-of-coverage" ? "your area" : neighborhood}
-        />
-      ) : filteredPros.length === 0 ? (
-        <NoResults onClear={clearFilters} />
-      ) : (
-        <div className="flex flex-col gap-5 px-5 pt-6">
-          {/* Editorial spotlight — standalone framed card */}
-          {spotlight && (
-            <SpotlightCard
-              pro={spotlight}
-              favorited={favorites.isFavorite(spotlight.id)}
-              onToggleFavorite={() => handleToggleFavorite(spotlight)}
-              onTap={() => navigate({ to: "/pro/$proId", params: { proId: spotlight.id } })}
-            />
-          )}
-
-          {/* Quick rebook (returning users only) */}
-          {rebookPros.length > 0 && (
-            <section>
-              <EyebrowHeading>Book again</EyebrowHeading>
-              <HScrollRow>
-                {rebookPros.map((p) => (
-                  <CompactProCard
-                    key={p.id}
-                    pro={p}
-                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
-                  />
-                ))}
-              </HScrollRow>
-            </section>
-          )}
-
-          {/* Service categories chip row */}
-          <SectionCard title="Browse by service">
-            <HScrollInCard>
-              {SERVICE_CATEGORIES.map((cat) => {
-                const active = activeCategories.has(cat);
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => toggleCategory(cat)}
-                    className="shrink-0 rounded-full border px-4 py-2 transition-colors"
-                    style={{
-                      // Card forces dark foreground via `currentColor`; chip
-                      // tones derive from it so contrast holds in both modes.
-                      borderColor: active ? "#FF823F" : "rgba(6,28,39,0.18)",
-                      backgroundColor: active ? "rgba(255,130,63,0.12)" : "rgba(6,28,39,0.04)",
-                      color: active ? "#FF823F" : "currentColor",
-                      fontFamily: SANS_STACK,
-                      fontSize: 13,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </HScrollInCard>
-          </SectionCard>
-
-          {/* Top rated */}
-          {topRated.length > 0 && (
-            <section>
-              <EyebrowHeading>Top rated near you</EyebrowHeading>
-              <HScrollRow>
-                {topRated.map((p) => (
-                  <CompactProCard
-                    key={p.id}
-                    pro={p}
-                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
-                  />
-                ))}
-              </HScrollRow>
-            </section>
-          )}
-
-          {/* New on Ewà */}
-          {newPros.length > 0 && (
-            <section>
-              <EyebrowHeading>New on Ewà</EyebrowHeading>
-              <HScrollRow>
-                {newPros.map((p) => (
-                  <CompactProCard
-                    key={p.id}
-                    pro={p}
-                    onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
-                  />
-                ))}
-              </HScrollRow>
-            </section>
-          )}
-
-          {/* All Pros feed — header outside, each pro is its own card */}
-          <section className="pt-2">
-            <SectionHeading>All pros near {neighborhood}</SectionHeading>
-            <div className="mt-4 flex flex-col gap-4">
-              {restPros.map((p) => (
-                <ProCard
-                  key={p.id}
-                  pro={p}
-                  favorited={favorites.isFavorite(p.id)}
-                  onToggleFavorite={() => handleToggleFavorite(p)}
-                  onTap={() => navigate({ to: "/pro/$proId", params: { proId: p.id } })}
-                />
-              ))}
-            </div>
-          </section>
+      {/* LIVE CONTEXT STRIP (only in Now mode) */}
+      {isNow && (
+        <div
+          className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
+          style={{
+            backgroundColor: "rgba(22,163,74,0.10)",
+            color: SUCCESS,
+            fontFamily: SANS_STACK,
+            fontSize: 11.5,
+            fontWeight: 600,
+          }}
+        >
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          {onlineList.length} stylists ready in Brooklyn
         </div>
       )}
 
-      {/* SHEETS */}
-      {neighborhoodOpen && (
-        <Sheet onClose={() => setNeighborhoodOpen(false)} title="Choose your area">
-          <div className="space-y-2">
-            {NEIGHBORHOODS.map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => {
-                  setNeighborhood(n);
-                  setNeighborhoodOpen(false);
-                }}
-                className="flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition-colors"
-                style={{
-                  borderColor: neighborhood === n ? "#FF823F" : borderCol,
-                  color: text,
-                  fontFamily: SANS_STACK,
-                  fontSize: 14,
-                  fontWeight: 500,
-                  backgroundColor: neighborhood === n ? "rgba(255,130,63,0.08)" : "transparent",
-                }}
-              >
-                {n}
-                {neighborhood === n && <span style={{ color: "#FF823F" }}>✓</span>}
-              </button>
-            ))}
-          </div>
-        </Sheet>
-      )}
-      {filterSheetOpen && (
-        <Sheet onClose={() => setFilterSheetOpen(false)} title="Filters">
-          <SheetSubhead text={text}>
-            Refine by service, price, distance, and availability.
-          </SheetSubhead>
-          <SheetComingSoon text={text} label="Advanced filters" hint="Use the chips above the feed for quick filtering in the meantime." />
-        </Sheet>
-      )}
-      {prefSheetOpen && (
-        <Sheet
-          onClose={() => setPrefSheetOpen(null)}
-          title={prefSheetOpen === "now" ? "Book now" : "Schedule later"}
-        >
-          <SheetSubhead text={text}>
-            {prefSheetOpen === "now"
-              ? "Tell us what you need today and we'll match you with a pro who's online right now."
-              : "Pick a date, a service, and a place — we'll find the right pro and confirm in minutes."}
-          </SheetSubhead>
-          <SheetComingSoon
+      {/* SERVICE CHIPS ----------------------------------------------------- */}
+      <div className="mt-3.5 flex gap-2 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: "none" }}>
+        <Chip active={activeChip === "All"} accent={accent} onClick={() => setActiveChip("All")} text={text} subtleSurface={subtleSurface} subtleBorder={subtleBorder}>
+          All
+        </Chip>
+        {PROFESSIONAL_TYPES.map((type) => (
+          <Chip
+            key={type}
+            active={activeChip === type}
+            accent={accent}
+            onClick={() => setActiveChip(type)}
             text={text}
-            label={prefSheetOpen === "now" ? "Instant matching" : "Scheduling flow"}
-            hint="The full preference flow (when, what, where) lands next."
-          />
-        </Sheet>
-      )}
-      <span hidden>{bg}</span>
+            subtleSurface={subtleSurface}
+            subtleBorder={subtleBorder}
+          >
+            {type}
+          </Chip>
+        ))}
+      </div>
+
+      {/* CONTENT ----------------------------------------------------------- */}
+      <div className="mt-4 flex flex-col gap-7 px-5 pb-6">
+        {/* Available right now (only in Now mode) */}
+        {isNow && onlineList.length > 0 && (
+          <Section
+            title="Available right now"
+            subtitle={`${onlineList.length} stylists ready in next 2 hours`}
+            seeAll
+            onAction={() => navigate({ to: "/see-all/$category", params: { category: "online" } })}
+            accent={accent}
+            muted={muted}
+            text={text}
+            badge={<LiveBadge />}
+          >
+            <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: "none" }}>
+              {onlineList.map((pro) => (
+                <OnlineCard key={pro.id} pro={pro} onTap={() => goToPro(pro)} onFavorite={() => handleFavorite(pro)} />
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Available today — hero card */}
+        {spotlight && (
+          <Section
+            title="Available today"
+            subtitle={isNow ? "Other open spots later today" : "Top-rated stylists with open spots"}
+            seeAll
+            onAction={() => navigate({ to: "/see-all/$category", params: { category: "available" } })}
+            accent={accent}
+            muted={muted}
+            text={text}
+          >
+            <HeroCard
+              pro={spotlight}
+              favorited={favorites.isFavorite(spotlight.id)}
+              onTap={() => goToPro(spotlight)}
+              onFavorite={() => handleFavorite(spotlight)}
+            />
+          </Section>
+        )}
+
+        {/* New in your area */}
+        {newInArea.length > 0 && (
+          <Section
+            title="New in your area"
+            subtitle="Stylists who recently joined"
+            seeAll
+            onAction={() => navigate({ to: "/see-all/$category", params: { category: "new" } })}
+            accent={accent}
+            muted={muted}
+            text={text}
+          >
+            <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: "none" }}>
+              {newInArea.map((pro) => (
+                <CompactCard key={pro.id} pro={pro} onTap={() => goToPro(pro)} />
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Trending styles */}
+        <Section
+          title="Trending styles"
+          subtitle="What clients are booking this week"
+          accent={accent}
+          muted={muted}
+          text={text}
+          actionLabel="Explore"
+          onAction={() => navigate({ to: "/see-all/$category", params: { category: "trending" } })}
+        >
+          <TrendingGrid />
+        </Section>
+      </div>
     </AppShell>
   );
 }
 
 /* ───────────────────────── Sub-components ───────────────────────── */
 
-function SearchBar({
-  value,
-  onChange,
-  onOpenFilters,
+function IconButton({
+  children,
+  onClick,
+  ariaLabel,
+  bg,
+  border,
+  color,
+  dot = false,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  onOpenFilters: () => void;
+  children: React.ReactNode;
+  onClick: () => void;
+  ariaLabel: string;
+  bg: string;
+  border: string;
+  color: string;
+  dot?: boolean;
 }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const fieldBg = isDark ? "rgba(240,235,216,0.06)" : "rgba(6,28,39,0.04)";
   return (
-    <div
-      className="flex h-11 items-center gap-2.5 rounded-full border pl-4 pr-1.5"
-      style={{ borderColor: borderCol, backgroundColor: fieldBg }}
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className="relative grid h-8 w-8 place-items-center rounded-full border transition-transform hover:scale-105 active:scale-95"
+      style={{ backgroundColor: bg, borderColor: border, color }}
     >
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={text} strokeOpacity="0.55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="7" />
-        <path d="M20 20l-4.3-4.3" />
-      </svg>
-      <input
-        type="search"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Search pros, services, or neighborhoods"
-        className="flex-1 bg-transparent outline-none"
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 14,
-          color: text,
-        }}
-      />
-      <button
-        type="button"
-        onClick={onOpenFilters}
-        aria-label="Open filters"
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors"
-        style={{ color: text, backgroundColor: "transparent" }}
-      >
-        {/* Sliders icon — universal filter affordance */}
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="4" y1="6" x2="20" y2="6" />
-          <line x1="4" y1="12" x2="20" y2="12" />
-          <line x1="4" y1="18" x2="20" y2="18" />
-          <circle cx="9" cy="6" r="2" fill={fieldBg} />
-          <circle cx="15" cy="12" r="2" fill={fieldBg} />
-          <circle cx="7" cy="18" r="2" fill={fieldBg} />
-        </svg>
-      </button>
-    </div>
+      {children}
+      {dot && (
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+            width: 7,
+            height: 7,
+            borderRadius: 9999,
+            backgroundColor: ORANGE,
+            border: `2px solid ${bg}`,
+          }}
+        />
+      )}
+    </button>
   );
 }
 
-function FilterChipRow({
-  filters,
-  active,
-  onToggle,
+function ModeSwitch({
+  mode,
+  onChange,
+  subtleSurface,
+  subtleBorder,
 }: {
-  filters: { id: QuickFilter; label: string }[];
-  active: Set<QuickFilter>;
-  onToggle: (id: QuickFilter) => void;
+  mode: "now" | "later";
+  onChange: (m: "now" | "later") => void;
+  subtleSurface: string;
+  subtleBorder: string;
 }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const subtle = isDark ? "rgba(240,235,216,0.05)" : "rgba(6,28,39,0.04)";
   return (
-    <div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
-      {filters.map((f) => {
-        const on = active.has(f.id);
+    <div
+      className="grid min-w-0 flex-1 grid-cols-2 rounded-xl border p-0.5"
+      style={{ backgroundColor: subtleSurface, borderColor: subtleBorder, fontFamily: SANS_STACK }}
+    >
+      {(["now", "later"] as const).map((m) => {
+        const active = mode === m;
+        const isNow = m === "now";
+        const activeBg = isNow ? SUCCESS : ORANGE;
+        const activeColor = isNow ? "#fff" : "#1A0E08";
         return (
           <button
-            key={f.id}
+            key={m}
             type="button"
-            onClick={() => onToggle(f.id)}
-            className="shrink-0 rounded-full border px-3.5 py-1.5 transition-colors"
+            onClick={() => onChange(m)}
+            className="inline-flex items-center justify-center gap-1.5 rounded-[9px] px-2 py-2 transition-colors"
             style={{
-              borderColor: on ? "#FF823F" : borderCol,
-              backgroundColor: on ? "rgba(255,130,63,0.12)" : subtle,
-              color: on ? "#FF823F" : text,
-              fontFamily: SANS_STACK,
+              backgroundColor: active ? activeBg : "transparent",
+              color: active ? activeColor : "rgba(141,151,163,0.95)",
               fontSize: 12.5,
-              fontWeight: 500,
+              fontWeight: 600,
+              boxShadow: active ? (isNow ? "0 1px 3px rgba(22,163,74,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
+              minWidth: 0,
             }}
           >
-            {f.label}
+            {isNow ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            )}
+            {isNow ? "Book now" : "Book later"}
           </button>
         );
       })}
@@ -466,631 +416,454 @@ function FilterChipRow({
   );
 }
 
-/**
- * SectionCard — card-based section grouping. White on dark mode,
- * cream-elevated on light mode. Header inside the card, sans semibold.
- */
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE"; // cream-elevated on light
-  const cardText = isDark ? "#061C27" : text;
-  return (
-    <section
-      className="overflow-hidden rounded-3xl border"
-      style={{
-        backgroundColor: cardBg,
-        borderColor: isDark ? "transparent" : borderCol,
-        boxShadow: isDark
-          ? "0 1px 0 rgba(0,0,0,0.04)"
-          : "0 1px 2px rgba(6,28,39,0.04)",
-      }}
-    >
-      <h2
-        className="px-5 pt-5"
-        style={{
-          fontFamily: SANS_STACK,
-          fontWeight: 600,
-          fontSize: 15,
-          letterSpacing: "-0.01em",
-          color: cardText,
-          margin: 0,
-        }}
-      >
-        {title}
-      </h2>
-      <div className="pb-5 pt-4" style={{ color: cardText }}>
-        {children}
-      </div>
-    </section>
-  );
-}
-
-/** Horizontal scroll inside a SectionCard — keeps left padding aligned. */
-function HScrollInCard({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex gap-3 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
-      {children}
-    </div>
-  );
-}
-
-/** Section header rendered OUTSIDE a card (used for the All-pros feed). */
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  const { text } = useAuthTheme();
-  return (
-    <h2
-      style={{
-        fontFamily: SANS_STACK,
-        fontWeight: 600,
-        fontSize: 15,
-        letterSpacing: "-0.01em",
-        color: text,
-        margin: 0,
-      }}
-    >
-      {children}
-    </h2>
-  );
-}
-
-/** Small uppercase eyebrow heading sitting on the page background. */
-function EyebrowHeading({ children }: { children: React.ReactNode }) {
-  const { text, isDark } = useAuthTheme();
-  return (
-    <h2
-      className="px-1"
-      style={{
-        fontFamily: SANS_STACK,
-        fontWeight: 700,
-        fontSize: 11,
-        letterSpacing: "1.6px",
-        textTransform: "uppercase",
-        color: text,
-        opacity: isDark ? 0.55 : 0.5,
-        margin: 0,
-        marginBottom: 12,
-      }}
-    >
-      {children}
-    </h2>
-  );
-}
-
-/** Horizontal scroll row of standalone cards on the page background. */
-function HScrollRow({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="-mx-5 flex gap-2.5 overflow-x-auto px-5 pb-1 [&::-webkit-scrollbar]:hidden">
-      {children}
-    </div>
-  );
-}
-
-/* ───────────────────────── Pro cards ───────────────────────── */
-
-function SpotlightCard({
-  pro,
-  onTap,
-  favorited,
-  onToggleFavorite,
-}: {
-  pro: Pro;
-  onTap: () => void;
-  favorited: boolean;
-  onToggleFavorite: () => void;
-}) {
-  const { isDark, borderCol } = useAuthTheme();
-  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE";
-  const cardText = "#061C27";
-  const metaText = "rgba(6,28,39,0.6)";
-  return (
-    <button
-      type="button"
-      onClick={onTap}
-      className="block w-full overflow-hidden rounded-3xl text-left transition-transform active:scale-[0.99]"
-      style={{
-        backgroundColor: cardBg,
-        border: isDark ? "none" : `1px solid ${borderCol}`,
-        boxShadow: isDark
-          ? "0 1px 0 rgba(0,0,0,0.04)"
-          : "0 1px 2px rgba(6,28,39,0.04)",
-      }}
-    >
-      <div
-        className="relative aspect-[5/4] w-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
-      >
-        <button
-          type="button"
-          aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite();
-          }}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-95"
-          style={{ backgroundColor: "rgba(6,28,39,0.6)", color: favorited ? "#FF823F" : "#F0EBD8" }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
-      </div>
-      <div className="px-5 pb-5 pt-4">
-        <div
-          style={{
-            fontFamily: SANS_STACK,
-            fontSize: 10.5,
-            letterSpacing: "1.6px",
-            textTransform: "uppercase",
-            color: "#FF823F",
-            fontWeight: 700,
-          }}
-        >
-          Featured
-        </div>
-        <h3
-          style={{
-            fontFamily: SANS_STACK,
-            fontWeight: 700,
-            fontSize: 26,
-            lineHeight: 1.15,
-            letterSpacing: "-0.02em",
-            color: cardText,
-            margin: 0,
-            marginTop: 6,
-          }}
-        >
-          {pro.name}
-        </h3>
-        <div
-          className="mt-1.5 flex flex-wrap items-center gap-x-1.5"
-          style={{ fontFamily: SANS_STACK, fontSize: 13.5, color: metaText }}
-        >
-          <span>{pro.headline.split(",")[0].split(" in ")[0]}</span>
-          <span>·</span>
-          <span>{pro.neighborhood}</span>
-          <span>·</span>
-          <span className="tabular">{pro.rating.toFixed(1)} ★</span>
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function ProCard({
-  pro,
-  onTap,
-  favorited,
-  onToggleFavorite,
-}: {
-  pro: Pro;
-  onTap: () => void;
-  favorited: boolean;
-  onToggleFavorite: () => void;
-}) {
-  const { isDark, borderCol } = useAuthTheme();
-  const cardBg = isDark ? "#FFFFFF" : "#F7F2DE";
-  const cardText = "#061C27";
-  const metaText = "rgba(6,28,39,0.6)";
-  return (
-    <button
-      type="button"
-      onClick={onTap}
-      className="block w-full overflow-hidden rounded-3xl text-left transition-transform active:scale-[0.99]"
-      style={{
-        backgroundColor: cardBg,
-        border: isDark ? "none" : `1px solid ${borderCol}`,
-        boxShadow: isDark ? "none" : "0 1px 2px rgba(6,28,39,0.04)",
-      }}
-    >
-      <div
-        className="relative aspect-[5/4] w-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
-      >
-        <button
-          type="button"
-          aria-label={favorited ? "Remove from favorites" : "Save to favorites"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite();
-          }}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-95"
-          style={{ backgroundColor: "rgba(6,28,39,0.55)", color: favorited ? "#FF823F" : "#F0EBD8" }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill={favorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </button>
-      </div>
-      <div className="px-5 pb-5 pt-4">
-        <div className="flex items-baseline justify-between gap-3">
-          <h3
-            className="truncate"
-            style={{
-              fontFamily: SANS_STACK,
-              fontSize: 20,
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              color: cardText,
-              margin: 0,
-            }}
-          >
-            {pro.name}
-          </h3>
-          <span
-            className="tabular shrink-0"
-            style={{ fontFamily: SANS_STACK, fontSize: 13, color: metaText, fontWeight: 500 }}
-          >
-            From ${pro.priceFrom}
-          </span>
-        </div>
-        <div
-          className="mt-1.5 flex flex-wrap items-center gap-x-1.5"
-          style={{ fontFamily: SANS_STACK, fontSize: 13, color: metaText }}
-        >
-          <span>{pro.category}</span>
-          <span>·</span>
-          <span>{pro.neighborhood}</span>
-          <span>·</span>
-          <span className="tabular">{pro.rating.toFixed(1)} ★</span>
-          {pro.certified && (
-            <>
-              <span>·</span>
-              <span style={{ color: "#FF823F", fontWeight: 600 }}>Licensed</span>
-            </>
-          )}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function CompactProCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { isDark, borderCol } = useAuthTheme();
-  const cardBg = "#FFFFFF";
-  const cardText = "#061C27";
-  const metaText = "rgba(6,28,39,0.6)";
-  return (
-    <button
-      type="button"
-      onClick={onTap}
-      className="w-[130px] shrink-0 overflow-hidden rounded-xl text-left transition-transform active:scale-[0.98]"
-      style={{
-        backgroundColor: cardBg,
-        border: isDark ? "none" : `1px solid ${borderCol}`,
-        boxShadow: isDark ? "none" : "0 1px 2px rgba(6,28,39,0.04)",
-      }}
-    >
-      <div
-        className="aspect-square w-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${pro.portfolio[0]})` }}
-      />
-      <div className="px-2.5 py-2.5">
-        <div
-          className="truncate"
-          style={{
-            fontFamily: SANS_STACK,
-            fontSize: 13,
-            fontWeight: 600,
-            color: cardText,
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {shortName(pro.name)}
-        </div>
-        <div
-          className="mt-0.5 truncate tabular"
-          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: metaText }}
-        >
-          {pro.category} · ${pro.priceFrom}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function shortName(full: string): string {
-  const [first, ...rest] = full.split(" ");
-  const last = rest[rest.length - 1];
-  return last ? `${first} ${last[0]}.` : first;
-}
-
-function RebookCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const cardBg = isDark ? "rgba(240,235,216,0.04)" : "#ffffff";
-  return (
-    <div
-      className="flex w-[260px] shrink-0 items-center gap-3 rounded-2xl border p-3"
-      style={{ borderColor: borderCol, backgroundColor: cardBg }}
-    >
-      <div
-        className="h-12 w-12 shrink-0 rounded-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${pro.avatar})` }}
-      />
-      <div className="min-w-0 flex-1">
-        <div
-          className="truncate"
-          style={{ fontFamily: SANS_STACK, fontSize: 13.5, fontWeight: 600, color: text }}
-        >
-          {pro.name}
-        </div>
-        <div
-          className="truncate"
-          style={{ fontFamily: SANS_STACK, fontSize: 11.5, color: text, opacity: 0.6 }}
-        >
-          {pro.services[0]?.name}
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={onTap}
-        className="shrink-0 rounded-full px-3 py-1.5"
-        style={{
-          backgroundColor: "rgba(255,130,63,0.12)",
-          color: "#FF823F",
-          fontFamily: SANS_STACK,
-          fontSize: 12,
-          fontWeight: 600,
-        }}
-      >
-        Book again
-      </button>
-    </div>
-  );
-}
-
-/* ───────────────────────── Empty + sheets ───────────────────────── */
-
-function EmptyArea({ headline, neighborhood }: { headline: string; neighborhood: string }) {
-  const { text } = useAuthTheme();
-  const [email, setEmail] = useState("");
-  return (
-    <section className="flex flex-1 flex-col items-center justify-center px-8 pt-12 text-center">
-      <div
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 10,
-          letterSpacing: "1.6px",
-          textTransform: "uppercase",
-          color: text,
-          opacity: 0.5,
-          fontWeight: 600,
-        }}
-      >
-        Coming to your area
-      </div>
-      <h2
-        style={{
-          fontFamily: FRAUNCES,
-          fontWeight: 400,
-          fontSize: 30,
-          lineHeight: 1.1,
-          letterSpacing: "-0.02em",
-          color: text,
-          margin: 0,
-          marginTop: 12,
-          maxWidth: 320,
-        }}
-      >
-        {headline}
-      </h2>
-      <p
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 13.5,
-          color: text,
-          opacity: 0.62,
-          marginTop: 12,
-          maxWidth: 300,
-        }}
-      >
-        Drop your email and we'll let you know when Ewà comes to {neighborhood}.
-      </p>
-      <div className="mt-6 flex w-full max-w-[320px] flex-col gap-3">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@domain.com"
-          className="h-11 w-full rounded-full border bg-transparent px-4 outline-none"
-          style={{
-            borderColor: "rgba(127,127,127,0.3)",
-            color: text,
-            fontFamily: SANS_STACK,
-            fontSize: 14,
-          }}
-        />
-        <PrimaryCta onClick={() => setEmail("")}>Notify me</PrimaryCta>
-      </div>
-    </section>
-  );
-}
-
-function NoResults({ onClear }: { onClear: () => void }) {
-  const { text } = useAuthTheme();
-  return (
-    <section className="flex flex-1 flex-col items-center justify-center px-8 py-16 text-center">
-      <h2
-        style={{
-          fontFamily: FRAUNCES,
-          fontWeight: 400,
-          fontSize: 24,
-          lineHeight: 1.1,
-          color: text,
-          margin: 0,
-          maxWidth: 280,
-        }}
-      >
-        No pros match those filters.
-      </h2>
-      <button
-        type="button"
-        onClick={onClear}
-        className="mt-4"
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 13,
-          fontWeight: 600,
-          color: "#FF823F",
-        }}
-      >
-        Clear filters
-      </button>
-    </section>
-  );
-}
-
-function Sheet({
-  title,
+function Chip({
   children,
-  onClose,
+  active,
+  accent,
+  onClick,
+  text,
+  subtleSurface,
+  subtleBorder,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  accent: string;
+  onClick: () => void;
+  text: string;
+  subtleSurface: string;
+  subtleBorder: string;
+}) {
+  const activeText = accent === SUCCESS ? "#fff" : "#1A0E08";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="shrink-0 rounded-full border px-3.5 py-2 transition-colors"
+      style={{
+        backgroundColor: active ? accent : subtleSurface,
+        borderColor: active ? accent : subtleBorder,
+        color: active ? activeText : text,
+        fontFamily: SANS_STACK,
+        fontSize: 13,
+        fontWeight: active ? 600 : 500,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Section({
+  title,
+  subtitle,
+  badge,
+  seeAll = false,
+  actionLabel,
+  onAction,
+  accent = ORANGE,
+  text,
+  muted,
+  children,
 }: {
   title: string;
+  subtitle?: string;
+  badge?: React.ReactNode;
+  seeAll?: boolean;
+  actionLabel?: string;
+  onAction?: () => void;
+  accent?: string;
+  text: string;
+  muted: string;
   children: React.ReactNode;
-  onClose: () => void;
 }) {
-  const { text, borderCol, isDark } = useAuthTheme();
-  const sheetBg = isDark ? "#0E2933" : "#FAF6E7";
+  const action = actionLabel ?? (seeAll ? "See all" : null);
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center">
-      <button
-        aria-label="Close"
-        onClick={onClose}
-        className="absolute inset-0"
-        style={{ backgroundColor: "rgba(6,28,39,0.55)" }}
-      />
-      <div
-        role="dialog"
-        aria-label={title}
-        className="relative flex w-full max-w-[420px] flex-col rounded-t-3xl border"
-        style={{
-          backgroundColor: sheetBg,
-          borderColor: borderCol,
-          // Cap height so the sheet never sits behind the tab bar; reserve
-          // the bar height + safe-area inset.
-          maxHeight: `calc(85vh - ${TAB_BAR_HEIGHT_PX}px - env(safe-area-inset-bottom))`,
-          minHeight: 320,
-          marginBottom: `calc(${TAB_BAR_HEIGHT_PX}px + env(safe-area-inset-bottom))`,
-        }}
-      >
-        <div className="px-5 pt-5">
-          <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: borderCol }} />
-          <div className="mb-5 flex items-center justify-between">
-            <h3
+    <section>
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h2
               style={{
-                fontFamily: FRAUNCES,
-                fontWeight: 400,
-                fontSize: 26,
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
+                fontFamily: SANS_STACK,
+                fontSize: 17,
+                fontWeight: 700,
+                letterSpacing: "-0.015em",
                 color: text,
                 margin: 0,
               }}
             >
               {title}
-            </h3>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="grid h-8 w-8 place-items-center rounded-full text-lg"
-              style={{ color: text, opacity: 0.6 }}
-            >
-              ×
-            </button>
+            </h2>
+            {badge}
+          </div>
+          {subtitle && (
+            <p style={{ fontFamily: SANS_STACK, fontSize: 12, color: muted, marginTop: 2 }}>{subtitle}</p>
+          )}
+        </div>
+        {action && onAction && (
+          <button
+            type="button"
+            onClick={onAction}
+            style={{
+              fontFamily: SANS_STACK,
+              fontSize: 13,
+              fontWeight: 600,
+              color: accent,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            {action}
+          </button>
+        )}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function LiveBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
+      style={{
+        backgroundColor: "rgba(22,163,74,0.18)",
+        color: SUCCESS,
+        fontFamily: SANS_STACK,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
+      }}
+    >
+      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
+      Live
+    </span>
+  );
+}
+
+/* ───────── Cards ───────── */
+
+const CARD_BG = "#FFFFFF";
+const INK_900 = "#0B1220";
+const INK_500 = "#6B7684";
+const LINE = "#EEF1F4";
+
+function HeroCard({
+  pro,
+  favorited,
+  onTap,
+  onFavorite,
+}: {
+  pro: Pro;
+  favorited: boolean;
+  onTap: () => void;
+  onFavorite: () => void;
+}) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onTap}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
+      className="cursor-pointer overflow-hidden rounded-3xl"
+      style={{ backgroundColor: CARD_BG, fontFamily: SANS_STACK }}
+    >
+      <div className="relative h-[220px] overflow-hidden">
+        <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.5) 100%)" }}
+        />
+        <div className="absolute left-3 top-3 flex gap-1.5">
+          <SmallTag bg={ORANGE} color="#1A0E08">★ Top rated</SmallTag>
+          <SmallTag bg="rgba(10,22,40,0.7)" color="#fff">{pro.category}</SmallTag>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onFavorite();
+          }}
+          aria-label={favorited ? "Unsave" : "Save"}
+          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: "rgba(10,22,40,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backdropFilter: "blur(12px)",
+            color: favorited ? ORANGE : "#fff",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill={favorited ? ORANGE : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+        <div
+          className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full px-2 py-1"
+          style={{ backgroundColor: "rgba(10,22,40,0.6)", color: "#fff", backdropFilter: "blur(10px)", fontSize: 11, fontWeight: 600 }}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+          {pro.portfolio.length * 8}
+        </div>
+      </div>
+
+      <div className="px-4 pb-4 pt-3.5">
+        <div className="flex items-center gap-2.5">
+          <Avatar pro={pro} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1" style={{ fontSize: 15, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>
+              <span className="truncate">{pro.name}</span>
+              {pro.certified && <VerifiedTick />}
+            </div>
+            <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 12, color: INK_500 }}>
+              <span style={{ color: "#FFC107" }}>★</span>
+              <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
+              <span>· {pro.reviewCount} reviews · {pro.headline}</span>
+            </div>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto px-5 pb-6">{children}</div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" style={{ borderColor: LINE }}>
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+            Available 2:00 PM
+          </span>
+          <span className="inline-flex items-center gap-1" style={{ fontSize: 11.5, fontWeight: 500, color: "#2A3544" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={INK_500} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
+            </svg>
+            {pro.travelRadiusMi - 3.8 < 0 ? "1.2" : (pro.travelRadiusMi - 3.8).toFixed(1)} mi
+          </span>
+          <span className="ml-auto" style={{ fontSize: 14, fontWeight: 700, color: INK_900 }}>
+            <span style={{ fontSize: 10, fontWeight: 500, color: INK_500, textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 3 }}>
+              From
+            </span>
+            ${pro.priceFrom}
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
-function SheetSubhead({ children, text }: { children: React.ReactNode; text: string }) {
+function OnlineCard({ pro, onTap, onFavorite }: { pro: Pro; onTap: () => void; onFavorite: () => void }) {
   return (
-    <p
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onTap}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
+      className="shrink-0 cursor-pointer overflow-hidden rounded-2xl"
       style={{
+        backgroundColor: CARD_BG,
+        width: 220,
+        border: `1.5px solid rgba(22,163,74,0.3)`,
         fontFamily: SANS_STACK,
-        fontSize: 14,
-        lineHeight: 1.5,
-        color: text,
-        opacity: 0.7,
-        marginTop: 0,
-        marginBottom: 20,
+      }}
+    >
+      <div className="relative h-32 overflow-hidden">
+        <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <span
+          className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5"
+          style={{
+            backgroundColor: SUCCESS,
+            color: "#fff",
+            fontSize: 9,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+          }}
+        >
+          <span aria-hidden className="ewa-pulse" style={{ width: 4, height: 4, borderRadius: 9999, backgroundColor: "#fff" }} />
+          Online
+        </span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onFavorite();
+          }}
+          aria-label="Save"
+          className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full transition-transform active:scale-95"
+          style={{
+            backgroundColor: "rgba(10,22,40,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backdropFilter: "blur(10px)",
+            color: "#fff",
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+      </div>
+      <div className="px-3 pb-3 pt-2.5">
+        <div className="flex items-center gap-1" style={{ fontSize: 13.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
+          <span className="truncate">{pro.name}</span>
+          {pro.certified && <VerifiedTick small />}
+        </div>
+        <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
+          <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+          <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
+          <span className="truncate">· {pro.reviewCount} reviews · {pro.category}</span>
+        </div>
+        <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+            Available now
+          </span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompactCard({ pro, onTap }: { pro: Pro; onTap: () => void }) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onTap}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
+      className="shrink-0 cursor-pointer overflow-hidden rounded-2xl"
+      style={{ backgroundColor: CARD_BG, width: 200, fontFamily: SANS_STACK }}
+    >
+      <div className="relative h-36 overflow-hidden">
+        <img src={pro.portfolio[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      </div>
+      <div className="px-3 pb-3 pt-2.5">
+        <div className="flex items-center gap-1" style={{ fontSize: 13.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
+          <span className="truncate">{pro.name}</span>
+          {pro.certified && <VerifiedTick small />}
+        </div>
+        <div className="mt-0.5 flex items-center gap-1" style={{ fontSize: 11.5, color: INK_500 }}>
+          <span style={{ color: "#FFC107", fontSize: 10 }}>★</span>
+          <span style={{ color: INK_900, fontWeight: 600 }}>{pro.rating.toFixed(1)}</span>
+          <span>· {pro.reviewCount} reviews</span>
+          <span className="ml-auto" style={{ color: INK_900, fontWeight: 700 }}>${pro.priceFrom}+</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Avatar({ pro }: { pro: Pro }) {
+  const initials = pro.name
+    .split(" ")
+    .map((s) => s[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <div
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
+      style={{
+        background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)",
+        color: "#9A3412",
+        fontSize: 12,
+        fontWeight: 600,
+        border: "2px solid #fff",
+        boxShadow: `0 0 0 1px ${LINE}`,
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function VerifiedTick({ small = false }: { small?: boolean }) {
+  const s = small ? 11 : 14;
+  return (
+    <span
+      aria-hidden
+      className="inline-grid shrink-0 place-items-center rounded-full"
+      style={{ width: s, height: s, backgroundColor: SUCCESS, color: "#fff" }}
+    >
+      <svg width={s - 4} height={s - 4} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </span>
+  );
+}
+
+function SmallTag({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2 py-0.5"
+      style={{
+        backgroundColor: bg,
+        color,
+        fontSize: 10,
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(255,255,255,0.1)",
       }}
     >
       {children}
-    </p>
+    </span>
   );
 }
 
-function SheetComingSoon({ text, label, hint }: { text: string; label: string; hint: string }) {
+/* ───────── Trending grid ───────── */
+
+const TRENDING = [
+  { label: "Knotless braids", count: 142, photo: "1522337360788-8b13dee7a37e", tall: true },
+  { label: "Silk press", count: 89, photo: "1503342217505-b0a15ec3261c", tall: false },
+  { label: "Locs", count: 54, photo: "1504703395950-b89145a5425b", tall: false },
+];
+
+function TrendingGrid() {
+  const [first, ...rest] = TRENDING;
   return (
-    <div
-      className="rounded-2xl border px-4 py-5"
-      style={{
-        borderColor: "rgba(255,130,63,0.35)",
-        backgroundColor: "rgba(255,130,63,0.08)",
-      }}
-    >
-      <div
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 10,
-          letterSpacing: "1.6px",
-          textTransform: "uppercase",
-          color: "#FF823F",
-          fontWeight: 600,
-        }}
-      >
-        Coming soon
+    <div className="grid grid-cols-2 gap-2">
+      <TrendingTile {...first!} />
+      <div className="flex flex-col gap-2">
+        {rest.map((t) => (
+          <TrendingTile key={t.label} {...t} />
+        ))}
       </div>
-      <div
-        style={{
-          fontFamily: FRAUNCES,
-          fontWeight: 400,
-          fontSize: 20,
-          lineHeight: 1.15,
-          color: text,
-          marginTop: 6,
-        }}
-      >
-        {label}
-      </div>
-      <p
-        style={{
-          fontFamily: SANS_STACK,
-          fontSize: 13,
-          lineHeight: 1.5,
-          color: text,
-          opacity: 0.65,
-          marginTop: 8,
-        }}
-      >
-        {hint}
-      </p>
     </div>
   );
 }
 
-/* ───────────────────────── Density / availability shaping ───────────────────────── */
-
-function shapePool(
-  density: "empty" | "sparse" | "rich",
-  mix: "many" | "few" | "none",
-): Pro[] {
-  if (density === "empty") return [];
-  let pool = [...MOCK_PROS];
-  if (density === "sparse") pool = pool.slice(0, 3);
-
-  if (mix === "none") pool = pool.map((p) => ({ ...p, online: false }));
-  if (mix === "few") {
-    let count = 1;
-    pool = pool.map((p) => {
-      if (count > 0 && p.online) {
-        count -= 1;
-        return p;
-      }
-      return { ...p, online: false };
-    });
-  }
-  return pool;
+function TrendingTile({ label, count, photo, tall }: { label: string; count: number; photo: string; tall: boolean }) {
+  return (
+    <div
+      className="relative cursor-pointer overflow-hidden rounded-2xl"
+      style={{ aspectRatio: tall ? "3 / 4" : "1 / 1", fontFamily: SANS_STACK }}
+    >
+      <img
+        src={`https://images.unsplash.com/photo-${photo}?auto=format&fit=crop&w=600&q=70`}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.55) 100%)" }}
+      />
+      <span
+        className="absolute right-2.5 top-2.5 inline-flex items-center rounded-full px-2 py-1"
+        style={{ backgroundColor: "rgba(10,22,40,0.6)", color: "#fff", backdropFilter: "blur(10px)", fontSize: 10, fontWeight: 600 }}
+      >
+        {count} stylists
+      </span>
+      <span
+        className="absolute bottom-2.5 left-3"
+        style={{ color: "#fff", fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em" }}
+      >
+        {label}
+      </span>
+    </div>
+  );
 }

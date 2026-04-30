@@ -58,8 +58,6 @@ export function DevStateToggle() {
     } catch {}
   }, [pos]);
 
-  if (import.meta.env.PROD) return null;
-
   const onPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     dragRef.current = {

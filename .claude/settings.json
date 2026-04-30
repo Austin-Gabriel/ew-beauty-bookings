@@ -3,7 +3,21 @@
     "allow": [
       "Bash(npx tsc *)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(/usr/bin/grep -rn \"localStorage\\\\|sessionStorage\\\\|isAuthenticated\\\\|signedIn\\\\|loggedIn\\\\|authState\" src/auth/ src/dev-state/ src/routes/)",
+      "Bash(/usr/bin/grep -v \".gen.ts\")",
+      "Bash(/usr/bin/head -30)",
+      "Bash(/usr/bin/grep -rn 'authState.*signed-out\\\\|\"signed-out\"\\\\|reset\\(\\)\\\\|clearStorage' src/)",
+      "Bash(/usr/bin/grep -v \".gen.ts\\\\|node_modules\")",
+      "Bash(/usr/bin/head -20)",
+      "Bash(/usr/bin/grep -in \"kemi\\\\|adesina\\\\|aseshina\" src/data/mock-pros.ts)",
+      "Bash(/usr/bin/head -10)",
+      "Bash(/usr/bin/grep -n \"name:\\\\|category:\" src/data/mock-pros.ts)",
+      "Bash(/usr/bin/head -60)",
+      "Bash(/usr/bin/grep -nE \"name:|category:\" src/data/mock-pros.ts)",
+      "Bash(/usr/bin/grep -n \"SERVICE_CATEGORIES\\\\|NEIGHBORHOODS\\\\|^export\" src/data/mock-pros.ts)",
+      "Bash(/usr/bin/head)",
+      "Bash(/usr/bin/grep -n \"SERVICE_CATEGORIES\" src/home/SeeAll.tsx)"
     ]
   }
 }

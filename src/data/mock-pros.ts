@@ -2,6 +2,16 @@
  * Mock pros — single source of truth for the Discover feed in dev mode.
  * Replace with real data when the backend lands.
  */
+export type ProfessionalType =
+  | "Hairdresser"
+  | "Barber"
+  | "Loctician"
+  | "Nail Tech"
+  | "Makeup Artist"
+  | "Lash Tech"
+  | "Esthetician"
+  | "Tattoo Artist";
+
 export type Pro = {
   id: string;
   name: string;
@@ -11,6 +21,9 @@ export type Pro = {
   neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene";
   travelRadiusMi: number;
   specializations: string[];
+  /** Pro type — what they ARE (drives the Discover chip filter). */
+  professionalType: ProfessionalType;
+  /** Service style — what THIS card is showcasing (per-card label). */
   category:
     | "Braids"
     | "Silk press"
@@ -40,12 +53,13 @@ export const MOCK_PROS: Pro[] = [
     portfolio: [
       PHOTO("1522337360788-8b13dee7a37e"),
       PHOTO("1517256064527-09c73fc73e38"),
-      PHOTO("1519415943484-c6c1b4e7c1d3"),
+      PHOTO("1580618672591-eb180b1a973f"),
     ],
     headline: "Knotless braids in Brooklyn",
     neighborhood: "Bed-Stuy",
     travelRadiusMi: 5,
     specializations: ["Knotless braids", "Box braids", "Color"],
+    professionalType: "Hairdresser",
     category: "Braids",
     services: [
       { name: "Medium knotless", priceFrom: 220 },
@@ -70,6 +84,7 @@ export const MOCK_PROS: Pro[] = [
     neighborhood: "Crown Heights",
     travelRadiusMi: 6,
     specializations: ["Silk press", "Trims", "Wash & Style"],
+    professionalType: "Hairdresser",
     category: "Silk press",
     services: [
       { name: "Silk press", priceFrom: 130 },
@@ -94,6 +109,7 @@ export const MOCK_PROS: Pro[] = [
     neighborhood: "Fort Greene",
     travelRadiusMi: 8,
     specializations: ["Tapers", "Beard sculpt", "Line-ups"],
+    professionalType: "Barber",
     category: "Barbering",
     services: [
       { name: "Cut + line-up", priceFrom: 65 },
@@ -111,13 +127,14 @@ export const MOCK_PROS: Pro[] = [
     name: "Kemi Adesanya",
     avatar: PHOTO("1438761681033-6461ffad8d80"),
     portfolio: [
-      PHOTO("1612200143316-32a8e8ab1e5a"),
+      PHOTO("1605497788044-5a32c7078486"),
       PHOTO("1487412947147-5cebf100ffc2"),
     ],
     headline: "Sisterlocks specialist",
     neighborhood: "Bed-Stuy",
     travelRadiusMi: 4,
     specializations: ["Sisterlocks", "Loc maintenance", "Retwist"],
+    professionalType: "Loctician",
     category: "Locs",
     services: [
       { name: "Retwist", priceFrom: 95 },
@@ -142,6 +159,7 @@ export const MOCK_PROS: Pro[] = [
     neighborhood: "Crown Heights",
     travelRadiusMi: 5,
     specializations: ["Gel-X", "Structure gel", "Nail art"],
+    professionalType: "Nail Tech",
     category: "Nails",
     services: [
       { name: "Gel-X full set", priceFrom: 110 },
@@ -166,6 +184,7 @@ export const MOCK_PROS: Pro[] = [
     neighborhood: "Fort Greene",
     travelRadiusMi: 10,
     specializations: ["Soft glam", "Bridal", "Editorial"],
+    professionalType: "Makeup Artist",
     category: "Makeup",
     services: [
       { name: "Soft glam", priceFrom: 150 },
@@ -190,6 +209,7 @@ export const MOCK_PROS: Pro[] = [
     neighborhood: "Bed-Stuy",
     travelRadiusMi: 6,
     specializations: ["Color", "Balayage", "Toner"],
+    professionalType: "Hairdresser",
     category: "Color",
     services: [
       { name: "Single process", priceFrom: 120 },
@@ -208,12 +228,13 @@ export const MOCK_PROS: Pro[] = [
     avatar: PHOTO("1534528741775-53994a69daeb"),
     portfolio: [
       PHOTO("1520975916090-3105956dac38"),
-      PHOTO("1487222480400-7c8b6d2b7d49"),
+      PHOTO("1559599101-f09722fb4948"),
     ],
     headline: "Boho braids & curated styles",
     neighborhood: "Crown Heights",
     travelRadiusMi: 7,
     specializations: ["Boho braids", "Goddess locs", "Twists"],
+    professionalType: "Hairdresser",
     category: "Braids",
     services: [
       { name: "Boho knotless", priceFrom: 260 },
@@ -240,3 +261,14 @@ export const SERVICE_CATEGORIES = [
 ] as const;
 
 export const NEIGHBORHOODS = ["Bed-Stuy", "Crown Heights", "Fort Greene"] as const;
+
+export const PROFESSIONAL_TYPES: readonly ProfessionalType[] = [
+  "Hairdresser",
+  "Barber",
+  "Loctician",
+  "Nail Tech",
+  "Makeup Artist",
+  "Lash Tech",
+  "Esthetician",
+  "Tattoo Artist",
+] as const;

@@ -20,6 +20,7 @@ import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -77,6 +78,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
+  id: '/see-all/$category',
+  path: '/see-all/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProProIdRoute = ProProIdRouteImport.update({
   id: '/pro/$proId',
   path: '/pro/$proId',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/see-all/$category': typeof SeeAllCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/see-all/$category': typeof SeeAllCategoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/see-all/$category': typeof SeeAllCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/unlock'
     | '/welcome'
     | '/pro/$proId'
+    | '/see-all/$category'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/unlock'
     | '/welcome'
     | '/pro/$proId'
+    | '/see-all/$category'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/unlock'
     | '/welcome'
     | '/pro/$proId'
+    | '/see-all/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
   ProProIdRoute: typeof ProProIdRoute
+  SeeAllCategoryRoute: typeof SeeAllCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/see-all/$category': {
+      id: '/see-all/$category'
+      path: '/see-all/$category'
+      fullPath: '/see-all/$category'
+      preLoaderRoute: typeof SeeAllCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pro/$proId': {
       id: '/pro/$proId'
       path: '/pro/$proId'
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
   ProProIdRoute: ProProIdRoute,
+  SeeAllCategoryRoute: SeeAllCategoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
