@@ -24,6 +24,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
+import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
+import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
+import { Route as ProfilePaymentMethodsRouteImport } from './routes/profile.payment-methods'
+import { Route as ProfileNotificationsRouteImport } from './routes/profile.notifications'
+import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
@@ -103,6 +109,36 @@ const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
   path: '/see-all/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileTippingRoute = ProfileTippingRouteImport.update({
+  id: '/tipping',
+  path: '/tipping',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileThemeRoute = ProfileThemeRouteImport.update({
+  id: '/theme',
+  path: '/theme',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfilePaymentMethodsRoute = ProfilePaymentMethodsRouteImport.update({
+  id: '/payment-methods',
+  path: '/payment-methods',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileNotificationsRoute = ProfileNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileAddressesRoute = ProfileAddressesRouteImport.update({
+  id: '/addresses',
+  path: '/addresses',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const ProProIdRoute = ProProIdRouteImport.update({
   id: '/pro/$proId',
   path: '/pro/$proId',
@@ -134,6 +170,12 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -152,6 +194,12 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
@@ -173,6 +221,12 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
@@ -195,6 +249,12 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites/'
     | '/profile/'
@@ -213,6 +273,12 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites'
     | '/profile'
@@ -233,6 +299,12 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites/'
     | '/profile/'
@@ -363,6 +435,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeeAllCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/tipping': {
+      id: '/profile/tipping'
+      path: '/tipping'
+      fullPath: '/profile/tipping'
+      preLoaderRoute: typeof ProfileTippingRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/theme': {
+      id: '/profile/theme'
+      path: '/theme'
+      fullPath: '/profile/theme'
+      preLoaderRoute: typeof ProfileThemeRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/payment-methods': {
+      id: '/profile/payment-methods'
+      path: '/payment-methods'
+      fullPath: '/profile/payment-methods'
+      preLoaderRoute: typeof ProfilePaymentMethodsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/notifications': {
+      id: '/profile/notifications'
+      path: '/notifications'
+      fullPath: '/profile/notifications'
+      preLoaderRoute: typeof ProfileNotificationsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/addresses': {
+      id: '/profile/addresses'
+      path: '/addresses'
+      fullPath: '/profile/addresses'
+      preLoaderRoute: typeof ProfileAddressesRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/pro/$proId': {
       id: '/pro/$proId'
       path: '/pro/$proId'
@@ -404,10 +518,22 @@ const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
 )
 
 interface ProfileRouteChildren {
+  ProfileAddressesRoute: typeof ProfileAddressesRoute
+  ProfileEditRoute: typeof ProfileEditRoute
+  ProfileNotificationsRoute: typeof ProfileNotificationsRoute
+  ProfilePaymentMethodsRoute: typeof ProfilePaymentMethodsRoute
+  ProfileThemeRoute: typeof ProfileThemeRoute
+  ProfileTippingRoute: typeof ProfileTippingRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileAddressesRoute: ProfileAddressesRoute,
+  ProfileEditRoute: ProfileEditRoute,
+  ProfileNotificationsRoute: ProfileNotificationsRoute,
+  ProfilePaymentMethodsRoute: ProfilePaymentMethodsRoute,
+  ProfileThemeRoute: ProfileThemeRoute,
+  ProfileTippingRoute: ProfileTippingRoute,
   ProfileIndexRoute: ProfileIndexRoute,
 }
 
