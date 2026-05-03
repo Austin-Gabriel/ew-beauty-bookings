@@ -277,6 +277,26 @@ export function DevStateToggle() {
                   onChange={(v) => set("activeBooking", v)}
                 />
               </Field>
+
+              <div
+                className="my-2 border-t"
+                style={{ borderColor: "rgba(127,127,127,0.2)" }}
+              />
+              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                Profile
+              </p>
+
+              <Field label="Profile state" hint="Drives identity header + addresses + pill">
+                <Segmented<ProfileState>
+                  value={state.profileState}
+                  options={[
+                    { value: "new", label: "New" },
+                    { value: "partial", label: "Partial" },
+                    { value: "complete", label: "Complete" },
+                  ]}
+                  onChange={(v) => set("profileState", v)}
+                />
+              </Field>
             </div>
 
             <div className="mt-6 flex flex-col gap-2">
