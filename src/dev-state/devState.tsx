@@ -51,6 +51,9 @@ export type ActiveBookingStage =
   | "arrived"
   | "in-progress";
 
+/** Profile completeness — drives identity header, addresses, payment pill. */
+export type ProfileState = "new" | "partial" | "complete";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -60,6 +63,7 @@ export type DevState = {
   favoritesSeed: FavoritesSeed;
   bookingsSeed: BookingsSeed;
   activeBooking: ActiveBookingStage;
+  profileState: ProfileState;
 };
 
 const DEFAULTS: DevState = {
@@ -71,6 +75,7 @@ const DEFAULTS: DevState = {
   favoritesSeed: "few",
   bookingsSeed: "many",
   activeBooking: "enroute",
+  profileState: "complete",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
