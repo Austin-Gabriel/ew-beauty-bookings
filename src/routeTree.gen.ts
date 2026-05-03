@@ -21,8 +21,15 @@ import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
+import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
+import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
+import { Route as ProfilePaymentMethodsRouteImport } from './routes/profile.payment-methods'
+import { Route as ProfileNotificationsRouteImport } from './routes/profile.notifications'
+import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
@@ -87,6 +94,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const FavoritesIndexRoute = FavoritesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -96,6 +108,36 @@ const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
   id: '/see-all/$category',
   path: '/see-all/$category',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileTippingRoute = ProfileTippingRouteImport.update({
+  id: '/tipping',
+  path: '/tipping',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileThemeRoute = ProfileThemeRouteImport.update({
+  id: '/theme',
+  path: '/theme',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfilePaymentMethodsRoute = ProfilePaymentMethodsRouteImport.update({
+  id: '/payment-methods',
+  path: '/payment-methods',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileNotificationsRoute = ProfileNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileEditRoute = ProfileEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileAddressesRoute = ProfileAddressesRouteImport.update({
+  id: '/addresses',
+  path: '/addresses',
+  getParentRoute: () => ProfileRoute,
 } as any)
 const ProProIdRoute = ProProIdRouteImport.update({
   id: '/pro/$proId',
@@ -120,7 +162,7 @@ export interface FileRoutesByFullPath {
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/notifications': typeof NotificationsRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -128,8 +170,15 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesByTo {
@@ -138,7 +187,6 @@ export interface FileRoutesByTo {
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
   '/notifications': typeof NotificationsRoute
-  '/profile': typeof ProfileRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -146,8 +194,15 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites': typeof FavoritesIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesById {
@@ -158,7 +213,7 @@ export interface FileRoutesById {
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/notifications': typeof NotificationsRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -166,8 +221,15 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
+  '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/edit': typeof ProfileEditRoute
+  '/profile/notifications': typeof ProfileNotificationsRoute
+  '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/theme': typeof ProfileThemeRoute
+  '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRouteTypes {
@@ -187,8 +249,15 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites/'
+    | '/profile/'
     | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -197,7 +266,6 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/discover'
     | '/notifications'
-    | '/profile'
     | '/signin'
     | '/signup'
     | '/splash'
@@ -205,8 +273,15 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites'
+    | '/profile'
     | '/favorites/shared/$shareId'
   id:
     | '__root__'
@@ -224,8 +299,15 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/favorites/$collectionId'
     | '/pro/$proId'
+    | '/profile/addresses'
+    | '/profile/edit'
+    | '/profile/notifications'
+    | '/profile/payment-methods'
+    | '/profile/theme'
+    | '/profile/tipping'
     | '/see-all/$category'
     | '/favorites/'
+    | '/profile/'
     | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
 }
@@ -236,7 +318,7 @@ export interface RootRouteChildren {
   DiscoverRoute: typeof DiscoverRoute
   FavoritesRoute: typeof FavoritesRouteWithChildren
   NotificationsRoute: typeof NotificationsRoute
-  ProfileRoute: typeof ProfileRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
@@ -332,6 +414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/favorites/': {
       id: '/favorites/'
       path: '/'
@@ -345,6 +434,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/see-all/$category'
       preLoaderRoute: typeof SeeAllCategoryRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/profile/tipping': {
+      id: '/profile/tipping'
+      path: '/tipping'
+      fullPath: '/profile/tipping'
+      preLoaderRoute: typeof ProfileTippingRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/theme': {
+      id: '/profile/theme'
+      path: '/theme'
+      fullPath: '/profile/theme'
+      preLoaderRoute: typeof ProfileThemeRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/payment-methods': {
+      id: '/profile/payment-methods'
+      path: '/payment-methods'
+      fullPath: '/profile/payment-methods'
+      preLoaderRoute: typeof ProfilePaymentMethodsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/notifications': {
+      id: '/profile/notifications'
+      path: '/notifications'
+      fullPath: '/profile/notifications'
+      preLoaderRoute: typeof ProfileNotificationsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/edit': {
+      id: '/profile/edit'
+      path: '/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/addresses': {
+      id: '/profile/addresses'
+      path: '/addresses'
+      fullPath: '/profile/addresses'
+      preLoaderRoute: typeof ProfileAddressesRouteImport
+      parentRoute: typeof ProfileRoute
     }
     '/pro/$proId': {
       id: '/pro/$proId'
@@ -386,6 +517,29 @@ const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
   FavoritesRouteChildren,
 )
 
+interface ProfileRouteChildren {
+  ProfileAddressesRoute: typeof ProfileAddressesRoute
+  ProfileEditRoute: typeof ProfileEditRoute
+  ProfileNotificationsRoute: typeof ProfileNotificationsRoute
+  ProfilePaymentMethodsRoute: typeof ProfilePaymentMethodsRoute
+  ProfileThemeRoute: typeof ProfileThemeRoute
+  ProfileTippingRoute: typeof ProfileTippingRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileAddressesRoute: ProfileAddressesRoute,
+  ProfileEditRoute: ProfileEditRoute,
+  ProfileNotificationsRoute: ProfileNotificationsRoute,
+  ProfilePaymentMethodsRoute: ProfilePaymentMethodsRoute,
+  ProfileThemeRoute: ProfileThemeRoute,
+  ProfileTippingRoute: ProfileTippingRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
@@ -393,7 +547,7 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverRoute: DiscoverRoute,
   FavoritesRoute: FavoritesRouteWithChildren,
   NotificationsRoute: NotificationsRoute,
-  ProfileRoute: ProfileRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,

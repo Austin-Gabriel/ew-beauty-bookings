@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlaceholderTab } from "@/home/PlaceholderTab";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { AppShell } from "@/home/AppShell";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -9,10 +9,8 @@ export const Route = createFileRoute("/profile")({
     ],
   }),
   component: () => (
-    <PlaceholderTab
-      pageTitle="Profile"
-      headline="Profile, on the way."
-      subhead="Saved pros, addresses, payment methods, and preferences will live here."
-    />
+    <AppShell>
+      <Outlet />
+    </AppShell>
   ),
 });
