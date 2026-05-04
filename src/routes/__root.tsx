@@ -100,10 +100,13 @@ function RootComponent() {
   return (
     <DevStateProvider>
       <CustomerProfileProvider>
-        <DevCustomerSync />
-        <Outlet />
-        <DevStateToggle />
-        <Toaster />
+        <BookingsProvider>
+          <DevCustomerSync />
+          <DevBookingsSync />
+          <Outlet />
+          <DevStateToggle />
+          <Toaster />
+        </BookingsProvider>
       </CustomerProfileProvider>
     </DevStateProvider>
   );
