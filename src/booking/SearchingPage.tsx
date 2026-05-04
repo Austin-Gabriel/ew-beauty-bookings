@@ -7,6 +7,7 @@ import { useNavigate, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Check, X, Clock } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useDevState } from "@/dev-state/devState";
+import { useBookings } from "@/data/bookings-store";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
@@ -40,8 +41,10 @@ export function SearchingPage({
   const router = useRouter();
   const navigate = useNavigate();
   const { state } = useDevState();
+  const { getBooking, updateBookingStatus, cancelBooking } = useBookings();
   const stage = state.searchingStage;
 
+  const booking = getBooking(bookingId);
   const pro = proId ? MOCK_PROS.find((p) => p.id === proId) : MOCK_PROS[0];
   const proFirstName = pro ? pro.name.split(" ")[0] : "Your pro";
 
@@ -53,19 +56,32 @@ export function SearchingPage({
       setAutoMatched(false);
       return;
     }
-    const t = setTimeout(() => setAutoMatched(true), 4000);
+    const t = setTimeout(() => {
+      setAutoMatched(true);
+      // Update the booking in the store to "confirmed"
+      if (booking) updateBookingStatus(bookingId, "confirmed");
+    }, 4000);
     return () => clearTimeout(t);
-  }, [stage]);
+  }, [stage, bookingId, booking, updateBookingStatus]);
 
   const effectiveStage = stage === "searching" && autoMatched ? "matched" : stage;
 
+  // When dev-state forces declined/timeout, update booking accordingly
+  useEffect(() => {
+    if (!booking) return;
+    if (stage === "declined") updateBookingStatus(bookingId, "declined");
+    else if (stage === "timeout") updateBookingStatus(bookingId, "declined");
+  }, [stage, bookingId, booking, updateBookingStatus]);
+
   const handleCancel = useCallback(() => {
+    cancelBooking(bookingId);
     router.history.back();
-  }, [router]);
+  }, [router, bookingId, cancelBooking]);
 
   const handleTryAgain = useCallback(() => {
     setAutoMatched(false);
-  }, []);
+    if (booking) updateBookingStatus(bookingId, "searching");
+  }, [bookingId, booking, updateBookingStatus]);
 
   const handleViewBooking = useCallback(() => {
     navigate({ to: "/bookings" });

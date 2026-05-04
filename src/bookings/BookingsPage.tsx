@@ -3,14 +3,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
-import { useDevState } from "@/dev-state/devState";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import {
-  MOCK_BOOKINGS,
+  useBookings,
   ACTIVE_STATUSES,
+  PAST_STATUSES,
   type Booking,
   type BookingStatus,
-} from "@/data/mock-bookings";
+} from "@/data/bookings-store";
 
 const ORANGE = "#FF823F";
 const SUCCESS = "#16A34A";
@@ -23,10 +23,8 @@ const LINE = "#EEF1F4";
 
 type Tab = "upcoming" | "past";
 
-const PAST_STATUSES: BookingStatus[] = ["completed", "cancelled", "declined"];
-
 export function BookingsPage() {
-  const { state } = useDevState();
+  const { bookings, activeBookings, pastBookings } = useBookings();
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
@@ -37,39 +35,12 @@ export function BookingsPage() {
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
 
-  // Derive the visible bookings from dev-state seed + active stage.
-  const all = useMemo(() => {
-    if (state.customerState === "new" || state.bookingsSeed === "empty") return [];
-
-    // Volume — "few" = next-up scheduled + 1 past; "many" = the full set
-    let pool: Booking[] =
-      state.bookingsSeed === "few"
-        ? MOCK_BOOKINGS.filter((b) => ["bk-jordan-sat", "bk-past-amara-apr"].includes(b.id))
-        : MOCK_BOOKINGS;
-
-    // Active booking stage — patch the in-flight Amara booking to whichever
-    // lifecycle stage the dev-state toggle selected (or remove it entirely).
-    pool = pool
-      .map((b): Booking | null => {
-        if (!ACTIVE_STATUSES.includes(b.status)) return b;
-        if (state.activeBooking === "none") return null;
-        const patched: Booking = { ...b, status: state.activeBooking };
-        // Tweak time-sensitive fields per stage so the hero copy reads right
-        if (state.activeBooking === "getting-ready") patched.etaMinutes = 5;
-        else if (state.activeBooking === "enroute") patched.etaMinutes = 12;
-        else if (state.activeBooking === "in-progress") patched.startedAt = Date.now() - 8 * 60 * 1000;
-        return patched;
-      })
-      .filter((b): b is Booking => b !== null);
-
-    return pool;
-  }, [state.customerState, state.bookingsSeed, state.activeBooking]);
-
-  const active = all.find((b) => ACTIVE_STATUSES.includes(b.status));
-  const upcomingRest = all.filter(
-    (b) => !PAST_STATUSES.includes(b.status) && !ACTIVE_STATUSES.includes(b.status),
+  const active = activeBookings.find((b) =>
+    (["getting-ready", "enroute", "arrived", "in-progress"] as BookingStatus[]).includes(b.status),
   );
-  const past = all.filter((b) => PAST_STATUSES.includes(b.status));
+  const upcomingRest = activeBookings.filter((b) => b !== active);
+
+  const past = pastBookings;
 
   const upcomingCount = (active ? 1 : 0) + upcomingRest.length;
   const pastCount = past.length;
@@ -899,7 +870,9 @@ function VerifiedTick() {
 
 function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: string } {
   switch (status) {
-    case "pending":
+    case "searching":
+      return { text: "Searching", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+    case "pending_pro_approval":
       return { text: "Pending", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
     case "confirmed":
       return { text: "Confirmed", bg: "rgba(22,163,74,0.14)", fg: SUCCESS };
@@ -917,6 +890,8 @@ function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: s
       return { text: "Cancelled", bg: "rgba(220,38,38,0.14)", fg: DANGER };
     case "declined":
       return { text: "Declined", bg: "rgba(220,38,38,0.14)", fg: DANGER };
+    default:
+      return { text: String(status), bg: "rgba(11,18,32,0.06)", fg: INK_500 };
   }
 }
 

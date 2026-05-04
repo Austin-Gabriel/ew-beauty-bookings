@@ -5,7 +5,9 @@ import { DevStateProvider } from "../dev-state/devState";
 import { DevStateToggle } from "../dev-state/DevStateToggle";
 import { Toaster } from "../components/ui/sonner";
 import { CustomerProfileProvider } from "../data/customer-store";
+import { BookingsProvider } from "../data/bookings-store";
 import { DevCustomerSync } from "../dev-state/DevCustomerSync";
+import { DevBookingsSync } from "../dev-state/DevBookingsSync";
 
 function NotFoundComponent() {
   return (
@@ -98,10 +100,13 @@ function RootComponent() {
   return (
     <DevStateProvider>
       <CustomerProfileProvider>
-        <DevCustomerSync />
-        <Outlet />
-        <DevStateToggle />
-        <Toaster />
+        <BookingsProvider>
+          <DevCustomerSync />
+          <DevBookingsSync />
+          <Outlet />
+          <DevStateToggle />
+          <Toaster />
+        </BookingsProvider>
       </CustomerProfileProvider>
     </DevStateProvider>
   );

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
+import { useBookings } from "@/data/bookings-store";
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -25,6 +26,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
     addAddress,
     addCard,
   } = useCustomerProfile();
+  const { createBooking } = useBookings();
 
   const addresses = profile.savedAddresses;
   const cards = profile.paymentMethods;
@@ -104,13 +106,29 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   const proFirstName = pro.name.split(" ")[0];
 
   const handleConfirm = () => {
+    if (!pro || !selectedService) return;
     setConfirming(true);
     setTimeout(() => {
-      const bookingId = `bk-${Date.now()}`;
+      const newId = createBooking({
+        proId,
+        service: {
+          name: selectedService.name,
+          durationLabel: "60 min",
+          price: selectedService.priceFrom,
+        },
+        location: selectedAddress
+          ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
+          : { type: "mobile", label: "Your home" },
+        bookingType: "on-demand",
+        total,
+        tipAmount: tipAmount ?? undefined,
+        addressId: selectedAddress?.id,
+        paymentMethodId: selectedCard?.id,
+      });
       navigate({
         to: "/booking/searching/$bookingId",
-        params: { bookingId },
-        search: { proId: proId },
+        params: { bookingId: newId },
+        search: { proId },
       });
     }, 600);
   };
