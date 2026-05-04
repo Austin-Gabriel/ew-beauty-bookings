@@ -107,6 +107,7 @@ const DEFAULTS: DevState = {
   notificationsProfile: "all-on",
   avatarState: "monogram",
   editProfileState: "default",
+  bookingConfirmState: "default",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
