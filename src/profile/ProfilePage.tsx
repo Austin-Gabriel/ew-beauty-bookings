@@ -271,13 +271,14 @@ export function ProfilePage() {
         <SettingsRow
           icon={MapPin}
           label="Saved addresses"
-          value={`${data.addressCount} address${data.addressCount !== 1 ? "es" : ""}`}
+          value={`${addressCount} address${addressCount !== 1 ? "es" : ""}`}
           to="/profile/addresses"
         />
         <SettingsRow
           icon={CreditCard}
           label="Payment methods"
-          pill={data.showExpiringPill ? { label: "Expiring", variant: "bagel" } : undefined}
+          value={cardCount > 0 ? `${cardCount} card${cardCount !== 1 ? "s" : ""}` : undefined}
+          pill={hasExpiringCard ? { label: "Expiring", variant: "bagel" } : undefined}
           to="/profile/payment-methods"
           last
         />
