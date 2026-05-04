@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Camera,
@@ -15,17 +15,15 @@ import {
   ChevronRight,
   ExternalLink,
 } from "lucide-react";
-import { useDevState, type ProfileState, type TippingPreference } from "@/dev-state/devState";
+import { useDevState } from "@/dev-state/devState";
+import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
 import { supportMailtoHref } from "./support-constants";
 
-const MOCK_PHOTO_URL =
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face";
-
-function tippingLabel(pref: TippingPreference, customVal: number): string {
-  if (pref === "ask") return "Ask each time";
-  if (pref === "custom") return `Default ${customVal}%`;
-  return `Default ${pref}%`;
+function tippingLabel(pref: { type: string; value?: number }): string {
+  if (pref.type === "ask") return "Ask each time";
+  if (pref.type === "custom") return `Default ${pref.value ?? 0}%`;
+  return `Default ${pref.value ?? 0}%`;
 }
 
 function themeModeLabel(mode: string): string {
@@ -34,47 +32,12 @@ function themeModeLabel(mode: string): string {
   return "Dark";
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-function profileData(ps: ProfileState) {
-  return {
-    showPhone: ps !== "new",
-    addressCount: ps === "new" ? 0 : ps === "partial" ? 1 : 2,
-    showExpiringPill: ps === "complete",
-  };
-}
-
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
   if (parts.length === 0) return "??";
   const first = parts[0]?.[0] ?? "";
   const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
   return (first + last).toUpperCase();
-}
-
-/* ------------------------------------------------------------------ */
-/*  Read saved profile edits from sessionStorage                        */
-/* ------------------------------------------------------------------ */
-
-function useSessionValue<T>(key: string): T | null {
-  const [val, setVal] = useState<T | null>(null);
-
-  useEffect(() => {
-    const read = () => {
-      try {
-        const raw = sessionStorage.getItem(key);
-        if (raw) setVal(JSON.parse(raw));
-        else setVal(null);
-      } catch {}
-    };
-    read();
-    window.addEventListener("focus", read);
-    return () => window.removeEventListener("focus", read);
-  }, [key]);
-
-  return val;
 }
 
 /* ------------------------------------------------------------------ */
@@ -189,23 +152,18 @@ function SignOutSheet({
         className="absolute inset-0 bg-midnight/40 backdrop-blur-sm"
       />
       <div className="relative w-full max-w-[420px] space-y-3 p-4 pb-8">
-        {/* Copy */}
         <div className="px-2 text-center">
           <p className="text-[18px] font-semibold text-foreground">Sign out?</p>
           <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
             You'll need to sign in again to book a pro or check your bookings.
           </p>
         </div>
-
-        {/* Sign out button */}
         <button
           onClick={onConfirm}
           className="w-full rounded-2xl bg-destructive py-3.5 text-[15px] font-semibold text-destructive-foreground transition-opacity active:opacity-80"
         >
           Sign out
         </button>
-
-        {/* Cancel button */}
         <button
           onClick={onCancel}
           className="w-full rounded-2xl border border-hairline bg-card py-3.5 text-[15px] font-semibold text-card-foreground transition-opacity active:opacity-80"
@@ -224,61 +182,57 @@ function SignOutSheet({
 export function ProfilePage() {
   const { state, set } = useDevState();
   const navigate = useNavigate();
-  const data = profileData(state.profileState);
-  const savedEdits = useSessionValue<{ name: string; email: string; phone: string }>("ewa.profile.edits");
-  const savedAddresses = useSessionValue<{ id: string; isDefault: boolean }[]>("ewa.profile.addresses");
-  const savedCards = useSessionValue<{ id: string; expMonth: number; expYear: number }[]>("ewa.profile.paymentMethods");
+  const { profile, updateIdentity } = useCustomerProfile();
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [showSignOutSheet, setShowSignOutSheet] = useState(false);
 
-  const hasPhoto = state.avatarState === "photo";
+  const { identity, savedAddresses, paymentMethods, tippingPreference, themePreference } = profile;
+  const hasPhoto = !!identity.avatarPhotoUrl;
 
-  // Dynamic counts from session
-  const addressCount = savedAddresses?.length ?? data.addressCount;
-  const cardCount = savedCards?.length ?? 0;
+  const addressCount = savedAddresses.length;
+  const cardCount = paymentMethods.length;
 
   // Check if any card is expiring
-  const hasExpiringCard = savedCards
-    ? savedCards.some((c) => {
-        const expDate = new Date(c.expYear, c.expMonth);
-        const now = new Date();
-        const sixtyDays = new Date(now.getTime() + 60 * 86400000);
-        return now < expDate && sixtyDays >= expDate;
-      })
-    : data.showExpiringPill;
+  const hasExpiringCard = paymentMethods.some((c) => {
+    const expDate = new Date(c.expYear, c.expMonth);
+    const now = new Date();
+    const sixtyDays = new Date(now.getTime() + 60 * 86400000);
+    return now < expDate && sixtyDays >= expDate;
+  });
 
-  // Derive display values
-  const displayName = savedEdits?.name ?? "Imani Okafor";
-  const displayEmail = savedEdits?.email ?? "imani@example.com";
-  const displayPhone = savedEdits?.phone ?? "5551234";
+  const displayName = identity.name;
+  const displayEmail = identity.email;
+  const displayPhone = identity.phone;
   const maskedPhone = displayPhone.length >= 4 ? `••• ${displayPhone.slice(-4)}` : "";
   const initials = getInitials(displayName);
+  const showPhone = state.profileState !== "new";
 
   function handleTakePhoto() {
+    updateIdentity({
+      avatarPhotoUrl:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+    });
     set("avatarState", "photo");
     setShowAvatarSheet(false);
   }
 
   function handleChooseFromLibrary() {
+    updateIdentity({
+      avatarPhotoUrl:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face",
+    });
     set("avatarState", "photo");
     setShowAvatarSheet(false);
   }
 
   function handleRemovePhoto() {
+    updateIdentity({ avatarPhotoUrl: null });
     set("avatarState", "monogram");
     setShowAvatarSheet(false);
   }
 
   function handleSignOut() {
-    // Sync dev state to signed-out
     set("authState", "signed-out");
-    // Clear mock session data
-    try {
-      sessionStorage.removeItem("ewa.profile.edits");
-      sessionStorage.removeItem("ewa.profile.addresses");
-      sessionStorage.removeItem("ewa.profile.paymentMethods");
-    } catch {}
-    // Navigate to welcome (pre-auth entry)
     navigate({ to: "/welcome" });
   }
 
@@ -286,11 +240,10 @@ export function ProfilePage() {
     <div className="flex flex-col gap-6 px-5 pb-8 pt-12">
       {/* ----- Identity header ----- */}
       <div className="flex flex-col items-center gap-2.5">
-        {/* Avatar — tap camera badge for action sheet */}
         <div className="relative inline-flex">
           {hasPhoto ? (
             <img
-              src={MOCK_PHOTO_URL}
+              src={identity.avatarPhotoUrl!}
               alt={displayName}
               className="h-[104px] w-[104px] rounded-full object-cover"
             />
@@ -309,7 +262,6 @@ export function ProfilePage() {
               </span>
             </div>
           )}
-          {/* Camera badge */}
           <button
             onClick={() => setShowAvatarSheet(true)}
             className="absolute grid h-8 w-8 place-items-center rounded-full bg-midnight"
@@ -324,7 +276,6 @@ export function ProfilePage() {
           </button>
         </div>
 
-        {/* Name + pencil — link to edit */}
         <Link
           to="/profile/edit"
           className="flex items-center gap-1.5 active:opacity-80"
@@ -339,10 +290,9 @@ export function ProfilePage() {
           />
         </Link>
 
-        {/* Email + phone */}
         <p className="tabular text-[13.5px] text-muted-foreground">
           {displayEmail}
-          {data.showPhone && maskedPhone && ` · ${maskedPhone}`}
+          {showPhone && maskedPhone && ` · ${maskedPhone}`}
         </p>
       </div>
 
@@ -374,13 +324,13 @@ export function ProfilePage() {
         <SettingsRow
           icon={Percent}
           label="Tipping preferences"
-          value={tippingLabel(state.tippingPreference, state.tippingCustomValue)}
+          value={tippingLabel(tippingPreference)}
           to="/profile/tipping"
         />
         <SettingsRow
           icon={Monitor}
           label="Theme"
-          value={themeModeLabel(state.themeMode)}
+          value={themeModeLabel(themePreference)}
           to="/profile/theme"
           last
         />
@@ -421,7 +371,6 @@ export function ProfilePage() {
         Sign out
       </button>
 
-      {/* Avatar action sheet */}
       {showAvatarSheet && (
         <AvatarActionSheet
           hasPhoto={hasPhoto}
@@ -432,7 +381,6 @@ export function ProfilePage() {
         />
       )}
 
-      {/* Sign out confirmation sheet */}
       {showSignOutSheet && (
         <SignOutSheet
           onCancel={() => setShowSignOutSheet(false)}

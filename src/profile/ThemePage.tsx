@@ -1,20 +1,26 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Check } from "lucide-react";
-import { useDevState, type ThemeMode } from "@/dev-state/devState";
+import { useCustomerProfile, type ThemePref } from "@/data/customer-store";
+import { useDevState } from "@/dev-state/devState";
 
-const OPTIONS: { value: ThemeMode; label: string }[] = [
+const OPTIONS: { value: ThemePref; label: string }[] = [
   { value: "system", label: "System" },
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ];
 
 export function ThemePage() {
-  const { state, set } = useDevState();
+  const { profile, setThemePreference } = useCustomerProfile();
+  const { set } = useDevState();
   const navigate = useNavigate();
+
+  function handleSelect(v: ThemePref) {
+    setThemePreference(v);
+    set("themeMode", v);
+  }
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-8 pt-3">
-      {/* Top bar */}
       <div className="relative flex h-11 items-center justify-center">
         <button
           onClick={() => navigate({ to: "/profile" })}
@@ -25,18 +31,17 @@ export function ThemePage() {
         <span className="text-[17px] font-semibold text-foreground">Appearance</span>
       </div>
 
-      {/* Options card */}
       <div className="overflow-hidden rounded-2xl border border-hairline bg-card shadow-sm">
         {OPTIONS.map((opt, i) => (
           <div key={opt.value}>
             <button
-              onClick={() => set("themeMode", opt.value)}
+              onClick={() => handleSelect(opt.value)}
               className="flex w-full items-center justify-between px-4 py-3.5 transition-colors active:bg-muted/30"
             >
               <span className="text-[15px] font-medium text-card-foreground">
                 {opt.label}
               </span>
-              {state.themeMode === opt.value && (
+              {profile.themePreference === opt.value && (
                 <Check size={18} className="text-bagel" />
               )}
             </button>

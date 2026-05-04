@@ -1,42 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, CreditCard } from "lucide-react";
-
-/* ------------------------------------------------------------------ */
-/*  Types                                                               */
-/* ------------------------------------------------------------------ */
-
-type CardBrand = "visa" | "mastercard" | "amex" | "discover";
-
-type PaymentCard = {
-  id: string;
-  brand: CardBrand;
-  last4: string;
-  expMonth: number;
-  expYear: number;
-  isDefault: boolean;
-};
-
-const STORAGE_KEY = "ewa.profile.paymentMethods";
-
-function readCards(): PaymentCard[] {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
-}
-
-function writeCards(cards: PaymentCard[]) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-  } catch {}
-}
-
-let _nextId = 1;
-function genId() {
-  return `card-${Date.now()}-${_nextId++}`;
-}
+import {
+  useCustomerProfile,
+  genId,
+  type PaymentCard,
+  type CardBrand,
+} from "@/data/customer-store";
 
 /* ------------------------------------------------------------------ */
 /*  Card brand display                                                  */
@@ -73,22 +43,14 @@ function BrandIcon({ brand, size = 28 }: { brand: CardBrand; size?: number }) {
 /*  Expiry helpers                                                      */
 /* ------------------------------------------------------------------ */
 
-function expiryStatus(month: number, year: number): "ok" | "expiring" | "expired" {
-  const now = new Date();
-  const expDate = new Date(year, month); // first day AFTER expiry month
-  if (now >= expDate) return "expired";
-  const sixtyDays = new Date(now.getTime() + 60 * 86400000);
-  if (sixtyDays >= expDate) return "expiring";
-  return "ok";
-}
-
 function expiryLabel(month: number, year: number): { text: string; className: string } {
   const mm = String(month).padStart(2, "0");
   const yy = String(year).slice(-2);
-  const status = expiryStatus(month, year);
-  if (status === "expired")
-    return { text: `Expired ${mm}/${yy}`, className: "text-destructive" };
-  if (status === "expiring")
+  const now = new Date();
+  const expDate = new Date(year, month);
+  if (now >= expDate) return { text: `Expired ${mm}/${yy}`, className: "text-destructive" };
+  const sixtyDays = new Date(now.getTime() + 60 * 86400000);
+  if (sixtyDays >= expDate)
     return { text: `Expires ${mm}/${yy} — Expiring soon`, className: "text-destructive" };
   return { text: `Expires ${mm}/${yy}`, className: "text-on-card-muted" };
 }
@@ -154,7 +116,6 @@ function AddCardSheet({
   const [cvc, setCvc] = useState("");
   const [name, setName] = useState("");
 
-  // Derive brand from first digits
   function detectBrand(num: string): CardBrand {
     const d = num.replace(/\s/g, "");
     if (d.startsWith("4")) return "visa";
@@ -184,7 +145,7 @@ function AddCardSheet({
     const month = parseInt(expDigits.slice(0, 2), 10);
     const year = 2000 + parseInt(expDigits.slice(2), 10);
     onSave({
-      id: genId(),
+      id: genId("card"),
       brand: detectBrand(digits),
       last4: digits.slice(-4),
       expMonth: month,
@@ -338,7 +299,6 @@ function PaymentCardRow({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="mt-2.5 flex items-center gap-2">
         {!card.isDefault && (
           <>
@@ -365,42 +325,23 @@ function PaymentCardRow({
 
 export function PaymentMethodsPage() {
   const navigate = useNavigate();
-  const [cards, setCards] = useState<PaymentCard[]>(readCards);
+  const { profile, addCard, removeCard, setDefaultCard } = useCustomerProfile();
+  const cards = profile.paymentMethods;
   const [showAdd, setShowAdd] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState<PaymentCard | null>(null);
 
-  useEffect(() => {
-    writeCards(cards);
-  }, [cards]);
-
   function handleAddCard(c: PaymentCard) {
-    setCards((prev) => {
-      if (prev.length === 0) c.isDefault = true;
-      return [...prev, c];
-    });
+    addCard(c);
     setShowAdd(false);
   }
 
-  function handleSetDefault(id: string) {
-    setCards((prev) =>
-      prev.map((c) => ({ ...c, isDefault: c.id === id }))
-    );
-  }
-
   function handleRemove(card: PaymentCard) {
-    setCards((prev) => {
-      const next = prev.filter((c) => c.id !== card.id);
-      if (card.isDefault && next.length > 0) {
-        next[0] = { ...next[0], isDefault: true };
-      }
-      return next;
-    });
+    removeCard(card.id);
     setConfirmRemove(null);
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Top bar */}
       <div className="flex h-12 shrink-0 items-center justify-between px-4">
         <button
           onClick={() => navigate({ to: "/profile" })}
@@ -420,7 +361,6 @@ export function PaymentMethodsPage() {
         </button>
       </div>
 
-      {/* Body */}
       {cards.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8">
           <CreditCard size={32} className="text-muted-foreground" />
@@ -443,7 +383,7 @@ export function PaymentMethodsPage() {
             <PaymentCardRow
               key={card.id}
               card={card}
-              onSetDefault={() => handleSetDefault(card.id)}
+              onSetDefault={() => setDefaultCard(card.id)}
               onRemove={() => setConfirmRemove(card)}
             />
           ))}
