@@ -8,6 +8,7 @@ import {
   MapPin,
   CreditCard,
   Star,
+  FileText,
 } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
@@ -51,6 +52,8 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   const [showServiceSheet, setShowServiceSheet] = useState(false);
   const [showAddressSheet, setShowAddressSheet] = useState(false);
   const [showCardSheet, setShowCardSheet] = useState(false);
+  const [showNotesSheet, setShowNotesSheet] = useState(false);
+  const [notes, setNotes] = useState("");
   const [showScheduledStub, setShowScheduledStub] = useState(false);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [showAddCardForm, setShowAddCardForm] = useState(false);
@@ -124,6 +127,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         tipAmount: tipAmount ?? undefined,
         addressId: selectedAddress?.id,
         paymentMethodId: selectedCard?.id,
+        notes: notes.trim() || undefined,
       });
       navigate({
         to: "/booking/searching/$bookingId",
