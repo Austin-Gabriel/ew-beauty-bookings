@@ -23,8 +23,6 @@ const LINE = "#EEF1F4";
 
 type Tab = "upcoming" | "past";
 
-const PAST_STATUSES: BookingStatus[] = ["completed", "cancelled", "declined"];
-
 export function BookingsPage() {
   const { state } = useDevState();
   const { isDark, text } = useAuthTheme();
