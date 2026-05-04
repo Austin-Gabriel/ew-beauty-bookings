@@ -52,13 +52,13 @@ function SettingsRow({
         to={to}
         className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted/30"
       >
-        {/* Icon tile */}
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-muted/50">
-          <Icon size={17} className="text-foreground" />
+        {/* Icon tile — light surface, so use card-foreground */}
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-cream-elevated/60">
+          <Icon size={17} className="text-card-foreground" />
         </span>
 
         <span className="flex flex-1 items-center justify-between gap-2">
-          <span className="text-[15px] font-medium text-foreground">
+          <span className="text-[15px] font-medium text-card-foreground">
             {label}
           </span>
           <span className="flex items-center gap-1.5">
@@ -68,9 +68,9 @@ function SettingsRow({
               </span>
             )}
             {value && (
-              <span className="text-[13px] text-muted-foreground">{value}</span>
+              <span className="text-[13px] text-on-card-muted">{value}</span>
             )}
-            <ChevronRight size={13} className="text-muted-foreground" />
+            <ChevronRight size={13} className="text-on-card-muted" />
           </span>
         </span>
       </Link>
@@ -121,7 +121,7 @@ export function ProfilePage() {
         className="flex flex-col items-center gap-2.5 active:opacity-80"
       >
         {/* Avatar */}
-        <div className="relative">
+        <div className="relative inline-flex">
           <div className="grid h-[104px] w-[104px] place-items-center rounded-full bg-cream-elevated">
             <span
               className="text-midnight"
@@ -135,17 +135,17 @@ export function ProfilePage() {
               IO
             </span>
           </div>
-          {/* Camera badge */}
-          <Link
-            to="/profile/edit"
-            onClick={(e) => e.stopPropagation()}
-            className="absolute -bottom-0.5 -right-0.5 grid h-8 w-8 place-items-center rounded-full bg-midnight"
+          {/* Camera badge — overlaps bottom-right edge of avatar */}
+          <span
+            className="absolute grid h-8 w-8 place-items-center rounded-full bg-midnight"
             style={{
+              bottom: 2,
+              right: 2,
               boxShadow: "0 0 0 2.5px var(--cream-elevated)",
             }}
           >
             <Camera size={14} className="text-cream" />
-          </Link>
+          </span>
         </div>
 
         {/* Name + pencil */}

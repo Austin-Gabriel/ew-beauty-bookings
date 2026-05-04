@@ -72,6 +72,7 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-hairline: var(--hairline);
+  --color-on-card-muted: var(--on-card-muted);
 
   --font-sans: "Uncut Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
@@ -120,6 +121,9 @@
   --hairline: oklch(0.225 0.028 235 / 0.08);
   --input: oklch(0.225 0.028 235 / 0.14);
   --ring: var(--bagel);
+
+  /* Text on always-light card surfaces (white/cream-elevated) — same in both modes */
+  --on-card-muted: oklch(0.45 0.020 235);
 }
 
 .dark {
@@ -155,6 +159,9 @@
   --hairline: oklch(1 0 0 / 0.08);
   --input: oklch(1 0 0 / 0.14);
   --ring: var(--bagel);
+
+  /* Same as light mode — cards are always light */
+  --on-card-muted: oklch(0.45 0.020 235);
 }
 
 @layer base {
