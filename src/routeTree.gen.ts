@@ -26,8 +26,11 @@ import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
 import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
+import { Route as ProfileTermsRouteImport } from './routes/profile.terms'
+import { Route as ProfilePrivacyRouteImport } from './routes/profile.privacy'
 import { Route as ProfilePaymentMethodsRouteImport } from './routes/profile.payment-methods'
 import { Route as ProfileNotificationsRouteImport } from './routes/profile.notifications'
+import { Route as ProfileHelpRouteImport } from './routes/profile.help'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
@@ -119,6 +122,16 @@ const ProfileThemeRoute = ProfileThemeRouteImport.update({
   path: '/theme',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfileTermsRoute = ProfileTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfilePrivacyRoute = ProfilePrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const ProfilePaymentMethodsRoute = ProfilePaymentMethodsRouteImport.update({
   id: '/payment-methods',
   path: '/payment-methods',
@@ -127,6 +140,11 @@ const ProfilePaymentMethodsRoute = ProfilePaymentMethodsRouteImport.update({
 const ProfileNotificationsRoute = ProfileNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileHelpRoute = ProfileHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => ProfileRoute,
 } as any)
 const ProfileEditRoute = ProfileEditRouteImport.update({
@@ -172,8 +190,11 @@ export interface FileRoutesByFullPath {
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/help': typeof ProfileHelpRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
@@ -196,8 +217,11 @@ export interface FileRoutesByTo {
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/help': typeof ProfileHelpRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
@@ -223,8 +247,11 @@ export interface FileRoutesById {
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/help': typeof ProfileHelpRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
+  '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
@@ -251,8 +278,11 @@ export interface FileRouteTypes {
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
+    | '/profile/help'
     | '/profile/notifications'
     | '/profile/payment-methods'
+    | '/profile/privacy'
+    | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
@@ -275,8 +305,11 @@ export interface FileRouteTypes {
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
+    | '/profile/help'
     | '/profile/notifications'
     | '/profile/payment-methods'
+    | '/profile/privacy'
+    | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
@@ -301,8 +334,11 @@ export interface FileRouteTypes {
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
+    | '/profile/help'
     | '/profile/notifications'
     | '/profile/payment-methods'
+    | '/profile/privacy'
+    | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
@@ -449,6 +485,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileThemeRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/terms': {
+      id: '/profile/terms'
+      path: '/terms'
+      fullPath: '/profile/terms'
+      preLoaderRoute: typeof ProfileTermsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/privacy': {
+      id: '/profile/privacy'
+      path: '/privacy'
+      fullPath: '/profile/privacy'
+      preLoaderRoute: typeof ProfilePrivacyRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/profile/payment-methods': {
       id: '/profile/payment-methods'
       path: '/payment-methods'
@@ -461,6 +511,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/profile/notifications'
       preLoaderRoute: typeof ProfileNotificationsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/help': {
+      id: '/profile/help'
+      path: '/help'
+      fullPath: '/profile/help'
+      preLoaderRoute: typeof ProfileHelpRouteImport
       parentRoute: typeof ProfileRoute
     }
     '/profile/edit': {
@@ -520,8 +577,11 @@ const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
 interface ProfileRouteChildren {
   ProfileAddressesRoute: typeof ProfileAddressesRoute
   ProfileEditRoute: typeof ProfileEditRoute
+  ProfileHelpRoute: typeof ProfileHelpRoute
   ProfileNotificationsRoute: typeof ProfileNotificationsRoute
   ProfilePaymentMethodsRoute: typeof ProfilePaymentMethodsRoute
+  ProfilePrivacyRoute: typeof ProfilePrivacyRoute
+  ProfileTermsRoute: typeof ProfileTermsRoute
   ProfileThemeRoute: typeof ProfileThemeRoute
   ProfileTippingRoute: typeof ProfileTippingRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
@@ -530,8 +590,11 @@ interface ProfileRouteChildren {
 const ProfileRouteChildren: ProfileRouteChildren = {
   ProfileAddressesRoute: ProfileAddressesRoute,
   ProfileEditRoute: ProfileEditRoute,
+  ProfileHelpRoute: ProfileHelpRoute,
   ProfileNotificationsRoute: ProfileNotificationsRoute,
   ProfilePaymentMethodsRoute: ProfilePaymentMethodsRoute,
+  ProfilePrivacyRoute: ProfilePrivacyRoute,
+  ProfileTermsRoute: ProfileTermsRoute,
   ProfileThemeRoute: ProfileThemeRoute,
   ProfileTippingRoute: ProfileTippingRoute,
   ProfileIndexRoute: ProfileIndexRoute,

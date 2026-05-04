@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Camera,
   Pencil,
@@ -13,9 +13,11 @@ import {
   FileText,
   Shield,
   ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 import { useDevState, type ProfileState, type TippingPreference } from "@/dev-state/devState";
 import { AvatarActionSheet } from "./AvatarActionSheet";
+import { supportMailtoHref } from "./support-constants";
 
 const MOCK_PHOTO_URL =
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face";
@@ -85,46 +87,62 @@ function SettingsRow({
   value,
   pill,
   to,
+  href,
+  trailingIcon,
   last = false,
 }: {
   icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   value?: string;
   pill?: { label: string; variant: "bagel" };
-  to: string;
+  to?: string;
+  href?: string;
+  trailingIcon?: "chevron" | "external";
   last?: boolean;
 }) {
+  const TrailingIcon = trailingIcon === "external" ? ExternalLink : ChevronRight;
+
+  const inner = (
+    <>
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-cream-elevated/60">
+        <Icon size={17} className="text-card-foreground" />
+      </span>
+
+      <span className="flex flex-1 items-center justify-between gap-2">
+        <span className="text-[15px] font-medium text-card-foreground">
+          {label}
+        </span>
+        <span className="flex items-center gap-1.5">
+          {pill && (
+            <span className="rounded-full bg-bagel px-2 py-0.5 text-[11px] font-semibold text-bagel-foreground">
+              {pill.label}
+            </span>
+          )}
+          {value && (
+            <span className="text-[13px] text-on-card-muted">{value}</span>
+          )}
+          <TrailingIcon size={13} className="text-on-card-muted" />
+        </span>
+      </span>
+    </>
+  );
+
+  const className = "flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted/30";
+
   return (
     <>
-      <Link
-        to={to}
-        className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted/30"
-      >
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-cream-elevated/60">
-          <Icon size={17} className="text-card-foreground" />
-        </span>
-
-        <span className="flex flex-1 items-center justify-between gap-2">
-          <span className="text-[15px] font-medium text-card-foreground">
-            {label}
-          </span>
-          <span className="flex items-center gap-1.5">
-            {pill && (
-              <span className="rounded-full bg-bagel px-2 py-0.5 text-[11px] font-semibold text-bagel-foreground">
-                {pill.label}
-              </span>
-            )}
-            {value && (
-              <span className="text-[13px] text-on-card-muted">{value}</span>
-            )}
-            <ChevronRight size={13} className="text-on-card-muted" />
-          </span>
-        </span>
-      </Link>
-
-      {!last && (
-        <div className="ml-[60px] border-b border-hairline" />
+      {href ? (
+        <a href={href} className={className}>
+          {inner}
+        </a>
+      ) : to ? (
+        <Link to={to} className={className}>
+          {inner}
+        </Link>
+      ) : (
+        <div className={className}>{inner}</div>
       )}
+      {!last && <div className="ml-[60px] border-b border-hairline" />}
     </>
   );
 }
@@ -153,16 +171,65 @@ function SectionCard({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Sign-out confirmation sheet                                         */
+/* ------------------------------------------------------------------ */
+
+function SignOutSheet({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[9997] flex items-end justify-center">
+      <button
+        aria-label="Cancel"
+        onClick={onCancel}
+        className="absolute inset-0 bg-midnight/40 backdrop-blur-sm"
+      />
+      <div className="relative w-full max-w-[420px] space-y-3 p-4 pb-8">
+        {/* Copy */}
+        <div className="px-2 text-center">
+          <p className="text-[18px] font-semibold text-foreground">Sign out?</p>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
+            You'll need to sign in again to book a pro or check your bookings.
+          </p>
+        </div>
+
+        {/* Sign out button */}
+        <button
+          onClick={onConfirm}
+          className="w-full rounded-2xl bg-destructive py-3.5 text-[15px] font-semibold text-destructive-foreground transition-opacity active:opacity-80"
+        >
+          Sign out
+        </button>
+
+        {/* Cancel button */}
+        <button
+          onClick={onCancel}
+          className="w-full rounded-2xl border border-hairline bg-card py-3.5 text-[15px] font-semibold text-card-foreground transition-opacity active:opacity-80"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Profile Page                                                        */
 /* ------------------------------------------------------------------ */
 
 export function ProfilePage() {
   const { state, set } = useDevState();
+  const navigate = useNavigate();
   const data = profileData(state.profileState);
   const savedEdits = useSessionValue<{ name: string; email: string; phone: string }>("ewa.profile.edits");
   const savedAddresses = useSessionValue<{ id: string; isDefault: boolean }[]>("ewa.profile.addresses");
   const savedCards = useSessionValue<{ id: string; expMonth: number; expYear: number }[]>("ewa.profile.paymentMethods");
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
+  const [showSignOutSheet, setShowSignOutSheet] = useState(false);
 
   const hasPhoto = state.avatarState === "photo";
 
@@ -200,6 +267,19 @@ export function ProfilePage() {
   function handleRemovePhoto() {
     set("avatarState", "monogram");
     setShowAvatarSheet(false);
+  }
+
+  function handleSignOut() {
+    // Sync dev state to signed-out
+    set("authState", "signed-out");
+    // Clear mock session data
+    try {
+      sessionStorage.removeItem("ewa.profile.edits");
+      sessionStorage.removeItem("ewa.profile.addresses");
+      sessionStorage.removeItem("ewa.profile.paymentMethods");
+    } catch {}
+    // Navigate to welcome (pre-auth entry)
+    navigate({ to: "/welcome" });
   }
 
   return (
@@ -311,22 +391,23 @@ export function ProfilePage() {
         <SettingsRow
           icon={HelpCircle}
           label="Help center"
-          to="/profile/notifications"
+          to="/profile/help"
         />
         <SettingsRow
           icon={MessageCircle}
           label="Contact support"
-          to="/profile/notifications"
+          href={supportMailtoHref()}
+          trailingIcon="external"
         />
         <SettingsRow
           icon={FileText}
           label="Terms of service"
-          to="/profile/notifications"
+          to="/profile/terms"
         />
         <SettingsRow
           icon={Shield}
           label="Privacy policy"
-          to="/profile/notifications"
+          to="/profile/privacy"
           last
         />
       </SectionCard>
@@ -335,9 +416,7 @@ export function ProfilePage() {
       <button
         type="button"
         className="mx-auto text-[15px] font-medium text-destructive transition-opacity active:opacity-60"
-        onClick={() => {
-          // TODO: confirmation sheet + actual sign-out
-        }}
+        onClick={() => setShowSignOutSheet(true)}
       >
         Sign out
       </button>
@@ -350,6 +429,14 @@ export function ProfilePage() {
           onChooseFromLibrary={handleChooseFromLibrary}
           onRemovePhoto={handleRemovePhoto}
           onDismiss={() => setShowAvatarSheet(false)}
+        />
+      )}
+
+      {/* Sign out confirmation sheet */}
+      {showSignOutSheet && (
+        <SignOutSheet
+          onCancel={() => setShowSignOutSheet(false)}
+          onConfirm={handleSignOut}
         />
       )}
     </div>
