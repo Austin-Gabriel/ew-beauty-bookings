@@ -56,27 +56,23 @@ function getInitials(name: string): string {
 /*  Read saved profile edits from sessionStorage                        */
 /* ------------------------------------------------------------------ */
 
-function useSavedEdits() {
-  const [edits, setEdits] = useState<{ name: string; email: string; phone: string } | null>(null);
+function useSessionValue<T>(key: string): T | null {
+  const [val, setVal] = useState<T | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("ewa.profile.edits");
-      if (raw) setEdits(JSON.parse(raw));
-    } catch {}
-
-    // Re-read when navigating back
-    const handler = () => {
+    const read = () => {
       try {
-        const raw = sessionStorage.getItem("ewa.profile.edits");
-        if (raw) setEdits(JSON.parse(raw));
+        const raw = sessionStorage.getItem(key);
+        if (raw) setVal(JSON.parse(raw));
+        else setVal(null);
       } catch {}
     };
-    window.addEventListener("focus", handler);
-    return () => window.removeEventListener("focus", handler);
-  }, []);
+    read();
+    window.addEventListener("focus", read);
+    return () => window.removeEventListener("focus", read);
+  }, [key]);
 
-  return edits;
+  return val;
 }
 
 /* ------------------------------------------------------------------ */
@@ -163,10 +159,26 @@ function SectionCard({
 export function ProfilePage() {
   const { state, set } = useDevState();
   const data = profileData(state.profileState);
-  const savedEdits = useSavedEdits();
+  const savedEdits = useSessionValue<{ name: string; email: string; phone: string }>("ewa.profile.edits");
+  const savedAddresses = useSessionValue<{ id: string; isDefault: boolean }[]>("ewa.profile.addresses");
+  const savedCards = useSessionValue<{ id: string; expMonth: number; expYear: number }[]>("ewa.profile.paymentMethods");
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
 
   const hasPhoto = state.avatarState === "photo";
+
+  // Dynamic counts from session
+  const addressCount = savedAddresses?.length ?? data.addressCount;
+  const cardCount = savedCards?.length ?? 0;
+
+  // Check if any card is expiring
+  const hasExpiringCard = savedCards
+    ? savedCards.some((c) => {
+        const expDate = new Date(c.expYear, c.expMonth);
+        const now = new Date();
+        const sixtyDays = new Date(now.getTime() + 60 * 86400000);
+        return now < expDate && sixtyDays >= expDate;
+      })
+    : data.showExpiringPill;
 
   // Derive display values
   const displayName = savedEdits?.name ?? "Imani Okafor";
@@ -259,13 +271,14 @@ export function ProfilePage() {
         <SettingsRow
           icon={MapPin}
           label="Saved addresses"
-          value={`${data.addressCount} address${data.addressCount !== 1 ? "es" : ""}`}
+          value={`${addressCount} address${addressCount !== 1 ? "es" : ""}`}
           to="/profile/addresses"
         />
         <SettingsRow
           icon={CreditCard}
           label="Payment methods"
-          pill={data.showExpiringPill ? { label: "Expiring", variant: "bagel" } : undefined}
+          value={cardCount > 0 ? `${cardCount} card${cardCount !== 1 ? "s" : ""}` : undefined}
+          pill={hasExpiringCard ? { label: "Expiring", variant: "bagel" } : undefined}
           to="/profile/payment-methods"
           last
         />
