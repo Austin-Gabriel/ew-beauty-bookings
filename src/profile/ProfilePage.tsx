@@ -56,27 +56,23 @@ function getInitials(name: string): string {
 /*  Read saved profile edits from sessionStorage                        */
 /* ------------------------------------------------------------------ */
 
-function useSavedEdits() {
-  const [edits, setEdits] = useState<{ name: string; email: string; phone: string } | null>(null);
+function useSessionValue<T>(key: string): T | null {
+  const [val, setVal] = useState<T | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("ewa.profile.edits");
-      if (raw) setEdits(JSON.parse(raw));
-    } catch {}
-
-    // Re-read when navigating back
-    const handler = () => {
+    const read = () => {
       try {
-        const raw = sessionStorage.getItem("ewa.profile.edits");
-        if (raw) setEdits(JSON.parse(raw));
+        const raw = sessionStorage.getItem(key);
+        if (raw) setVal(JSON.parse(raw));
+        else setVal(null);
       } catch {}
     };
-    window.addEventListener("focus", handler);
-    return () => window.removeEventListener("focus", handler);
-  }, []);
+    read();
+    window.addEventListener("focus", read);
+    return () => window.removeEventListener("focus", read);
+  }, [key]);
 
-  return edits;
+  return val;
 }
 
 /* ------------------------------------------------------------------ */
