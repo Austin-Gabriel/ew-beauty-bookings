@@ -60,6 +60,12 @@ export type TippingPreference = "15" | "18" | "20" | "25" | "custom" | "ask";
 /** Notification profile — drives /profile/notifications toggles. */
 export type NotificationsProfile = "all-on" | "booking-only" | "all-off";
 
+/** Avatar state — monogram vs mock photo on Profile. */
+export type AvatarState = "monogram" | "photo";
+
+/** Edit profile state — drives form values + save button. */
+export type EditProfileState = "default" | "edited";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -73,6 +79,8 @@ export type DevState = {
   tippingPreference: TippingPreference;
   tippingCustomValue: number;
   notificationsProfile: NotificationsProfile;
+  avatarState: AvatarState;
+  editProfileState: EditProfileState;
 };
 
 const DEFAULTS: DevState = {
@@ -88,6 +96,8 @@ const DEFAULTS: DevState = {
   tippingPreference: "20",
   tippingCustomValue: 22,
   notificationsProfile: "all-on",
+  avatarState: "monogram",
+  editProfileState: "default",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";

@@ -12,6 +12,8 @@ import {
   type ProfileState,
   type TippingPreference,
   type NotificationsProfile,
+  type AvatarState,
+  type EditProfileState,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
@@ -336,6 +338,28 @@ export function DevStateToggle() {
                     { value: "all-off", label: "All off" },
                   ]}
                   onChange={(v) => set("notificationsProfile", v)}
+                />
+              </Field>
+
+              <Field label="Avatar state" hint="Drives avatar on Profile + action sheet">
+                <Segmented<AvatarState>
+                  value={state.avatarState}
+                  options={[
+                    { value: "monogram", label: "Monogram" },
+                    { value: "photo", label: "Photo" },
+                  ]}
+                  onChange={(v) => set("avatarState", v)}
+                />
+              </Field>
+
+              <Field label="Edit profile state" hint="Drives form values + Save button">
+                <Segmented<EditProfileState>
+                  value={state.editProfileState}
+                  options={[
+                    { value: "default", label: "Default" },
+                    { value: "edited", label: "Edited" },
+                  ]}
+                  onChange={(v) => set("editProfileState", v)}
                 />
               </Field>
             </div>
