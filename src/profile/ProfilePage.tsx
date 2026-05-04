@@ -159,10 +159,26 @@ function SectionCard({
 export function ProfilePage() {
   const { state, set } = useDevState();
   const data = profileData(state.profileState);
-  const savedEdits = useSavedEdits();
+  const savedEdits = useSessionValue<{ name: string; email: string; phone: string }>("ewa.profile.edits");
+  const savedAddresses = useSessionValue<{ id: string; isDefault: boolean }[]>("ewa.profile.addresses");
+  const savedCards = useSessionValue<{ id: string; expMonth: number; expYear: number }[]>("ewa.profile.paymentMethods");
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
 
   const hasPhoto = state.avatarState === "photo";
+
+  // Dynamic counts from session
+  const addressCount = savedAddresses?.length ?? data.addressCount;
+  const cardCount = savedCards?.length ?? 0;
+
+  // Check if any card is expiring
+  const hasExpiringCard = savedCards
+    ? savedCards.some((c) => {
+        const expDate = new Date(c.expYear, c.expMonth);
+        const now = new Date();
+        const sixtyDays = new Date(now.getTime() + 60 * 86400000);
+        return now < expDate && sixtyDays >= expDate;
+      })
+    : data.showExpiringPill;
 
   // Derive display values
   const displayName = savedEdits?.name ?? "Imani Okafor";
