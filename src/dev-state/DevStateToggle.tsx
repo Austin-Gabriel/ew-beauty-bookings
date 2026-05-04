@@ -14,6 +14,7 @@ import {
   type NotificationsProfile,
   type AvatarState,
   type EditProfileState,
+  type BookingConfirmState,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
