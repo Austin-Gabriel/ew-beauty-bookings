@@ -54,6 +54,12 @@ export type ActiveBookingStage =
 /** Profile completeness — drives identity header, addresses, payment pill. */
 export type ProfileState = "new" | "partial" | "complete";
 
+/** Tipping preference — drives /profile/tipping and parent row value. */
+export type TippingPreference = "15" | "18" | "20" | "25" | "custom" | "ask";
+
+/** Notification profile — drives /profile/notifications toggles. */
+export type NotificationsProfile = "all-on" | "booking-only" | "all-off";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -64,6 +70,9 @@ export type DevState = {
   bookingsSeed: BookingsSeed;
   activeBooking: ActiveBookingStage;
   profileState: ProfileState;
+  tippingPreference: TippingPreference;
+  tippingCustomValue: number;
+  notificationsProfile: NotificationsProfile;
 };
 
 const DEFAULTS: DevState = {
@@ -76,6 +85,9 @@ const DEFAULTS: DevState = {
   bookingsSeed: "many",
   activeBooking: "enroute",
   profileState: "complete",
+  tippingPreference: "20",
+  tippingCustomValue: 22,
+  notificationsProfile: "all-on",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
