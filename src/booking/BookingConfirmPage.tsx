@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import {
   ChevronLeft,
@@ -9,51 +9,8 @@ import {
   CreditCard,
   Star,
 } from "lucide-react";
-import { MOCK_PROS, type Pro } from "@/data/mock-pros";
-import {
-  useDevState,
-  type BookingConfirmState,
-} from "@/dev-state/devState";
-
-/* ------------------------------------------------------------------ */
-/*  Session helpers (reuse same storage keys as profile subscreens)     */
-/* ------------------------------------------------------------------ */
-
-type Address = {
-  id: string;
-  label: string;
-  street: string;
-  apt: string;
-  city: string;
-  state: string;
-  zip: string;
-  isDefault: boolean;
-};
-
-type PaymentCard = {
-  id: string;
-  brand: string;
-  last4: string;
-  expMonth: number;
-  expYear: number;
-  isDefault: boolean;
-};
-
-function readAddresses(): Address[] {
-  try {
-    const raw = sessionStorage.getItem("ewa.profile.addresses");
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
-}
-
-function readCards(): PaymentCard[] {
-  try {
-    const raw = sessionStorage.getItem("ewa.profile.paymentMethods");
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
-}
+import { MOCK_PROS } from "@/data/mock-pros";
+import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -63,75 +20,55 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   const pro = MOCK_PROS.find((p) => p.id === proId);
   const router = useRouter();
   const navigate = useNavigate();
-  const { state: devState } = useDevState();
-  const confirmState = devState.bookingConfirmState;
+  const {
+    profile,
+    addAddress,
+    addCard,
+  } = useCustomerProfile();
+
+  const addresses = profile.savedAddresses;
+  const cards = profile.paymentMethods;
 
   // Selected service index — pre-select from serviceId query param if provided
   const initialServiceIdx = serviceId && pro
     ? Math.max(0, pro.services.findIndex((s) => s.name === serviceId))
     : 0;
   const [selectedServiceIdx, setSelectedServiceIdx] = useState(initialServiceIdx);
-  // Selected address id
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-  // Selected card id
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  // Selected address id — default to the default address
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(() => {
+    const def = addresses.find((a) => a.isDefault) ?? addresses[0];
+    return def?.id ?? null;
+  });
+  // Selected card id — default to the default card
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(() => {
+    const def = cards.find((c) => c.isDefault) ?? cards[0];
+    return def?.id ?? null;
+  });
   // Sheets
   const [showWhenSheet, setShowWhenSheet] = useState(false);
   const [showServiceSheet, setShowServiceSheet] = useState(false);
   const [showAddressSheet, setShowAddressSheet] = useState(false);
   const [showCardSheet, setShowCardSheet] = useState(false);
   const [showScheduledStub, setShowScheduledStub] = useState(false);
+  const [showAddAddressForm, setShowAddAddressForm] = useState(false);
+  const [showAddCardForm, setShowAddCardForm] = useState(false);
   // Loading
   const [confirming, setConfirming] = useState(false);
 
-  // Resolve addresses & cards based on devState
-  const addresses = useMemo(() => {
-    if (confirmState === "missing-address") return [];
-    const stored = readAddresses();
-    if (stored.length > 0) return stored;
-    // Provide mock defaults from customer profile
-    if (devState.profileState === "new") return [];
-    return [
-      {
-        id: "mock-home",
-        label: "Home",
-        street: "456 Halsey St",
-        apt: "",
-        city: "Brooklyn",
-        state: "NY",
-        zip: "11233",
-        isDefault: true,
-      },
-    ];
-  }, [confirmState, devState.profileState]);
+  // Auto-select newly added address/card if none selected
+  const selectedAddress = useMemo(() => {
+    const found = addresses.find((a) => a.id === selectedAddressId);
+    if (found) return found;
+    const def = addresses.find((a) => a.isDefault) ?? addresses[0];
+    return def ?? null;
+  }, [addresses, selectedAddressId]);
 
-  const cards = useMemo(() => {
-    if (confirmState === "missing-payment") return [];
-    const stored = readCards();
-    if (stored.length > 0) return stored;
-    if (devState.profileState === "new") return [];
-    return [
-      {
-        id: "mock-visa",
-        brand: "visa",
-        last4: "4421",
-        expMonth: 12,
-        expYear: 2027,
-        isDefault: true,
-      },
-    ];
-  }, [confirmState, devState.profileState]);
-
-  // Auto-select defaults
-  useEffect(() => {
-    const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
-    setSelectedAddressId(defaultAddr?.id ?? null);
-  }, [addresses]);
-
-  useEffect(() => {
-    const defaultCard = cards.find((c) => c.isDefault) ?? cards[0];
-    setSelectedCardId(defaultCard?.id ?? null);
-  }, [cards]);
+  const selectedCard = useMemo(() => {
+    const found = cards.find((c) => c.id === selectedCardId);
+    if (found) return found;
+    const def = cards.find((c) => c.isDefault) ?? cards[0];
+    return def ?? null;
+  }, [cards, selectedCardId]);
 
   if (!pro) {
     return (
@@ -149,24 +86,13 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   }
 
   const selectedService = pro.services[selectedServiceIdx] ?? pro.services[0];
-  const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-  const selectedCard = cards.find((c) => c.id === selectedCardId);
 
-  // Tipping logic
-  const tipPref =
-    confirmState === "always-ask-tip"
-      ? "ask"
-      : confirmState === "custom-tip"
-        ? "custom"
-        : devState.tippingPreference;
-  const tipCustomVal =
-    confirmState === "custom-tip" ? 22 : devState.tippingCustomValue;
+  // Tipping logic — read from shared store
+  const tipPref = profile.tippingPreference;
   const tipPct =
-    tipPref === "ask"
+    tipPref.type === "ask"
       ? null
-      : tipPref === "custom"
-        ? tipCustomVal
-        : parseInt(tipPref, 10);
+      : tipPref.value ?? 20;
 
   const servicePrice = selectedService?.priceFrom ?? 0;
   const tipAmount = tipPct != null ? (servicePrice * tipPct) / 100 : null;
@@ -228,11 +154,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
                 {pro.specializations[0]} · {pro.neighborhood}
               </p>
               <div className="mt-0.5 flex items-center gap-1 text-[13px] text-on-card-muted">
-                <Star
-                  size={12}
-                  className="text-bagel"
-                  fill="currentColor"
-                />
+                <Star size={12} className="text-bagel" fill="currentColor" />
                 <span className="tabular font-medium text-card-foreground">
                   {pro.rating.toFixed(2)}
                 </span>
@@ -244,7 +166,6 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
 
         {/* Booking details card */}
         <div className="mt-3 rounded-2xl bg-card">
-          {/* When */}
           <DetailRow
             icon={<Clock size={18} />}
             label="When"
@@ -252,7 +173,6 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
             onTap={() => setShowWhenSheet(true)}
           />
           <Divider />
-          {/* What */}
           <DetailRow
             icon={<Scissors size={18} />}
             label="Service"
@@ -265,7 +185,6 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
             onTap={() => setShowServiceSheet(true)}
           />
           <Divider />
-          {/* Where */}
           <DetailRow
             icon={<MapPin size={18} />}
             label="Address"
@@ -301,9 +220,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         <div className="mt-3 rounded-2xl bg-card p-4">
           <div className="flex items-center justify-between text-[15px] text-card-foreground">
             <span>Service</span>
-            <span className="tabular font-medium">
-              ${servicePrice.toFixed(2)}
-            </span>
+            <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[15px]">
             {tipPct != null ? (
@@ -326,15 +243,10 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
           </div>
           <div
             className="my-3"
-            style={{
-              height: 1,
-              backgroundColor: "var(--hairline)",
-            }}
+            style={{ height: 1, backgroundColor: "var(--hairline)" }}
           />
           <div className="flex items-center justify-between">
-            <span className="text-[17px] font-semibold text-card-foreground">
-              Total
-            </span>
+            <span className="text-[17px] font-semibold text-card-foreground">Total</span>
             <span className="tabular text-[17px] font-semibold text-card-foreground">
               ${total.toFixed(2)}
             </span>
@@ -347,9 +259,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
       </div>
 
       {/* Sticky confirm button */}
-      <div
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-cream px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3 dark:bg-midnight"
-      >
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-cream px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3 dark:bg-midnight">
         <button
           type="button"
           disabled={!canConfirm}
@@ -366,14 +276,9 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
 
       {/* ── Sheets ────────────────────────────────── */}
 
-      {/* When sheet */}
       {showWhenSheet && (
         <Sheet title="When" onClose={() => setShowWhenSheet(false)}>
-          <SheetOption
-            label="Now — earliest available"
-            selected
-            onTap={() => setShowWhenSheet(false)}
-          />
+          <SheetOption label="Now — earliest available" selected onTap={() => setShowWhenSheet(false)} />
           <SheetOption
             label="Schedule for later"
             selected={false}
@@ -385,12 +290,8 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         </Sheet>
       )}
 
-      {/* Scheduled stub sheet */}
       {showScheduledStub && (
-        <Sheet
-          title="Schedule for later"
-          onClose={() => setShowScheduledStub(false)}
-        >
+        <Sheet title="Schedule for later" onClose={() => setShowScheduledStub(false)}>
           <div className="px-4 py-8 text-center">
             <p className="text-[17px] font-semibold text-card-foreground">
               Scheduled bookings — coming soon
@@ -403,7 +304,6 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         </Sheet>
       )}
 
-      {/* Service sheet */}
       {showServiceSheet && (
         <Sheet title="Choose a service" onClose={() => setShowServiceSheet(false)}>
           {pro.services.map((s, i) => (
@@ -421,18 +321,15 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         </Sheet>
       )}
 
-      {/* Address sheet */}
-      {showAddressSheet && (
-        <Sheet
-          title="Choose an address"
-          onClose={() => setShowAddressSheet(false)}
-        >
+      {/* Address picker sheet */}
+      {showAddressSheet && !showAddAddressForm && (
+        <Sheet title="Choose an address" onClose={() => setShowAddressSheet(false)}>
           {addresses.map((a) => (
             <SheetOption
               key={a.id}
               label={a.label || a.street}
               detail={`${a.city}, ${a.state} ${a.zip}`}
-              selected={a.id === selectedAddressId}
+              selected={a.id === (selectedAddress?.id ?? null)}
               onTap={() => {
                 setSelectedAddressId(a.id);
                 setShowAddressSheet(false);
@@ -443,7 +340,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
             type="button"
             onClick={() => {
               setShowAddressSheet(false);
-              navigate({ to: "/profile/addresses" });
+              setShowAddAddressForm(true);
             }}
             className="w-full px-4 py-3 text-left text-[15px] font-medium text-bagel"
           >
@@ -452,18 +349,27 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         </Sheet>
       )}
 
-      {/* Card sheet */}
-      {showCardSheet && (
-        <Sheet
-          title="Choose a card"
-          onClose={() => setShowCardSheet(false)}
-        >
+      {/* Inline add address form */}
+      {showAddAddressForm && (
+        <InlineAddressForm
+          onSave={(addr) => {
+            addAddress(addr);
+            setSelectedAddressId(addr.id);
+            setShowAddAddressForm(false);
+          }}
+          onCancel={() => setShowAddAddressForm(false)}
+        />
+      )}
+
+      {/* Card picker sheet */}
+      {showCardSheet && !showAddCardForm && (
+        <Sheet title="Choose a card" onClose={() => setShowCardSheet(false)}>
           {cards.map((c) => (
             <SheetOption
               key={c.id}
               label={`${brandLabel(c.brand)} · ${c.last4}`}
               detail={`Exp ${String(c.expMonth).padStart(2, "0")}/${c.expYear}`}
-              selected={c.id === selectedCardId}
+              selected={c.id === (selectedCard?.id ?? null)}
               onTap={() => {
                 setSelectedCardId(c.id);
                 setShowCardSheet(false);
@@ -474,7 +380,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
             type="button"
             onClick={() => {
               setShowCardSheet(false);
-              navigate({ to: "/profile/payment-methods" });
+              setShowAddCardForm(true);
             }}
             className="w-full px-4 py-3 text-left text-[15px] font-medium text-bagel"
           >
@@ -482,6 +388,181 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
           </button>
         </Sheet>
       )}
+
+      {/* Inline add card form */}
+      {showAddCardForm && (
+        <InlineAddCardForm
+          onSave={(card) => {
+            addCard(card);
+            setSelectedCardId(card.id);
+            setShowAddCardForm(false);
+          }}
+          onCancel={() => setShowAddCardForm(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Inline Add Address Form (within booking flow)                      */
+/* ------------------------------------------------------------------ */
+
+function InlineAddressForm({
+  onSave,
+  onCancel,
+}: {
+  onSave: (a: Address) => void;
+  onCancel: () => void;
+}) {
+  const [label, setLabel] = useState("");
+  const [street, setStreet] = useState("");
+  const [apt, setApt] = useState("");
+  const [city, setCity] = useState("Brooklyn");
+  const [st, setSt] = useState("NY");
+  const [zip, setZip] = useState("");
+
+  const valid = label.trim() && street.trim() && city.trim() && st.trim() && zip.trim();
+
+  return (
+    <div className="fixed inset-0 z-[9997] flex flex-col bg-background">
+      <div className="flex h-12 shrink-0 items-center justify-between px-4">
+        <button onClick={onCancel} className="text-[15px] font-medium text-foreground">Cancel</button>
+        <span className="text-[17px] font-semibold text-foreground">Add address</span>
+        <button
+          onClick={() => {
+            if (!valid) return;
+            onSave({
+              id: genId("addr"),
+              label: label.trim(),
+              street: street.trim(),
+              apt: apt.trim(),
+              city: city.trim(),
+              state: st.trim(),
+              zip: zip.trim(),
+              isDefault: false,
+            });
+          }}
+          disabled={!valid}
+          className="text-[15px] font-semibold text-bagel disabled:opacity-40"
+        >
+          Save
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto px-5 pb-8 pt-4">
+        <div className="flex flex-col gap-4">
+          <MiniInput label="Label" value={label} onChange={setLabel} placeholder="Home, Work" />
+          <MiniInput label="Street" value={street} onChange={setStreet} />
+          <MiniInput label="Apt/Suite" value={apt} onChange={setApt} />
+          <MiniInput label="City" value={city} onChange={setCity} />
+          <div className="flex gap-3">
+            <MiniInput label="State" value={st} onChange={setSt} />
+            <MiniInput label="ZIP" value={zip} onChange={setZip} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Inline Add Card Form (within booking flow)                         */
+/* ------------------------------------------------------------------ */
+
+function InlineAddCardForm({
+  onSave,
+  onCancel,
+}: {
+  onSave: (c: PaymentCard) => void;
+  onCancel: () => void;
+}) {
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+
+  function detectBrand(num: string): "visa" | "mastercard" | "amex" | "discover" {
+    const d = num.replace(/\s/g, "");
+    if (d.startsWith("4")) return "visa";
+    if (d.startsWith("5") || d.startsWith("2")) return "mastercard";
+    if (d.startsWith("3")) return "amex";
+    if (d.startsWith("6")) return "discover";
+    return "visa";
+  }
+
+  const digits = cardNumber.replace(/\D/g, "");
+  const expDigits = expiry.replace(/\D/g, "");
+  const valid = digits.length >= 15 && expDigits.length === 4 && cvc.length >= 3;
+
+  return (
+    <div className="fixed inset-0 z-[9997] flex flex-col bg-background">
+      <div className="flex h-12 shrink-0 items-center justify-between px-4">
+        <button onClick={onCancel} className="text-[15px] font-medium text-foreground">Cancel</button>
+        <span className="text-[17px] font-semibold text-foreground">Add card</span>
+        <button
+          onClick={() => {
+            if (!valid) return;
+            const month = parseInt(expDigits.slice(0, 2), 10);
+            const year = 2000 + parseInt(expDigits.slice(2), 10);
+            onSave({
+              id: genId("card"),
+              brand: detectBrand(digits),
+              last4: digits.slice(-4),
+              expMonth: month,
+              expYear: year,
+              isDefault: false,
+            });
+          }}
+          disabled={!valid}
+          className="text-[15px] font-semibold text-bagel disabled:opacity-40"
+        >
+          Save
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto px-5 pb-8 pt-4">
+        <div className="flex flex-col gap-4">
+          <MiniInput
+            label="Card number"
+            value={cardNumber}
+            onChange={(v) => setCardNumber(v.replace(/\D/g, "").slice(0, 16))}
+          />
+          <div className="flex gap-3">
+            <MiniInput
+              label="MM/YY"
+              value={expiry}
+              onChange={(v) => setExpiry(v.replace(/\D/g, "").slice(0, 4))}
+            />
+            <MiniInput
+              label="CVC"
+              value={cvc}
+              onChange={(v) => setCvc(v.replace(/\D/g, "").slice(0, 4))}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-[12px] font-medium text-muted-foreground">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="rounded-xl border border-hairline bg-card px-3 py-2.5 text-[15px] font-medium text-card-foreground outline-none placeholder:text-on-card-muted/50 focus:border-bagel"
+      />
     </div>
   );
 }
@@ -587,9 +668,7 @@ function SheetOption({
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-medium text-card-foreground">{label}</p>
         {detail && (
-          <p className="mt-0.5 text-[13px] tabular text-on-card-muted">
-            {detail}
-          </p>
+          <p className="mt-0.5 text-[13px] tabular text-on-card-muted">{detail}</p>
         )}
       </div>
       {selected && (
@@ -625,15 +704,10 @@ function initialsOf(name: string): string {
 
 function brandLabel(brand: string): string {
   switch (brand.toLowerCase()) {
-    case "visa":
-      return "Visa";
-    case "mastercard":
-      return "Mastercard";
-    case "amex":
-      return "Amex";
-    case "discover":
-      return "Discover";
-    default:
-      return brand;
+    case "visa": return "Visa";
+    case "mastercard": return "Mastercard";
+    case "amex": return "Amex";
+    case "discover": return "Discover";
+    default: return brand;
   }
 }
