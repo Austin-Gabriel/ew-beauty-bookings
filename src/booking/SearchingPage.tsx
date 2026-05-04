@@ -7,6 +7,7 @@ import { useNavigate, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Check, X, Clock } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useDevState } from "@/dev-state/devState";
+import { useBookings } from "@/data/bookings-store";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
