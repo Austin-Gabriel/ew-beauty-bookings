@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Camera,
@@ -14,6 +15,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useDevState, type ProfileState, type TippingPreference } from "@/dev-state/devState";
+import { AvatarActionSheet } from "./AvatarActionSheet";
+
+const MOCK_PHOTO_URL =
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face";
 
 function tippingLabel(pref: TippingPreference, customVal: number): string {
   if (pref === "ask") return "Ask each time";
@@ -37,6 +42,41 @@ function profileData(ps: ProfileState) {
     addressCount: ps === "new" ? 0 : ps === "partial" ? 1 : 2,
     showExpiringPill: ps === "complete",
   };
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 0) return "??";
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
+  return (first + last).toUpperCase();
+}
+
+/* ------------------------------------------------------------------ */
+/*  Read saved profile edits from sessionStorage                        */
+/* ------------------------------------------------------------------ */
+
+function useSavedEdits() {
+  const [edits, setEdits] = useState<{ name: string; email: string; phone: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("ewa.profile.edits");
+      if (raw) setEdits(JSON.parse(raw));
+    } catch {}
+
+    // Re-read when navigating back
+    const handler = () => {
+      try {
+        const raw = sessionStorage.getItem("ewa.profile.edits");
+        if (raw) setEdits(JSON.parse(raw));
+      } catch {}
+    };
+    window.addEventListener("focus", handler);
+    return () => window.removeEventListener("focus", handler);
+  }, []);
+
+  return edits;
 }
 
 /* ------------------------------------------------------------------ */
@@ -64,7 +104,6 @@ function SettingsRow({
         to={to}
         className="flex items-center gap-3 px-4 py-3 transition-colors active:bg-muted/30"
       >
-        {/* Icon tile — light surface, so use card-foreground */}
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-cream-elevated/60">
           <Icon size={17} className="text-card-foreground" />
         </span>
@@ -122,62 +161,98 @@ function SectionCard({
 /* ------------------------------------------------------------------ */
 
 export function ProfilePage() {
-  const { state } = useDevState();
+  const { state, set } = useDevState();
   const data = profileData(state.profileState);
+  const savedEdits = useSavedEdits();
+  const [showAvatarSheet, setShowAvatarSheet] = useState(false);
+
+  const hasPhoto = state.avatarState === "photo";
+
+  // Derive display values
+  const displayName = savedEdits?.name ?? "Imani Okafor";
+  const displayEmail = savedEdits?.email ?? "imani@example.com";
+  const displayPhone = savedEdits?.phone ?? "5551234";
+  const maskedPhone = displayPhone.length >= 4 ? `••• ${displayPhone.slice(-4)}` : "";
+  const initials = getInitials(displayName);
+
+  function handleTakePhoto() {
+    set("avatarState", "photo");
+    setShowAvatarSheet(false);
+  }
+
+  function handleChooseFromLibrary() {
+    set("avatarState", "photo");
+    setShowAvatarSheet(false);
+  }
+
+  function handleRemovePhoto() {
+    set("avatarState", "monogram");
+    setShowAvatarSheet(false);
+  }
 
   return (
     <div className="flex flex-col gap-6 px-5 pb-8 pt-12">
       {/* ----- Identity header ----- */}
-      <Link
-        to="/profile/edit"
-        className="flex flex-col items-center gap-2.5 active:opacity-80"
-      >
-        {/* Avatar */}
+      <div className="flex flex-col items-center gap-2.5">
+        {/* Avatar — tap camera badge for action sheet */}
         <div className="relative inline-flex">
-          <div className="grid h-[104px] w-[104px] place-items-center rounded-full bg-cream-elevated">
-            <span
-              className="text-midnight"
-              style={{
-                fontSize: 34,
-                fontWeight: 600,
-                letterSpacing: "-0.02em",
-                lineHeight: 1,
-              }}
-            >
-              IO
-            </span>
-          </div>
-          {/* Camera badge — overlaps bottom-right edge of avatar */}
-          <span
+          {hasPhoto ? (
+            <img
+              src={MOCK_PHOTO_URL}
+              alt={displayName}
+              className="h-[104px] w-[104px] rounded-full object-cover"
+            />
+          ) : (
+            <div className="grid h-[104px] w-[104px] place-items-center rounded-full bg-cream-elevated">
+              <span
+                className="text-midnight"
+                style={{
+                  fontSize: 34,
+                  fontWeight: 600,
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                }}
+              >
+                {initials}
+              </span>
+            </div>
+          )}
+          {/* Camera badge */}
+          <button
+            onClick={() => setShowAvatarSheet(true)}
             className="absolute grid h-8 w-8 place-items-center rounded-full bg-midnight"
             style={{
               bottom: 2,
               right: 2,
               boxShadow: "0 0 0 2.5px var(--cream-elevated)",
             }}
+            aria-label="Change avatar"
           >
             <Camera size={14} className="text-cream" />
-          </span>
+          </button>
         </div>
 
-        {/* Name + pencil */}
-        <div className="flex items-center gap-1.5">
+        {/* Name + pencil — link to edit */}
+        <Link
+          to="/profile/edit"
+          className="flex items-center gap-1.5 active:opacity-80"
+        >
           <span className="text-[22px] font-semibold text-foreground">
-            Imani Okafor
+            {displayName}
           </span>
           <Pencil
             size={15}
             className="text-foreground"
             style={{ opacity: 0.4 }}
           />
-        </div>
+        </Link>
 
         {/* Email + phone */}
         <p className="tabular text-[13.5px] text-muted-foreground">
-          imani@example.com
-          {data.showPhone && " · ••• 1234"}
+          {displayEmail}
+          {data.showPhone && maskedPhone && ` · ${maskedPhone}`}
         </p>
-      </Link>
+      </div>
 
       {/* ----- PERSONAL ----- */}
       <SectionCard eyebrow="Personal">
@@ -253,6 +328,17 @@ export function ProfilePage() {
       >
         Sign out
       </button>
+
+      {/* Avatar action sheet */}
+      {showAvatarSheet && (
+        <AvatarActionSheet
+          hasPhoto={hasPhoto}
+          onTakePhoto={handleTakePhoto}
+          onChooseFromLibrary={handleChooseFromLibrary}
+          onRemovePhoto={handleRemovePhoto}
+          onDismiss={() => setShowAvatarSheet(false)}
+        />
+      )}
     </div>
   );
 }
