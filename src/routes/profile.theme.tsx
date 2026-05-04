@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ThemePage } from "@/profile/ThemePage";
 
 export const Route = createFileRoute("/profile/theme")({
-  component: () => <div className="p-5 text-foreground">Theme — coming soon</div>,
+  component: ThemePage,
 });
