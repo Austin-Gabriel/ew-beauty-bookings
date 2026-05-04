@@ -59,15 +59,18 @@ function readCards(): PaymentCard[] {
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export function BookingConfirmPage({ proId }: { proId: string }) {
+export function BookingConfirmPage({ proId, serviceId }: { proId: string; serviceId?: string }) {
   const pro = MOCK_PROS.find((p) => p.id === proId);
   const router = useRouter();
   const navigate = useNavigate();
   const { state: devState } = useDevState();
   const confirmState = devState.bookingConfirmState;
 
-  // Selected service index
-  const [selectedServiceIdx, setSelectedServiceIdx] = useState(0);
+  // Selected service index — pre-select from serviceId query param if provided
+  const initialServiceIdx = serviceId && pro
+    ? Math.max(0, pro.services.findIndex((s) => s.id === serviceId))
+    : 0;
+  const [selectedServiceIdx, setSelectedServiceIdx] = useState(initialServiceIdx);
   // Selected address id
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   // Selected card id

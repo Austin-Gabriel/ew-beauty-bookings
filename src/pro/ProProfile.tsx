@@ -273,13 +273,13 @@ export function ProProfile({ proId }: { proId: string }) {
         }}
       >
         {/* Services */}
-        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => toast("Full services list coming soon")} />
+        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })} />
         <ul className="flex flex-col gap-2">
           {pro.services.slice(0, 3).map((s, i) => (
             <li key={i}>
               <button
                 type="button"
-                onClick={() => toast(`Book "${s.name}" — coming soon`)}
+                onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id }, search: { service: s.id } })}
                 className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors"
                 style={{
                   backgroundColor: "var(--card)",
