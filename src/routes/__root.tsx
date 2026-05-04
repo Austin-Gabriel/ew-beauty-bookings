@@ -4,6 +4,8 @@ import appCss from "../styles.css?url";
 import { DevStateProvider } from "../dev-state/devState";
 import { DevStateToggle } from "../dev-state/DevStateToggle";
 import { Toaster } from "../components/ui/sonner";
+import { CustomerProfileProvider } from "../data/customer-store";
+import { DevCustomerSync } from "../dev-state/DevCustomerSync";
 
 function NotFoundComponent() {
   return (
