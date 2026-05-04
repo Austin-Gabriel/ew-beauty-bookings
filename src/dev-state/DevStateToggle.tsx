@@ -10,6 +10,8 @@ import {
   type BookingsSeed,
   type ActiveBookingStage,
   type ProfileState,
+  type TippingPreference,
+  type NotificationsProfile,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
