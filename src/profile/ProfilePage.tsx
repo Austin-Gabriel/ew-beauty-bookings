@@ -13,7 +13,19 @@ import {
   Shield,
   ChevronRight,
 } from "lucide-react";
-import { useDevState, type ProfileState } from "@/dev-state/devState";
+import { useDevState, type ProfileState, type TippingPreference } from "@/dev-state/devState";
+
+function tippingLabel(pref: TippingPreference, customVal: number): string {
+  if (pref === "ask") return "Ask each time";
+  if (pref === "custom") return `Default ${customVal}%`;
+  return `Default ${pref}%`;
+}
+
+function themeModeLabel(mode: string): string {
+  if (mode === "system") return "System";
+  if (mode === "light") return "Light";
+  return "Dark";
+}
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
