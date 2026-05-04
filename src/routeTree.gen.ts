@@ -36,6 +36,8 @@ import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
+import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
+import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -172,6 +174,17 @@ const FavoritesSharedShareIdRoute = FavoritesSharedShareIdRouteImport.update({
   path: '/shared/$shareId',
   getParentRoute: () => FavoritesRoute,
 } as any)
+const BookingSearchingBookingIdRoute =
+  BookingSearchingBookingIdRouteImport.update({
+    id: '/booking/searching/$bookingId',
+    path: '/booking/searching/$bookingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BookingConfirmProIdRoute = BookingConfirmProIdRouteImport.update({
+  id: '/booking/confirm/$proId',
+  path: '/booking/confirm/$proId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,6 +213,8 @@ export interface FileRoutesByFullPath {
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
+  '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesByTo {
@@ -227,6 +242,8 @@ export interface FileRoutesByTo {
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
+  '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
+  '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesById {
@@ -257,6 +274,8 @@ export interface FileRoutesById {
   '/see-all/$category': typeof SeeAllCategoryRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
+  '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRouteTypes {
@@ -288,6 +307,8 @@ export interface FileRouteTypes {
     | '/see-all/$category'
     | '/favorites/'
     | '/profile/'
+    | '/booking/confirm/$proId'
+    | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -315,6 +336,8 @@ export interface FileRouteTypes {
     | '/see-all/$category'
     | '/favorites'
     | '/profile'
+    | '/booking/confirm/$proId'
+    | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   id:
     | '__root__'
@@ -344,6 +367,8 @@ export interface FileRouteTypes {
     | '/see-all/$category'
     | '/favorites/'
     | '/profile/'
+    | '/booking/confirm/$proId'
+    | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
 }
@@ -362,6 +387,8 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   ProProIdRoute: typeof ProProIdRoute
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
+  BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
+  BookingSearchingBookingIdRoute: typeof BookingSearchingBookingIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -555,6 +582,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesSharedShareIdRouteImport
       parentRoute: typeof FavoritesRoute
     }
+    '/booking/searching/$bookingId': {
+      id: '/booking/searching/$bookingId'
+      path: '/booking/searching/$bookingId'
+      fullPath: '/booking/searching/$bookingId'
+      preLoaderRoute: typeof BookingSearchingBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/confirm/$proId': {
+      id: '/booking/confirm/$proId'
+      path: '/booking/confirm/$proId'
+      fullPath: '/booking/confirm/$proId'
+      preLoaderRoute: typeof BookingConfirmProIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -618,6 +659,8 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   ProProIdRoute: ProProIdRoute,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
+  BookingConfirmProIdRoute: BookingConfirmProIdRoute,
+  BookingSearchingBookingIdRoute: BookingSearchingBookingIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

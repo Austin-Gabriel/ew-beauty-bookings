@@ -66,6 +66,14 @@ export type AvatarState = "monogram" | "photo";
 /** Edit profile state — drives form values + save button. */
 export type EditProfileState = "default" | "edited";
 
+/** Booking confirm state — drives /booking/confirm/:proId variations. */
+export type BookingConfirmState =
+  | "default"
+  | "missing-payment"
+  | "missing-address"
+  | "always-ask-tip"
+  | "custom-tip";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -81,6 +89,7 @@ export type DevState = {
   notificationsProfile: NotificationsProfile;
   avatarState: AvatarState;
   editProfileState: EditProfileState;
+  bookingConfirmState: BookingConfirmState;
 };
 
 const DEFAULTS: DevState = {
@@ -98,6 +107,7 @@ const DEFAULTS: DevState = {
   notificationsProfile: "all-on",
   avatarState: "monogram",
   editProfileState: "default",
+  bookingConfirmState: "default",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";

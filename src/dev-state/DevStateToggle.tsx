@@ -14,6 +14,7 @@ import {
   type NotificationsProfile,
   type AvatarState,
   type EditProfileState,
+  type BookingConfirmState,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
@@ -360,6 +361,28 @@ export function DevStateToggle() {
                     { value: "edited", label: "Edited" },
                   ]}
                   onChange={(v) => set("editProfileState", v)}
+                />
+              </Field>
+
+              <div
+                className="my-2 border-t"
+                style={{ borderColor: "rgba(127,127,127,0.2)" }}
+              />
+              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                Booking
+              </p>
+
+              <Field label="Booking confirm state" hint="Drives /booking/confirm variations">
+                <Stacked<BookingConfirmState>
+                  value={state.bookingConfirmState}
+                  options={[
+                    { value: "default", label: "Default (all pre-filled)" },
+                    { value: "missing-payment", label: "Missing payment" },
+                    { value: "missing-address", label: "Missing address" },
+                    { value: "always-ask-tip", label: "Always-ask tip" },
+                    { value: "custom-tip", label: "Custom tip 22%" },
+                  ]}
+                  onChange={(v) => set("bookingConfirmState", v)}
                 />
               </Field>
             </div>

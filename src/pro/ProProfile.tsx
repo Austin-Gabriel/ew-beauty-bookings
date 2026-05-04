@@ -440,7 +440,7 @@ export function ProProfile({ proId }: { proId: string }) {
           </div>
           <button
             type="button"
-            onClick={() => toast("Booking flow coming soon")}
+            onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
             className="inline-flex items-center gap-1.5 rounded-xl transition-transform active:scale-95"
             style={{
               padding: "12px 22px",
