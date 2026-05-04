@@ -116,6 +116,7 @@ const DEFAULTS: DevState = {
   avatarState: "monogram",
   editProfileState: "default",
   bookingConfirmState: "default",
+  searchingStage: "searching",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
