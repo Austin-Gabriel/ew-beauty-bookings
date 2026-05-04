@@ -119,6 +119,7 @@ export function SearchingPage({
             initials={pro ? initialsOf(pro.name) : "??"}
             rating={pro?.rating ?? 4.9}
             eta={mockEta()}
+            pin={booking?.pin}
             onViewBooking={handleViewBooking}
           />
         )}
@@ -218,6 +219,7 @@ function MatchedState({
   initials,
   rating,
   eta,
+  pin,
   onViewBooking,
 }: {
   proName: string;
@@ -226,6 +228,7 @@ function MatchedState({
   initials: string;
   rating: number;
   eta: string;
+  pin?: string;
   onViewBooking: () => void;
 }) {
   /* Entry animation */
