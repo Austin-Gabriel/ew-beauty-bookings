@@ -870,7 +870,9 @@ function VerifiedTick() {
 
 function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: string } {
   switch (status) {
-    case "pending":
+    case "searching":
+      return { text: "Searching", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+    case "pending_pro_approval":
       return { text: "Pending", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
     case "confirmed":
       return { text: "Confirmed", bg: "rgba(22,163,74,0.14)", fg: SUCCESS };
@@ -888,6 +890,8 @@ function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: s
       return { text: "Cancelled", bg: "rgba(220,38,38,0.14)", fg: DANGER };
     case "declined":
       return { text: "Declined", bg: "rgba(220,38,38,0.14)", fg: DANGER };
+    default:
+      return { text: String(status), bg: "rgba(11,18,32,0.06)", fg: INK_500 };
   }
 }
 
