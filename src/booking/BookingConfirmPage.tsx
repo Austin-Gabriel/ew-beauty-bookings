@@ -68,7 +68,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
 
   // Selected service index — pre-select from serviceId query param if provided
   const initialServiceIdx = serviceId && pro
-    ? Math.max(0, pro.services.findIndex((s) => s.id === serviceId))
+    ? Math.max(0, pro.services.findIndex((s) => s.name === serviceId))
     : 0;
   const [selectedServiceIdx, setSelectedServiceIdx] = useState(initialServiceIdx);
   // Selected address id

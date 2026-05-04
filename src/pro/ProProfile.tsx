@@ -279,7 +279,7 @@ export function ProProfile({ proId }: { proId: string }) {
             <li key={i}>
               <button
                 type="button"
-                onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id }, search: { service: s.id } })}
+                onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id }, search: { service: s.name } })}
                 className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors"
                 style={{
                   backgroundColor: "var(--card)",
