@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { TippingPage } from "@/profile/TippingPage";
 
 export const Route = createFileRoute("/profile/tipping")({
-  component: () => <div className="p-5 text-foreground">Tipping preferences — coming soon</div>,
+  component: TippingPage,
 });
