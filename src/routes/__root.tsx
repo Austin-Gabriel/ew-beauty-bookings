@@ -97,9 +97,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <DevStateProvider>
-      <Outlet />
-      <DevStateToggle />
-      <Toaster />
+      <CustomerProfileProvider>
+        <DevCustomerSync />
+        <Outlet />
+        <DevStateToggle />
+        <Toaster />
+      </CustomerProfileProvider>
     </DevStateProvider>
   );
 }
