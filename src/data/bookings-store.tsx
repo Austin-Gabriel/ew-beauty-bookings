@@ -72,6 +72,8 @@ export type Booking = {
   addressId?: string;
   /** Payment method id from customer store. */
   paymentMethodId?: string;
+  /** Customer notes for the pro. */
+  notes?: string;
   /** Creation timestamp, unix ms. */
   createdAt: number;
 };
@@ -183,6 +185,7 @@ export type CreateBookingInput = {
   addressId?: string;
   paymentMethodId?: string;
   when?: number;
+  notes?: string;
 };
 
 type BookingsCtx = {
@@ -232,6 +235,7 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       tipAmount: input.tipAmount,
       addressId: input.addressId,
       paymentMethodId: input.paymentMethodId,
+      notes: input.notes,
       createdAt: Date.now(),
     };
     setBookings((prev) => [booking, ...prev]);
@@ -243,6 +247,10 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       prev.map((b) => {
         if (b.id !== id) return b;
         const updated = { ...b, status };
+        // Generate PIN on confirmation if not already set
+        if (status === "confirmed" && !updated.pin) {
+          updated.pin = generatePin();
+        }
         // Tweak time-sensitive fields per lifecycle stage
         if (status === "getting-ready") updated.etaMinutes = 5;
         else if (status === "enroute") updated.etaMinutes = 12;

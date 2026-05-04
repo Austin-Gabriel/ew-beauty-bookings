@@ -119,6 +119,7 @@ export function SearchingPage({
             initials={pro ? initialsOf(pro.name) : "??"}
             rating={pro?.rating ?? 4.9}
             eta={mockEta()}
+            pin={booking?.pin}
             onViewBooking={handleViewBooking}
           />
         )}
@@ -218,6 +219,7 @@ function MatchedState({
   initials,
   rating,
   eta,
+  pin,
   onViewBooking,
 }: {
   proName: string;
@@ -226,6 +228,7 @@ function MatchedState({
   initials: string;
   rating: number;
   eta: string;
+  pin?: string;
   onViewBooking: () => void;
 }) {
   /* Entry animation */
@@ -266,9 +269,24 @@ function MatchedState({
       <p className="mb-1 text-[15px] text-muted-foreground">
         {proFullName} · <span className="tabular">{rating.toFixed(1)} ★</span>
       </p>
-      <p className="mb-8 text-[13px] text-muted-foreground">
+      <p className="mb-6 text-[13px] text-muted-foreground">
         Estimated arrival {eta}
       </p>
+
+      {/* PIN card */}
+      {pin && (
+        <div className="mb-8 w-full max-w-[300px] rounded-2xl bg-cream-elevated p-5 text-center dark:bg-cream-elevated">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Your PIN
+          </p>
+          <p className="mt-2 tabular text-[32px] font-semibold leading-none tracking-[0.2em] text-foreground">
+            {pin}
+          </p>
+          <p className="mt-2 text-[14px] text-muted-foreground">
+            Read this to {proName} when they arrive.
+          </p>
+        </div>
+      )}
 
       {/* CTA */}
       <button
