@@ -3,14 +3,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
-import { useDevState } from "@/dev-state/devState";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import {
-  MOCK_BOOKINGS,
+  useBookings,
   ACTIVE_STATUSES,
+  PAST_STATUSES,
   type Booking,
   type BookingStatus,
-} from "@/data/mock-bookings";
+} from "@/data/bookings-store";
 
 const ORANGE = "#FF823F";
 const SUCCESS = "#16A34A";
