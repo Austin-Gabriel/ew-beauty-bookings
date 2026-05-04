@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PaymentMethodsPage } from "@/profile/PaymentMethodsPage";
 
 export const Route = createFileRoute("/profile/payment-methods")({
-  component: () => <div className="p-5 text-foreground">Payment methods — coming soon</div>,
+  component: PaymentMethodsPage,
 });
