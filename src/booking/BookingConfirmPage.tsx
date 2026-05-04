@@ -113,7 +113,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         proId,
         service: {
           name: selectedService.name,
-          durationLabel: selectedService.duration ?? "60 min",
+          durationLabel: "60 min",
           price: selectedService.priceFrom,
         },
         location: selectedAddress
