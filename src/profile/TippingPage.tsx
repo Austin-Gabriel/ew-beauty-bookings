@@ -1,9 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Check } from "lucide-react";
-import { useDevState, type TippingPreference } from "@/dev-state/devState";
+import { useCustomerProfile, type TippingPref } from "@/data/customer-store";
+import { useDevState } from "@/dev-state/devState";
 import { useState, useEffect } from "react";
 
-const OPTIONS: { value: TippingPreference; label: string; tabular?: boolean }[] = [
+type TipOption = { value: string; label: string; tabular?: boolean };
+
+const OPTIONS: TipOption[] = [
   { value: "15", label: "15%", tabular: true },
   { value: "18", label: "18%", tabular: true },
   { value: "20", label: "20%", tabular: true },
@@ -12,28 +15,53 @@ const OPTIONS: { value: TippingPreference; label: string; tabular?: boolean }[] 
   { value: "ask", label: "Always ask each time" },
 ];
 
+function prefToKey(p: TippingPref): string {
+  if (p.type === "ask") return "ask";
+  if (p.type === "custom") return "custom";
+  return String(p.value ?? 20);
+}
+
 export function TippingPage() {
-  const { state, set } = useDevState();
   const navigate = useNavigate();
-  const [customValue, setCustomValue] = useState(state.tippingCustomValue);
+  const { profile, setTippingPreference } = useCustomerProfile();
+  const { set } = useDevState();
+  const pref = profile.tippingPreference;
+  const selectedKey = prefToKey(pref);
+  const [customValue, setCustomValue] = useState(pref.type === "custom" ? (pref.value ?? 22) : 22);
 
   useEffect(() => {
-    setCustomValue(state.tippingCustomValue);
-  }, [state.tippingCustomValue]);
+    if (pref.type === "custom" && pref.value) setCustomValue(pref.value);
+  }, [pref]);
 
-  const handleCustomChange = (val: string) => {
+  function selectOption(val: string) {
+    let newPref: TippingPref;
+    if (val === "ask") {
+      newPref = { type: "ask" };
+      set("tippingPreference", "ask");
+    } else if (val === "custom") {
+      newPref = { type: "custom", value: customValue };
+      set("tippingPreference", "custom");
+      set("tippingCustomValue", customValue);
+    } else {
+      newPref = { type: "percent", value: parseInt(val, 10) };
+      set("tippingPreference", val as any);
+    }
+    setTippingPreference(newPref);
+  }
+
+  function handleCustomChange(val: string) {
     const num = parseInt(val, 10);
     if (!isNaN(num) && num >= 1 && num <= 50) {
       setCustomValue(num);
+      setTippingPreference({ type: "custom", value: num });
       set("tippingCustomValue", num);
     } else if (val === "") {
       setCustomValue(0);
     }
-  };
+  }
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-8 pt-3">
-      {/* Top bar */}
       <div className="relative flex h-11 items-center justify-center">
         <button
           onClick={() => navigate({ to: "/profile" })}
@@ -46,17 +74,15 @@ export function TippingPage() {
         </span>
       </div>
 
-      {/* Intro */}
       <p className="px-1 text-[14px] leading-relaxed text-muted-foreground">
         Set a default tip for your bookings. You can always adjust it after a service.
       </p>
 
-      {/* Options card */}
       <div className="overflow-hidden rounded-2xl border border-hairline bg-card shadow-sm">
         {OPTIONS.map((opt, i) => (
           <div key={opt.value}>
             <button
-              onClick={() => set("tippingPreference", opt.value)}
+              onClick={() => selectOption(opt.value)}
               className="flex w-full items-center justify-between px-4 py-3.5 transition-colors active:bg-muted/30"
             >
               <span
@@ -64,13 +90,12 @@ export function TippingPage() {
               >
                 {opt.label}
               </span>
-              {state.tippingPreference === opt.value && (
+              {selectedKey === opt.value && (
                 <Check size={18} className="text-bagel" />
               )}
             </button>
 
-            {/* Custom input row */}
-            {opt.value === "custom" && state.tippingPreference === "custom" && (
+            {opt.value === "custom" && selectedKey === "custom" && (
               <>
                 <div className="ml-4 border-b border-hairline" />
                 <div className="flex items-center gap-3 px-4 py-3">

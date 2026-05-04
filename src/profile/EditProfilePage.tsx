@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
-import { useDevState } from "@/dev-state/devState";
+import { useCustomerProfile } from "@/data/customer-store";
 
 /* ------------------------------------------------------------------ */
 /*  Floating label input                                               */
@@ -69,7 +69,6 @@ function PhoneInput({
   const filled = value.length > 0;
   const lifted = focused || filled;
 
-  // Format as US phone
   function formatPhone(raw: string): string {
     const digits = raw.replace(/\D/g, "").slice(0, 10);
     if (digits.length <= 3) return digits;
@@ -77,7 +76,6 @@ function PhoneInput({
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
   }
 
-  // Mask display when not focused
   function maskedDisplay(raw: string): string {
     const digits = raw.replace(/\D/g, "");
     if (digits.length < 4) return raw;
@@ -163,7 +161,7 @@ function DiscardSheet({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section card (same pattern as ProfilePage)                          */
+/*  Section card                                                        */
 /* ------------------------------------------------------------------ */
 
 function FormCard({
@@ -191,32 +189,19 @@ function FormCard({
 
 export function EditProfilePage() {
   const navigate = useNavigate();
-  const { state, set } = useDevState();
+  const { profile, updateIdentity } = useCustomerProfile();
 
-  // Defaults from dev state
-  const isEdited = state.editProfileState === "edited";
-  const defaultName = isEdited ? "Imani O." : "Imani Okafor";
-  const defaultEmail = "imani@example.com";
-  const defaultPhone = isEdited ? "2125551234" : "5551234";
-
-  const [name, setName] = useState(defaultName);
-  const [email, setEmail] = useState(defaultEmail);
-  const [phone, setPhone] = useState(defaultPhone);
+  const [name, setName] = useState(profile.identity.name);
+  const [email, setEmail] = useState(profile.identity.email);
+  const [phone, setPhone] = useState(profile.identity.phone);
   const [saving, setSaving] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
 
-  // Track original values
-  const origRef = useRef({ name: defaultName, email: defaultEmail, phone: defaultPhone });
-
-  // Sync when dev state changes
-  useEffect(() => {
-    const n = isEdited ? "Imani O." : "Imani Okafor";
-    const p = isEdited ? "2125551234" : "5551234";
-    setName(n);
-    setEmail(defaultEmail);
-    setPhone(p);
-    origRef.current = { name: n, email: defaultEmail, phone: p };
-  }, [isEdited]);
+  const origRef = useRef({
+    name: profile.identity.name,
+    email: profile.identity.email,
+    phone: profile.identity.phone,
+  });
 
   const hasChanges =
     name !== origRef.current.name ||
@@ -234,11 +219,7 @@ export function EditProfilePage() {
   function handleSave() {
     setSaving(true);
     setTimeout(() => {
-      // Persist to dev state via sessionStorage for identity header
-      try {
-        const profileEdits = { name, email, phone };
-        sessionStorage.setItem("ewa.profile.edits", JSON.stringify(profileEdits));
-      } catch {}
+      updateIdentity({ name, email, phone });
       setSaving(false);
       navigate({ to: "/profile" });
     }, 600);
@@ -246,7 +227,6 @@ export function EditProfilePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Top bar */}
       <div className="flex h-12 shrink-0 items-center justify-between px-4">
         <button
           onClick={handleBack}
@@ -267,7 +247,6 @@ export function EditProfilePage() {
         </button>
       </div>
 
-      {/* Body */}
       <div className="flex flex-col gap-6 px-5 pb-8 pt-4">
         <FormCard eyebrow="Name">
           <FloatingInput

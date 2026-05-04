@@ -1,42 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, MapPin } from "lucide-react";
-
-/* ------------------------------------------------------------------ */
-/*  Types                                                               */
-/* ------------------------------------------------------------------ */
-
-type Address = {
-  id: string;
-  label: string;
-  street: string;
-  apt: string;
-  city: string;
-  state: string;
-  zip: string;
-  isDefault: boolean;
-};
-
-const STORAGE_KEY = "ewa.profile.addresses";
-
-function readAddresses(): Address[] {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
-}
-
-function writeAddresses(addrs: Address[]) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(addrs));
-  } catch {}
-}
-
-let _nextId = 1;
-function genId() {
-  return `addr-${Date.now()}-${_nextId++}`;
-}
+import {
+  useCustomerProfile,
+  genId,
+  type Address,
+} from "@/data/customer-store";
 
 /* ------------------------------------------------------------------ */
 /*  Confirmation sheet                                                  */
@@ -93,7 +62,7 @@ function AddressFormSheet({
   onSave,
   onCancel,
 }: {
-  address: Address | null; // null = add mode
+  address: Address | null;
   isOnlyDefault: boolean;
   onSave: (a: Address) => void;
   onCancel: () => void;
@@ -103,21 +72,21 @@ function AddressFormSheet({
   const [street, setStreet] = useState(address?.street ?? "");
   const [apt, setApt] = useState(address?.apt ?? "");
   const [city, setCity] = useState(address?.city ?? "Brooklyn");
-  const [state, setState] = useState(address?.state ?? "NY");
+  const [st, setSt] = useState(address?.state ?? "NY");
   const [zip, setZip] = useState(address?.zip ?? "");
   const [isDefault, setIsDefault] = useState(address?.isDefault ?? false);
 
-  const valid = label.trim() && street.trim() && city.trim() && state.trim() && zip.trim();
+  const valid = label.trim() && street.trim() && city.trim() && st.trim() && zip.trim();
 
   function handleSave() {
     if (!valid) return;
     onSave({
-      id: address?.id ?? genId(),
+      id: address?.id ?? genId("addr"),
       label: label.trim(),
       street: street.trim(),
       apt: apt.trim(),
       city: city.trim(),
-      state: state.trim(),
+      state: st.trim(),
       zip: zip.trim(),
       isDefault,
     });
@@ -125,7 +94,6 @@ function AddressFormSheet({
 
   return (
     <div className="fixed inset-0 z-[9997] flex flex-col bg-background">
-      {/* Top bar */}
       <div className="flex h-12 shrink-0 items-center justify-between px-4">
         <button
           onClick={onCancel}
@@ -145,15 +113,12 @@ function AddressFormSheet({
         </button>
       </div>
 
-      {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 pb-8 pt-4">
         <div className="flex flex-col gap-6">
-          {/* LABEL */}
           <FormCard eyebrow="Label">
             <FloatingInput label="Label" value={label} onChange={setLabel} placeholder="Home, Work, Mom's place" />
           </FormCard>
 
-          {/* ADDRESS */}
           <FormCard eyebrow="Address">
             <FloatingInput label="Street address" value={street} onChange={setStreet} />
             <div className="ml-4 border-b border-hairline" />
@@ -163,7 +128,7 @@ function AddressFormSheet({
             <div className="ml-4 border-b border-hairline" />
             <div className="flex">
               <div className="flex-1">
-                <FloatingInput label="State" value={state} onChange={setState} />
+                <FloatingInput label="State" value={st} onChange={setSt} />
               </div>
               <div className="w-px bg-hairline" />
               <div className="flex-1">
@@ -172,7 +137,6 @@ function AddressFormSheet({
             </div>
           </FormCard>
 
-          {/* OPTIONS — edit mode only */}
           {isEdit && (
             <FormCard eyebrow="Options">
               <div className="flex items-center justify-between px-4 py-3.5">
@@ -298,7 +262,6 @@ function AddressCard({
       onClick={onTap}
       className="w-full overflow-hidden rounded-2xl border border-hairline bg-card p-4 text-left shadow-sm transition-colors active:bg-muted/20"
     >
-      {/* Top row */}
       <div className="flex items-center justify-between">
         <span className="text-[16px] font-semibold text-card-foreground">
           {address.label}
@@ -310,14 +273,12 @@ function AddressCard({
         )}
       </div>
 
-      {/* Address lines */}
       <p className="mt-1 text-[15px] text-card-foreground">
         {address.street}
         {address.apt ? `, ${address.apt}` : ""}
       </p>
       <p className="text-[14px] text-on-card-muted">{line2Full}</p>
 
-      {/* Actions */}
       <div className="mt-2.5 flex items-center gap-2">
         <span
           role="button"
@@ -351,50 +312,28 @@ function AddressCard({
 
 export function SavedAddressesPage() {
   const navigate = useNavigate();
-  const [addresses, setAddresses] = useState<Address[]>(readAddresses);
+  const { profile, addAddress, updateAddress, removeAddress } = useCustomerProfile();
+  const addresses = profile.savedAddresses;
   const [showForm, setShowForm] = useState<"add" | Address | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<Address | null>(null);
 
-  // Persist on change
-  useEffect(() => {
-    writeAddresses(addresses);
-  }, [addresses]);
-
   function handleSave(a: Address) {
-    setAddresses((prev) => {
-      const exists = prev.find((x) => x.id === a.id);
-      let next: Address[];
-      if (exists) {
-        next = prev.map((x) => (x.id === a.id ? a : x));
-      } else {
-        // First address auto-defaults
-        if (prev.length === 0) a.isDefault = true;
-        next = [...prev, a];
-      }
-      // Ensure only one default
-      if (a.isDefault) {
-        next = next.map((x) => (x.id === a.id ? x : { ...x, isDefault: false }));
-      }
-      return next;
-    });
+    const exists = addresses.find((x) => x.id === a.id);
+    if (exists) {
+      updateAddress(a);
+    } else {
+      addAddress(a);
+    }
     setShowForm(null);
   }
 
   function handleRemove(addr: Address) {
-    setAddresses((prev) => {
-      const next = prev.filter((x) => x.id !== addr.id);
-      // If removed was default, promote first
-      if (addr.isDefault && next.length > 0) {
-        next[0] = { ...next[0], isDefault: true };
-      }
-      return next;
-    });
+    removeAddress(addr.id);
     setConfirmRemove(null);
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Top bar */}
       <div className="flex h-12 shrink-0 items-center justify-between px-4">
         <button
           onClick={() => navigate({ to: "/profile" })}
@@ -414,9 +353,7 @@ export function SavedAddressesPage() {
         </button>
       </div>
 
-      {/* Body */}
       {addresses.length === 0 ? (
-        /* Empty state */
         <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8">
           <MapPin size={32} className="text-muted-foreground" />
           <p className="text-[17px] font-semibold text-foreground">
@@ -433,7 +370,6 @@ export function SavedAddressesPage() {
           </button>
         </div>
       ) : (
-        /* List */
         <div className="flex flex-col gap-3 px-5 pb-8 pt-4">
           {addresses.map((addr) => (
             <AddressCard
@@ -447,7 +383,6 @@ export function SavedAddressesPage() {
         </div>
       )}
 
-      {/* Form sheet */}
       {showForm !== null && (
         <AddressFormSheet
           address={showForm === "add" ? null : showForm}
@@ -461,7 +396,6 @@ export function SavedAddressesPage() {
         />
       )}
 
-      {/* Confirm remove */}
       {confirmRemove && (
         <RemoveSheet
           onCancel={() => setConfirmRemove(null)}

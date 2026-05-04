@@ -1,48 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
-import { useDevState, type NotificationsProfile } from "@/dev-state/devState";
-import { useState, useEffect } from "react";
-
-type Toggles = {
-  confirmations: boolean;
-  statusUpdates: boolean;
-  reminders: boolean;
-  messages: boolean;
-  ratingPrompts: boolean;
-  newPros: boolean;
-};
-
-function defaultToggles(profile: NotificationsProfile): Toggles {
-  switch (profile) {
-    case "all-on":
-      return {
-        confirmations: true,
-        statusUpdates: true,
-        reminders: true,
-        messages: true,
-        ratingPrompts: true,
-        newPros: false, // off by default even in "all-on"
-      };
-    case "booking-only":
-      return {
-        confirmations: true,
-        statusUpdates: true,
-        reminders: true,
-        messages: false,
-        ratingPrompts: false,
-        newPros: false,
-      };
-    case "all-off":
-      return {
-        confirmations: false,
-        statusUpdates: false,
-        reminders: false,
-        messages: false,
-        ratingPrompts: false,
-        newPros: false,
-      };
-  }
-}
+import { useCustomerProfile, type NotificationToggles } from "@/data/customer-store";
 
 function Toggle({
   checked,
@@ -120,23 +78,16 @@ function SectionCard({
 }
 
 export function NotificationsPage() {
-  const { state } = useDevState();
   const navigate = useNavigate();
-  const [toggles, setToggles] = useState<Toggles>(() =>
-    defaultToggles(state.notificationsProfile),
-  );
+  const { profile, setNotificationPreferences } = useCustomerProfile();
+  const toggles = profile.notificationPreferences;
 
-  // Sync when dev-state profile changes
-  useEffect(() => {
-    setToggles(defaultToggles(state.notificationsProfile));
-  }, [state.notificationsProfile]);
-
-  const setToggle = (key: keyof Toggles) => (v: boolean) =>
-    setToggles((prev) => ({ ...prev, [key]: v }));
+  const setToggle = (key: keyof NotificationToggles) => (v: boolean) => {
+    setNotificationPreferences({ ...toggles, [key]: v });
+  };
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-8 pt-3">
-      {/* Top bar */}
       <div className="relative flex h-11 items-center justify-center">
         <button
           onClick={() => navigate({ to: "/profile" })}
