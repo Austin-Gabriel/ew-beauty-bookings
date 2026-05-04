@@ -40,11 +40,7 @@ export function BookingsPage() {
   );
   const upcomingRest = activeBookings.filter((b) => b !== active);
 
-  const active = all.find((b) => ACTIVE_STATUSES.includes(b.status));
-  const upcomingRest = all.filter(
-    (b) => !PAST_STATUSES.includes(b.status) && !ACTIVE_STATUSES.includes(b.status),
-  );
-  const past = all.filter((b) => PAST_STATUSES.includes(b.status));
+  const past = pastBookings;
 
   const upcomingCount = (active ? 1 : 0) + upcomingRest.length;
   const pastCount = past.length;
