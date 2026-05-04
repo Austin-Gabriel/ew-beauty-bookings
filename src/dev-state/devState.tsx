@@ -89,6 +89,7 @@ export type DevState = {
   notificationsProfile: NotificationsProfile;
   avatarState: AvatarState;
   editProfileState: EditProfileState;
+  bookingConfirmState: BookingConfirmState;
 };
 
 const DEFAULTS: DevState = {
