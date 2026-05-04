@@ -434,6 +434,28 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
           onCancel={() => setShowAddCardForm(false)}
         />
       )}
+
+      {/* Notes sheet */}
+      {showNotesSheet && (
+        <Sheet title="Notes for your pro" onClose={() => setShowNotesSheet(false)}>
+          <div className="px-4 pb-4">
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Parking info, gate codes, preferences…"
+              rows={4}
+              className="w-full resize-none rounded-xl border border-hairline bg-card px-3 py-2.5 text-[15px] font-medium text-card-foreground outline-none placeholder:text-on-card-muted/50 focus:border-bagel"
+            />
+            <button
+              type="button"
+              onClick={() => setShowNotesSheet(false)}
+              className="mt-3 h-[44px] w-full rounded-2xl bg-bagel text-[15px] font-semibold text-bagel-foreground"
+            >
+              Save
+            </button>
+          </div>
+        </Sheet>
+      )}
     </div>
   );
 }
