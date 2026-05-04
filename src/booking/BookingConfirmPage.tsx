@@ -26,6 +26,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
     addAddress,
     addCard,
   } = useCustomerProfile();
+  const { createBooking } = useBookings();
 
   const addresses = profile.savedAddresses;
   const cards = profile.paymentMethods;
