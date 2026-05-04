@@ -239,6 +239,17 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
           />
         </div>
 
+        {/* Notes card */}
+        <div className="mt-3 rounded-2xl bg-card">
+          <DetailRow
+            icon={<FileText size={18} />}
+            label="Notes"
+            value={notes.trim() || undefined}
+            placeholder="Add a note for your pro"
+            onTap={() => setShowNotesSheet(true)}
+          />
+        </div>
+
         {/* Total breakdown */}
         <div className="mt-3 rounded-2xl bg-card p-4">
           <div className="flex items-center justify-between text-[15px] text-card-foreground">
