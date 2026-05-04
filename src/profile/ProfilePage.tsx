@@ -206,13 +206,13 @@ export function ProfilePage() {
         <SettingsRow
           icon={Percent}
           label="Tipping preferences"
-          value="Default 20%"
+          value={tippingLabel(state.tippingPreference, state.tippingCustomValue)}
           to="/profile/tipping"
         />
         <SettingsRow
           icon={Monitor}
           label="Theme"
-          value="System"
+          value={themeModeLabel(state.themeMode)}
           to="/profile/theme"
           last
         />
