@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
+import { useBookings } from "@/data/bookings-store";
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
