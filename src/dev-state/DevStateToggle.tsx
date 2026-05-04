@@ -15,6 +15,7 @@ import {
   type AvatarState,
   type EditProfileState,
   type BookingConfirmState,
+  type SearchingStage,
 } from "./devState";
 
 const POS_KEY = "ewa.devstate.pos.v1";
@@ -383,6 +384,19 @@ export function DevStateToggle() {
                     { value: "custom-tip", label: "Custom tip 22%" },
                   ]}
                   onChange={(v) => set("bookingConfirmState", v)}
+                />
+               </Field>
+
+              <Field label="Searching stage" hint="Drives /booking/searching variations">
+                <Stacked<SearchingStage>
+                  value={state.searchingStage}
+                  options={[
+                    { value: "searching", label: "Searching (pulsing)" },
+                    { value: "matched", label: "Matched (pro accepted)" },
+                    { value: "declined", label: "Declined (pro passed)" },
+                    { value: "timeout", label: "Timeout (no response)" },
+                  ]}
+                  onChange={(v) => set("searchingStage", v)}
                 />
               </Field>
             </div>

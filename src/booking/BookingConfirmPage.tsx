@@ -110,6 +110,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
       navigate({
         to: "/booking/searching/$bookingId",
         params: { bookingId },
+        search: { proId: proId },
       });
     }, 600);
   };

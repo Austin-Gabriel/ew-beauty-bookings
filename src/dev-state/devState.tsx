@@ -74,6 +74,13 @@ export type BookingConfirmState =
   | "always-ask-tip"
   | "custom-tip";
 
+/** Searching stage — drives /booking/searching/:bookingId variations. */
+export type SearchingStage =
+  | "searching"
+  | "matched"
+  | "declined"
+  | "timeout";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -90,6 +97,7 @@ export type DevState = {
   avatarState: AvatarState;
   editProfileState: EditProfileState;
   bookingConfirmState: BookingConfirmState;
+  searchingStage: SearchingStage;
 };
 
 const DEFAULTS: DevState = {
@@ -108,6 +116,7 @@ const DEFAULTS: DevState = {
   avatarState: "monogram",
   editProfileState: "default",
   bookingConfirmState: "default",
+  searchingStage: "searching",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
