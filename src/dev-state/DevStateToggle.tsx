@@ -299,6 +299,45 @@ export function DevStateToggle() {
                   onChange={(v) => set("profileState", v)}
                 />
               </Field>
+
+              <Field label="Theme preference" hint="Syncs with /profile/theme">
+                <Segmented<ThemeMode>
+                  value={state.themeMode}
+                  options={[
+                    { value: "system", label: "System" },
+                    { value: "light", label: "Light" },
+                    { value: "dark", label: "Dark" },
+                  ]}
+                  onChange={(v) => set("themeMode", v)}
+                />
+              </Field>
+
+              <Field label="Tipping preference" hint="Syncs with /profile/tipping">
+                <Stacked<TippingPreference>
+                  value={state.tippingPreference}
+                  options={[
+                    { value: "15", label: "15%" },
+                    { value: "18", label: "18%" },
+                    { value: "20", label: "20%" },
+                    { value: "25", label: "25%" },
+                    { value: "custom", label: "Custom 22%" },
+                    { value: "ask", label: "Always ask" },
+                  ]}
+                  onChange={(v) => set("tippingPreference", v)}
+                />
+              </Field>
+
+              <Field label="Notifications profile" hint="Resets toggle states on subscreen">
+                <Segmented<NotificationsProfile>
+                  value={state.notificationsProfile}
+                  options={[
+                    { value: "all-on", label: "All on" },
+                    { value: "booking-only", label: "Booking" },
+                    { value: "all-off", label: "All off" },
+                  ]}
+                  onChange={(v) => set("notificationsProfile", v)}
+                />
+              </Field>
             </div>
 
             <div className="mt-6 flex flex-col gap-2">
