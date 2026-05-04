@@ -74,6 +74,13 @@ export type BookingConfirmState =
   | "always-ask-tip"
   | "custom-tip";
 
+/** Searching stage — drives /booking/searching/:bookingId variations. */
+export type SearchingStage =
+  | "searching"
+  | "matched"
+  | "declined"
+  | "timeout";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
