@@ -25,11 +25,11 @@ export function BookingsPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : INK_500;
+  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : LINE;
+  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
-  const surfaceBg = isDark ? "transparent" : "#FFFFFF";
+  const surfaceBg = isDark ? "transparent" : "var(--card)";
 
   const active = activeBookings.find((b) =>
     (["getting-ready", "enroute", "arrived", "in-progress"] as BookingStatus[]).includes(b.status),
