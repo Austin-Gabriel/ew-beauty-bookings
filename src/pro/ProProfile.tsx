@@ -405,30 +405,18 @@ export function ProProfile({ proId }: { proId: string }) {
         </ul>
       </div>
 
-      {/* STICKY BOOKING BAR -------------------------------------------------- */}
+      {/* FLOATING BOOK BUTTON ------------------------------------------------- */}
       <div
-        className="fixed left-0 right-0 z-30"
+        className="pointer-events-none fixed left-0 right-0 z-30"
         style={{
-          // Sits flush against the top of the tab bar regardless of safe-area inset
-          bottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX}px)`,
-          backgroundColor: surfaceBg,
-          borderTop: `1px solid ${subtleBorder}`,
-          padding: "12px 20px",
-          fontFamily: SANS_STACK,
-          boxShadow: "0 -4px 12px rgba(20,25,40,0.04)",
+          bottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX + 16}px)`,
         }}
       >
-        <div className="mx-auto flex w-full max-w-[420px] items-center justify-end gap-3">
-          {pro.online && (
-            <p className="mr-auto inline-flex items-center gap-1.5" style={{ fontSize: 11.5, color: SUCCESS, fontWeight: 600 }}>
-              <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
-              Next available 2:00 PM today
-            </p>
-          )}
+        <div className="mx-auto flex w-full max-w-[420px] justify-end px-5">
           <button
             type="button"
             onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
-            className="inline-flex items-center gap-1.5 rounded-xl transition-transform active:scale-95"
+            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl shadow-lg transition-transform active:scale-95"
             style={{
               padding: "12px 22px",
               backgroundColor: ORANGE,
