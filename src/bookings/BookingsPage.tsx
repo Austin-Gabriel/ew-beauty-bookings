@@ -770,7 +770,7 @@ function PastCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              toast("Receipt coming soon");
+              navigate({ to: "/booking/receipt/$bookingId", params: { bookingId: booking.id } });
             }}
             className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
             style={{
