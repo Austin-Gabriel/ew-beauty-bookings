@@ -109,7 +109,7 @@ export function DevStateToggle() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         aria-label="Open dev state panel (drag to move)"
-        className="fixed z-[9998] flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-popover px-3 font-mono text-[11px] font-medium text-popover-foreground shadow-lg backdrop-blur"
+        className="fixed z-[2147483646] flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-popover px-3 font-mono text-[11px] font-medium text-popover-foreground shadow-lg backdrop-blur"
         style={{
           left: pos.x,
           top: pos.y,
@@ -123,7 +123,7 @@ export function DevStateToggle() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center">
+        <div className="fixed inset-0 z-[2147483647] flex items-end justify-center sm:items-center">
           <button
             aria-label="Close dev state panel"
             onClick={() => setOpen(false)}
