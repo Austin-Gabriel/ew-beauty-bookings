@@ -29,7 +29,7 @@ export function ItemActionSheet({
               type="button"
               onClick={onMove}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-[var(--accent)]"
-              style={{ fontSize: 14.5, fontWeight: 600, color: "var(--foreground)" }}
+              style={{ fontSize: 14.5, fontWeight: 600, color: "var(--card-foreground)" }}
             >
               <Icon><path d="M5 12h14M13 6l6 6-6 6" /></Icon>
               Move to collection

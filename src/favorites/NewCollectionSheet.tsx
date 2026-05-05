@@ -42,9 +42,9 @@ export function NewCollectionSheet({
             placeholder="e.g. Birthday glam, Wedding inspo, My regulars"
             maxLength={40}
             className="w-full rounded-xl border bg-transparent px-4 py-3 outline-none focus:border-[var(--ring)]"
-            style={{ fontSize: 15, borderColor: "var(--border)", color: "var(--foreground)" }}
+            style={{ fontSize: 15, borderColor: "var(--border)", color: "var(--card-foreground)" }}
           />
-          <div className="mt-2 flex justify-end" style={{ fontSize: 11, color: "var(--muted-foreground)" }}>
+          <div className="mt-2 flex justify-end" style={{ fontSize: 11, color: "var(--on-card-muted)" }}>
             {name.length}/40
           </div>
         </div>
@@ -53,7 +53,7 @@ export function NewCollectionSheet({
             type="button"
             onClick={() => { setName(""); onOpenChange(false); }}
             className="flex-1 rounded-full px-4 py-3 transition-colors"
-            style={{ backgroundColor: "var(--accent)", color: "var(--foreground)", fontSize: 14, fontWeight: 600 }}
+            style={{ backgroundColor: "var(--accent)", color: "var(--card-foreground)", fontSize: 14, fontWeight: 600 }}
           >
             Cancel
           </button>

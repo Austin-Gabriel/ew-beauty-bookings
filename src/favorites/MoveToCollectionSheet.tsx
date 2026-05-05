@@ -44,10 +44,10 @@ export function MoveToCollectionSheet({
                     onClick={() => onPick(c.id)}
                     disabled={active}
                     className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-[var(--accent)] disabled:opacity-50"
-                    style={{ fontSize: 14.5, fontWeight: 600, color: "var(--foreground)" }}
+                    style={{ fontSize: 14.5, fontWeight: 600, color: "var(--card-foreground)" }}
                   >
                     <span>{c.name}</span>
-                    {active && <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>Current</span>}
+                    {active && <span style={{ fontSize: 12, color: "var(--on-card-muted)" }}>Current</span>}
                   </button>
                 </li>
               );
