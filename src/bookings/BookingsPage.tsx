@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
+
 import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
@@ -86,8 +86,8 @@ export function BookingsPage() {
               <ActiveBookingHero
                 booking={active}
                 pro={MOCK_PROS.find((p) => p.id === active.proId)!}
-                onMessage={() => toast("Messaging coming soon")}
-                onCall={() => toast("Calling coming soon")}
+                onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
+                onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
                 onTap={() => goPro(active.proId)}
               />
             )}
@@ -443,6 +443,7 @@ function UpcomingCard({
   subtleSurface: string;
   cardShadow: string;
 }) {
+  const navigate = useNavigate();
   const status = booking.status;
   const pill = statusPillFor(status);
 
@@ -553,7 +554,7 @@ function UpcomingCard({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            toast("Messaging coming soon");
+            navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
           }}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
           style={{
@@ -574,7 +575,7 @@ function UpcomingCard({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            toast("Reschedule coming soon");
+            navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
           }}
           className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
           style={{
@@ -668,6 +669,7 @@ function PastCard({
   subtleBorder: string;
   cardShadow: string;
 }) {
+  const navigate = useNavigate();
   const isCancelled = booking.status === "cancelled" || booking.status === "declined";
   const pill = statusPillFor(booking.status);
 
@@ -745,12 +747,20 @@ function PastCard({
             You rated {booking.rating} star{booking.rating === 1 ? "" : "s"}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5" style={{ color: ORANGE, fontWeight: 600 }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate({ to: "/booking/rate/$bookingId", params: { bookingId: booking.id } });
+            }}
+            className="inline-flex items-center gap-1.5"
+            style={{ color: ORANGE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontSize: 12, fontFamily: SANS_STACK }}
+          >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
             Rate this booking
-          </span>
+          </button>
         )}
       </div>
 
@@ -760,7 +770,7 @@ function PastCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              toast("Receipt coming soon");
+              navigate({ to: "/booking/receipt/$bookingId", params: { bookingId: booking.id } });
             }}
             className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
             style={{
