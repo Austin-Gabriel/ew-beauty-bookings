@@ -476,7 +476,7 @@ export function NotificationsPage() {
               </svg>
             </div>
             <p className="mt-3" style={{ fontSize: 14.5, fontWeight: 600 }}>You're all caught up</p>
-            <p className="mt-1" style={{ fontSize: 13, color: muted }}>We'll let you know when something needs you.</p>
+            <p className="mt-1" style={{ fontSize: 13, color: "var(--on-card-muted)" }}>We'll let you know when something needs you.</p>
           </section>
         )}
 
@@ -519,7 +519,7 @@ function OfferCard({
           <p className="line-clamp-2" style={{ fontSize: 14.5, fontWeight: 700, lineHeight: 1.25, color: "var(--card-foreground)" }}>
             {offer.title}
           </p>
-          <p className="mt-1" style={{ fontSize: 12, color: muted, lineHeight: 1.35 }}>
+          <p className="mt-1" style={{ fontSize: 12, color: "var(--on-card-muted)", lineHeight: 1.35 }}>
             {offer.subline}
           </p>
           {isUrgent && (
