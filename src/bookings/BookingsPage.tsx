@@ -282,7 +282,7 @@ function ActiveBookingHero({
           <div
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
             style={{
-              background: avatarBg(),
+              backgroundColor: avatarBg(), border: "0.5px solid rgba(6,28,39,0.08)",
               color: avatarFg(),
               fontSize: 13,
               fontWeight: 700,
@@ -465,7 +465,7 @@ function UpcomingCard({
         <div
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full"
           style={{
-            background: avatarBg(),
+            backgroundColor: avatarBg(), border: "0.5px solid rgba(6,28,39,0.08)",
             color: avatarFg(),
             fontSize: 14,
             fontWeight: 700,
@@ -690,7 +690,7 @@ function PastCard({
         <div
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full"
           style={{
-            background: avatarBg(),
+            backgroundColor: avatarBg(), border: "0.5px solid rgba(6,28,39,0.08)",
             color: avatarFg(),
             fontSize: 14,
             fontWeight: 700,
