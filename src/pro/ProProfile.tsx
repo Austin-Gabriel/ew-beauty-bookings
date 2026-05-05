@@ -418,26 +418,13 @@ export function ProProfile({ proId }: { proId: string }) {
           boxShadow: "0 -4px 12px rgba(20,25,40,0.04)",
         }}
       >
-        <div className="mx-auto flex w-full max-w-[420px] items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                color: text,
-                letterSpacing: "-0.015em",
-                lineHeight: 1.1,
-              }}
-            >
-              From ${pro.priceFrom}
+        <div className="mx-auto flex w-full max-w-[420px] items-center justify-end gap-3">
+          {pro.online && (
+            <p className="mr-auto inline-flex items-center gap-1.5" style={{ fontSize: 11.5, color: SUCCESS, fontWeight: 600 }}>
+              <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
+              Next available 2:00 PM today
             </p>
-            {pro.online && (
-              <p className="mt-0.5 inline-flex items-center gap-1.5" style={{ fontSize: 11.5, color: SUCCESS, fontWeight: 600 }}>
-                <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
-                Next available 2:00 PM today
-              </p>
-            )}
-          </div>
+          )}
           <button
             type="button"
             onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
