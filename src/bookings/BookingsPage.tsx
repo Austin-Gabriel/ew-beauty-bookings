@@ -167,7 +167,7 @@ function Tabs({
             }}
           >
             <span>{t.label}</span>
-            <span style={{ color: INK_400, fontWeight: 500, fontSize: 12.5 }}>{t.count}</span>
+            <span style={{ color: "var(--on-card-muted)", fontWeight: 500, fontSize: 12.5 }}>{t.count}</span>
             {active && (
               <span
                 aria-hidden
@@ -475,11 +475,11 @@ function UpcomingCard({
           {initialsOf(pro.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1" style={{ fontSize: 14.5, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>
+          <div className="flex items-center gap-1" style={{ fontSize: 14.5, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
             <span className="truncate">{pro.name}</span>
             {pro.certified && <VerifiedTick />}
           </div>
-          <p style={{ fontSize: 12, color: INK_500, marginTop: 2 }}>
+          <p style={{ fontSize: 12, color: "var(--on-card-muted)", marginTop: 2 }}>
             {booking.service.name} · {booking.service.durationLabel}
           </p>
         </div>
@@ -504,14 +504,14 @@ function UpcomingCard({
         style={{ borderColor: subtleBorder, fontSize: 12, color: "#2A3544" }}
       >
         <span className="inline-flex items-center gap-1.5">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_400} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          <strong style={{ color: INK_900, fontWeight: 600 }}>{formatTime(booking.when)}</strong>
+          <strong style={{ color: "var(--card-foreground)", fontWeight: 600 }}>{formatTime(booking.when)}</strong>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_400} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
             <circle cx="12" cy="9" r="2.5" />
           </svg>
@@ -526,7 +526,7 @@ function UpcomingCard({
           style={{ backgroundColor: subtleSurface }}
         >
           <div>
-            <p style={{ fontSize: 10, color: INK_500, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            <p style={{ fontSize: 10, color: "var(--on-card-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
               Arrival PIN
             </p>
             <p
@@ -534,7 +534,7 @@ function UpcomingCard({
                 fontFamily: SANS_STACK,
                 fontSize: 18,
                 fontWeight: 700,
-                color: INK_900,
+                color: "var(--card-foreground)",
                 letterSpacing: "0.18em",
                 fontVariantNumeric: "tabular-nums",
                 marginTop: 2,
@@ -701,11 +701,11 @@ function PastCard({
           {initialsOf(pro.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1" style={{ fontSize: 14.5, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>
+          <div className="flex items-center gap-1" style={{ fontSize: 14.5, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
             <span className="truncate">{pro.name}</span>
             {pro.certified && <VerifiedTick />}
           </div>
-          <p style={{ fontSize: 12, color: INK_500, marginTop: 2 }}>
+          <p style={{ fontSize: 12, color: "var(--on-card-muted)", marginTop: 2 }}>
             {booking.service.name} · ${booking.service.price}
           </p>
         </div>
@@ -727,7 +727,7 @@ function PastCard({
 
       <div className="mt-3 flex items-center gap-3.5 border-t pt-3" style={{ borderColor: subtleBorder, fontSize: 12, color: "#2A3544" }}>
         <span className="inline-flex items-center gap-1.5">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={INK_400} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
@@ -881,13 +881,13 @@ function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: s
     case "in-progress":
       return { text: "In progress", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
     case "completed":
-      return { text: "Completed", bg: "rgba(11,18,32,0.06)", fg: INK_500 };
+      return { text: "Completed", bg: "rgba(11,18,32,0.06)", fg: "var(--on-card-muted)" };
     case "cancelled":
       return { text: "Cancelled", bg: "rgba(220,38,38,0.14)", fg: DANGER };
     case "declined":
       return { text: "Declined", bg: "rgba(220,38,38,0.14)", fg: DANGER };
     default:
-      return { text: String(status), bg: "rgba(11,18,32,0.06)", fg: INK_500 };
+      return { text: String(status), bg: "rgba(11,18,32,0.06)", fg: "var(--on-card-muted)" };
   }
 }
 
