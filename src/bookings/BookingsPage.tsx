@@ -12,14 +12,10 @@ import {
   type BookingStatus,
 } from "@/data/bookings-store";
 
-const ORANGE = "#FF823F";
+const ORANGE = "var(--bagel)";
 const SUCCESS = "#16A34A";
 const DANGER = "#DC2626";
 const STAR = "#F5A623";
-const INK_900 = "#0B1220";
-const INK_500 = "#6B7684";
-const INK_400 = "#8D97A3";
-const LINE = "#EEF1F4";
 
 type Tab = "upcoming" | "past";
 
