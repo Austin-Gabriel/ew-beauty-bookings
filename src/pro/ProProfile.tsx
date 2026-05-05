@@ -164,8 +164,8 @@ export function ProProfile({ proId }: { proId: string }) {
                 width: 64,
                 height: 64,
                 borderRadius: 9999,
-                background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 50%, #FF9270 100%)",
-                color: "#7C2D12",
+                background: "var(--cream-elevated)",
+                color: "var(--midnight)",
                 fontWeight: 700,
                 fontSize: 22,
                 letterSpacing: "-0.02em",
@@ -383,8 +383,8 @@ export function ProProfile({ proId }: { proId: string }) {
                 <div
                   className="grid h-8 w-8 shrink-0 place-items-center rounded-full"
                   style={{
-                    background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)",
-                    color: "#9A3412",
+                    background: "var(--cream-elevated)",
+                    color: "var(--midnight)",
                     fontSize: 11,
                     fontWeight: 600,
                   }}

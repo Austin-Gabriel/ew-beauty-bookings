@@ -158,13 +158,11 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
         <div className="rounded-2xl bg-card p-4">
           <div className="flex items-center gap-3.5">
             <div
-              className="grid h-14 w-14 shrink-0 place-items-center rounded-full"
+              className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-cream-elevated text-midnight"
               style={{
-                background:
-                  "linear-gradient(135deg, oklch(0.9 0.04 60) 0%, oklch(0.82 0.08 45) 100%)",
-                color: "var(--midnight)",
                 fontSize: 18,
                 fontWeight: 700,
+                border: "0.5px solid rgba(6,28,39,0.08)",
               }}
             >
               {initials}
