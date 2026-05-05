@@ -275,7 +275,7 @@ function MatchedState({
 
       {/* PIN card */}
       {pin && (
-      <div className="mb-8 w-full max-w-[300px] rounded-2xl bg-cream-elevated p-5 text-center">
+      <div className="mb-8 w-full max-w-[300px] rounded-2xl bg-card border border-hairline p-5 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-on-card-muted">
             Your PIN
           </p>

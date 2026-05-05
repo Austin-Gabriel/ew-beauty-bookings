@@ -138,7 +138,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream dark:bg-midnight">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Top bar */}
       <div className="relative flex h-12 shrink-0 items-center px-4">
         <button
@@ -291,7 +291,7 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
       </div>
 
       {/* Sticky confirm button */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-cream px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3 dark:bg-midnight">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
         <button
           type="button"
           disabled={!canConfirm}

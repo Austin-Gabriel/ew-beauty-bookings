@@ -25,8 +25,8 @@ export function useAuthTheme(): ThemeCtx {
   return {
     isDark,
     setIsDark: () => {},
-    text: isDark ? "#F0EBD8" : "#061C27",
-    bg: isDark ? "#061C27" : "#F0EBD8",
+    text: isDark ? "#F0EBD8" : "#0B1220",
+    bg: isDark ? "#061C27" : "#FFFFFF",
     borderCol: isDark ? "rgba(240,235,216,0.18)" : "rgba(6,28,39,0.18)",
     sans: SANS,
   };
