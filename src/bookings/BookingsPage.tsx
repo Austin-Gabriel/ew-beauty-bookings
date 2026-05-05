@@ -86,8 +86,8 @@ export function BookingsPage() {
               <ActiveBookingHero
                 booking={active}
                 pro={MOCK_PROS.find((p) => p.id === active.proId)!}
-                onMessage={() => toast("Messaging coming soon")}
-                onCall={() => toast("Calling coming soon")}
+                onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
+                onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
                 onTap={() => goPro(active.proId)}
               />
             )}
@@ -553,7 +553,7 @@ function UpcomingCard({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            toast("Messaging coming soon");
+            navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
           }}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
           style={{
@@ -574,7 +574,7 @@ function UpcomingCard({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            toast("Reschedule coming soon");
+            navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
           }}
           className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
           style={{
