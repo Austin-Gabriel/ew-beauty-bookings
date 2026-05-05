@@ -316,11 +316,11 @@ function LookLightbox({
           ) : null}
           <div className="mt-4 flex items-end justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate" style={{ fontSize: 16, fontWeight: 700, color: "var(--foreground)" }}>
+              <p className="truncate" style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)" }}>
                 {item?.meta?.name ?? "Saved look"}
               </p>
               {item?.meta?.subtitle && (
-                <p className="truncate" style={{ fontSize: 13, color: "var(--muted-foreground)", marginTop: 2 }}>
+                <p className="truncate" style={{ fontSize: 13, color: "var(--on-card-muted)", marginTop: 2 }}>
                   {item.meta.subtitle}
                 </p>
               )}

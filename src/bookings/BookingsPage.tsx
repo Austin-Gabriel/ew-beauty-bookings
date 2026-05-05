@@ -542,7 +542,7 @@ function UpcomingCard({
               {booking.pin}
             </p>
           </div>
-          <p style={{ fontSize: 11, color: muted, maxWidth: 130, lineHeight: 1.35, textAlign: "right" }}>
+          <p style={{ fontSize: 11, color: "var(--on-card-muted)", maxWidth: 130, lineHeight: 1.35, textAlign: "right" }}>
             Share with your stylist when they arrive.
           </p>
         </div>
@@ -559,7 +559,7 @@ function UpcomingCard({
           style={{
             backgroundColor: "transparent",
             border: `1px solid ${subtleBorder}`,
-            color: text,
+            color: "var(--card-foreground)",
             fontSize: 12.5,
             fontWeight: 600,
             fontFamily: SANS_STACK,
@@ -580,7 +580,7 @@ function UpcomingCard({
           style={{
             backgroundColor: "transparent",
             border: `1px solid ${subtleBorder}`,
-            color: text,
+            color: "var(--card-foreground)",
             fontSize: 12.5,
             fontWeight: 600,
             fontFamily: SANS_STACK,
@@ -766,7 +766,7 @@ function PastCard({
             style={{
               backgroundColor: "transparent",
               border: `1px solid ${subtleBorder}`,
-              color: text,
+              color: "var(--card-foreground)",
               fontSize: 12.5,
               fontWeight: 600,
               fontFamily: SANS_STACK,
