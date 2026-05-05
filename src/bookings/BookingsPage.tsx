@@ -500,7 +500,7 @@ function UpcomingCard({
 
       <div
         className="mt-3 flex items-center gap-3.5 border-t pt-3"
-        style={{ borderColor: subtleBorder, fontSize: 12, color: "#2A3544" }}
+        style={{ borderColor: subtleBorder, fontSize: 12, color: "var(--card-foreground)" }}
       >
         <span className="inline-flex items-center gap-1.5">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -723,7 +723,7 @@ function PastCard({
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-3.5 border-t pt-3" style={{ borderColor: subtleBorder, fontSize: 12, color: "#2A3544" }}>
+      <div className="mt-3 flex items-center gap-3.5 border-t pt-3" style={{ borderColor: subtleBorder, fontSize: 12, color: "var(--card-foreground)" }}>
         <span className="inline-flex items-center gap-1.5">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" />
