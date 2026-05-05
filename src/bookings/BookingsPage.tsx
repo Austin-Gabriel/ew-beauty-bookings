@@ -443,6 +443,7 @@ function UpcomingCard({
   subtleSurface: string;
   cardShadow: string;
 }) {
+  const navigate = useNavigate();
   const status = booking.status;
   const pill = statusPillFor(status);
 
