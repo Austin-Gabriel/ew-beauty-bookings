@@ -198,11 +198,12 @@ export function DiscoverPage() {
               aria-label="Profile"
               className="grid h-8 w-8 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
               style={{
-                background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)",
-                color: "#9A3412",
+                backgroundColor: "var(--cream-elevated)",
+                color: "var(--midnight)",
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: SANS_STACK,
+                border: "0.5px solid rgba(6,28,39,0.08)",
               }}
             >
               {initials}
@@ -967,12 +968,11 @@ function Avatar({ pro }: { pro: Pro }) {
     <div
       className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
       style={{
-        background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)",
-        color: "#9A3412",
+        backgroundColor: "var(--cream-elevated)",
+        color: "var(--midnight)",
         fontSize: 12,
         fontWeight: 600,
-        border: "2px solid #fff",
-        boxShadow: `0 0 0 1px ${LINE}`,
+        border: "0.5px solid rgba(6,28,39,0.08)",
       }}
     >
       {initials}
