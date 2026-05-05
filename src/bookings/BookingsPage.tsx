@@ -909,28 +909,12 @@ function livePillFor(status: BookingStatus): { text: string; bg: string; fg: str
   }
 }
 
-type Tint = "peach" | "blue" | "green" | "pink";
-function proTint(pro: Pro): Tint {
-  // Stable per-pro tint via simple hash
-  const h = pro.id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const tints: Tint[] = ["peach", "blue", "green", "pink"];
-  return tints[h % tints.length]!;
+/* Avatar: cream-elevated fill, midnight initials — locked brand pattern */
+function avatarBg(): string {
+  return "var(--cream-elevated)";
 }
-function avatarTintBg(t: Tint): string {
-  switch (t) {
-    case "peach": return "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)";
-    case "blue": return "linear-gradient(135deg, #DBEAFE 0%, #93C5FD 100%)";
-    case "green": return "linear-gradient(135deg, #DCFCE7 0%, #86EFAC 100%)";
-    case "pink": return "linear-gradient(135deg, #FCE7F3 0%, #F9A8D4 100%)";
-  }
-}
-function avatarTintFg(t: Tint): string {
-  switch (t) {
-    case "peach": return "#9A3412";
-    case "blue": return "#1E3A8A";
-    case "green": return "#166534";
-    case "pink": return "#9D174D";
-  }
+function avatarFg(): string {
+  return "var(--midnight)";
 }
 
 function initialsOf(name: string): string {
