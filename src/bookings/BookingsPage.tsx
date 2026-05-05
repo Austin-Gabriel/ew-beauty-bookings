@@ -282,8 +282,8 @@ function ActiveBookingHero({
           <div
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
             style={{
-              background: avatarTintBg(proTint(pro)),
-              color: avatarTintFg(proTint(pro)),
+              background: avatarBg(),
+              color: avatarFg(),
               fontSize: 13,
               fontWeight: 700,
               border: "2px solid rgba(255,255,255,0.20)",
@@ -443,7 +443,6 @@ function UpcomingCard({
   subtleSurface: string;
   cardShadow: string;
 }) {
-  const tint = proTint(pro);
   const status = booking.status;
   const pill = statusPillFor(status);
 
@@ -466,8 +465,8 @@ function UpcomingCard({
         <div
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full"
           style={{
-            background: avatarTintBg(tint),
-            color: avatarTintFg(tint),
+            background: avatarBg(),
+            color: avatarFg(),
             fontSize: 14,
             fontWeight: 700,
           }}
@@ -669,7 +668,6 @@ function PastCard({
   subtleBorder: string;
   cardShadow: string;
 }) {
-  const tint = proTint(pro);
   const isCancelled = booking.status === "cancelled" || booking.status === "declined";
   const pill = statusPillFor(booking.status);
 
@@ -692,8 +690,8 @@ function PastCard({
         <div
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full"
           style={{
-            background: avatarTintBg(tint),
-            color: avatarTintFg(tint),
+            background: avatarBg(),
+            color: avatarFg(),
             fontSize: 14,
             fontWeight: 700,
           }}
