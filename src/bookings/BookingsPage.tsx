@@ -282,7 +282,7 @@ function ActiveBookingHero({
           <div
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
             style={{
-              backgroundColor: avatarBg(), border: "0.5px solid rgba(6,28,39,0.08)",
+              backgroundColor: avatarBg(),
               color: avatarFg(),
               fontSize: 13,
               fontWeight: 700,
