@@ -669,6 +669,7 @@ function PastCard({
   subtleBorder: string;
   cardShadow: string;
 }) {
+  const navigate = useNavigate();
   const isCancelled = booking.status === "cancelled" || booking.status === "declined";
   const pill = statusPillFor(booking.status);
 
@@ -746,12 +747,20 @@ function PastCard({
             You rated {booking.rating} star{booking.rating === 1 ? "" : "s"}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5" style={{ color: ORANGE, fontWeight: 600 }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate({ to: "/booking/rate/$bookingId", params: { bookingId: booking.id } });
+            }}
+            className="inline-flex items-center gap-1.5"
+            style={{ color: ORANGE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontSize: 12, fontFamily: SANS_STACK }}
+          >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
             Rate this booking
-          </span>
+          </button>
         )}
       </div>
 
