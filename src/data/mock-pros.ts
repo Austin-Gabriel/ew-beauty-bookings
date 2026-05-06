@@ -72,6 +72,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Braids",
     services: [
       { name: "Medium knotless", priceFrom: 220 },
+    autoAccept: true,
       { name: "Small knotless", priceFrom: 280 },
     ],
     rating: 4.9,
@@ -99,6 +100,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Silk press",
     services: [
       { name: "Silk press", priceFrom: 130 },
+    autoAccept: true,
       { name: "Wash & style", priceFrom: 90 },
     ],
     rating: 4.95,
@@ -126,6 +128,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Barbering",
     services: [
       { name: "Cut + line-up", priceFrom: 65 },
+    autoAccept: false,
       { name: "Beard sculpt", priceFrom: 35 },
     ],
     rating: 4.85,
@@ -153,6 +156,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Locs",
     services: [
       { name: "Retwist", priceFrom: 95 },
+    autoAccept: false,
       { name: "Sisterlocks install", priceFrom: 850 },
     ],
     rating: 5.0,
@@ -180,6 +184,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Nails",
     services: [
       { name: "Gel-X full set", priceFrom: 110 },
+    autoAccept: true,
       { name: "Gel manicure", priceFrom: 55 },
     ],
     rating: 4.8,
@@ -207,6 +212,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Makeup",
     services: [
       { name: "Soft glam", priceFrom: 150 },
+    autoAccept: true,
       { name: "Bridal", priceFrom: 350 },
     ],
     rating: 4.92,
@@ -234,6 +240,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Color",
     services: [
       { name: "Single process", priceFrom: 120 },
+    autoAccept: false,
       { name: "Balayage", priceFrom: 280 },
     ],
     rating: 4.78,
@@ -261,6 +268,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Braids",
     services: [
       { name: "Boho knotless", priceFrom: 260 },
+    autoAccept: true,
       { name: "Goddess locs", priceFrom: 320 },
     ],
     rating: 4.88,
@@ -288,6 +296,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Makeup",
     services: [
       { name: "Classic full set", priceFrom: 140 },
+    autoAccept: true,
       { name: "Volume full set", priceFrom: 200 },
     ],
     rating: 4.91,
@@ -315,6 +324,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Wash & Style",
     services: [
       { name: "Wash & style", priceFrom: 85 },
+    autoAccept: false,
       { name: "Deep condition + style", priceFrom: 110 },
     ],
     rating: 4.82,
@@ -342,6 +352,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Barbering",
     services: [
       { name: "Skin fade + lineup", priceFrom: 55 },
+    autoAccept: true,
       { name: "Beard sculpt", priceFrom: 30 },
     ],
     rating: 4.87,
@@ -369,6 +380,7 @@ export const MOCK_PROS: Pro[] = [
     category: "Nails",
     services: [
       { name: "Gel-X set", priceFrom: 100 },
+    autoAccept: false,
       { name: "Gel manicure", priceFrom: 50 },
     ],
     rating: 4.93,
