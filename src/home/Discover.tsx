@@ -192,15 +192,12 @@ export function DiscoverPage() {
   const handleTrendingTap = (label: string) => {
     if (label === "Knotless braids") {
       setActiveChip("Hairdresser");
-      setSearch("knotless");
       toast("Showing hairdressers for knotless");
     } else if (label === "Silk press") {
       setActiveChip("Hairdresser");
-      setSearch("silk press");
       toast("Showing hairdressers for silk press");
     } else if (label === "Locs") {
       setActiveChip("Loctician");
-      setSearch("");
       toast("Showing locticians");
     } else {
       navigate({ to: "/see-all/$category", params: { category: "trending" } });
