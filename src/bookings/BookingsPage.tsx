@@ -105,7 +105,7 @@ export function BookingsPage() {
                 pro={MOCK_PROS.find((p) => p.id === active.proId)!}
                 onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
                 onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
-                onTap={() => goPro(active.proId)}
+                onTap={() => goBooking(active)}
                 onCancel={() => setCancelTarget(active.id)}
               />
             )}
@@ -116,7 +116,7 @@ export function BookingsPage() {
               subtleBorder={subtleBorder}
               subtleSurface={subtleSurface}
               cardShadow={cardShadow}
-              onTap={(b) => goPro(b.proId)}
+              onTap={(b) => goBooking(b)}
             />
           </div>
         )
@@ -137,7 +137,7 @@ export function BookingsPage() {
             muted={muted}
             subtleBorder={subtleBorder}
             cardShadow={cardShadow}
-            onTap={(b) => goPro(b.proId)}
+            onTap={(b) => goBooking(b)}
           />
         </div>
       )}
