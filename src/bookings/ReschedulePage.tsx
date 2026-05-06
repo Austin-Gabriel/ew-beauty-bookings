@@ -14,7 +14,7 @@ const TIME_SLOTS = [
 
 export function ReschedulePage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
-  const { isDark, text } = useAuthTheme();
+  const { text } = useAuthTheme();
   const { getBooking, setBookings, bookings } = useBookings();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;

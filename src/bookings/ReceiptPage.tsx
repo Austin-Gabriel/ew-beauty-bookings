@@ -8,7 +8,7 @@ const ORANGE = "var(--bagel)";
 
 export function ReceiptPage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
-  const { isDark } = useAuthTheme();
+  useAuthTheme(); // keep for potential future use
   const { getBooking } = useBookings();
   const { profile } = useCustomerProfile();
   const booking = getBooking(bookingId);
