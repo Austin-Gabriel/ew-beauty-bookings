@@ -313,14 +313,14 @@ export function DiscoverPage() {
         <div
           className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
           style={{
-            backgroundColor: isDark ? "rgba(255,130,63,0.10)" : "rgba(255,130,63,0.10)",
-            color: BAGEL_ACCENT,
+            backgroundColor: isDark ? "rgba(34,197,94,0.10)" : "rgba(34,197,94,0.10)",
+            color: LIVE_GREEN,
             fontFamily: SANS_STACK,
             fontSize: 11.5,
             fontWeight: 600,
           }}
         >
-          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
           {onlineList.length} stylists ready in Brooklyn
         </div>
       )}
