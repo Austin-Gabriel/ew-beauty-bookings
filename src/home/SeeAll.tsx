@@ -539,7 +539,7 @@ function ViewToggle({
             onClick={() => onChange(v)}
             className="inline-flex items-center gap-1 rounded-full px-3 py-1"
             style={{
-              backgroundColor: active ? (text === "#F0EBD8" ? "rgba(240,235,216,0.14)" : "rgba(6,28,39,0.10)") : "transparent",
+              backgroundColor: active ? "var(--muted)" : "transparent",
               color: active ? text : muted,
               fontFamily: SANS_STACK,
               fontSize: 11,
