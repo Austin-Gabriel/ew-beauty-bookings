@@ -11,6 +11,10 @@ import {
   type Booking,
   type BookingStatus,
 } from "@/data/bookings-store";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 
 const ORANGE = "var(--bagel)";
 const SUCCESS = "#16A34A";
