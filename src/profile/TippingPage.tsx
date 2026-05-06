@@ -113,8 +113,8 @@ export function TippingPage() {
                   <div className="ml-auto flex items-center gap-1">
                     <input
                       type="number"
-                      min={1}
-                      max={50}
+                      min={0}
+                      max={100}
                       value={customValue || ""}
                       onChange={(e) => handleCustomChange(e.target.value)}
                       className="tabular w-14 rounded-lg border border-hairline bg-card-foreground/5 px-2 py-1.5 text-center text-[15px] font-medium text-card-foreground outline-none focus:border-bagel"
