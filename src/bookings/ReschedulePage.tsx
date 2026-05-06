@@ -19,8 +19,8 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -77,18 +77,18 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)" }}>Reschedule</h1>
+        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)" }}>Reschedule</h1>
       </header>
 
       <div className="flex-1 px-5 pt-5 pb-28">
         <div
           className="rounded-2xl px-4 py-3.5"
-          style={{ backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8" }}
+          style={{ backgroundColor: "var(--surface-elevated)" }}
         >
           <p style={{ fontSize: 10.5, color: muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
             Current booking
           </p>
-          <p style={{ fontSize: 15, fontWeight: 600, color: "var(--card-foreground)", marginTop: 4 }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "var(--foreground)", marginTop: 4 }}>
             {booking.service.name} with {pro.name}
           </p>
           <p style={{ fontSize: 12.5, color: muted, marginTop: 2 }}>
@@ -96,7 +96,7 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
           </p>
         </div>
 
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)", marginTop: 24, marginBottom: 12 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--foreground)", marginTop: 24, marginBottom: 12 }}>
           Pick a new date
         </h3>
         <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
@@ -108,8 +108,8 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
                 onClick={() => setSelectedDay(i)}
                 className="flex shrink-0 flex-col items-center rounded-xl px-3.5 py-2.5 transition-colors"
                 style={{
-                  backgroundColor: active ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                  color: active ? "#1A0E08" : "var(--card-foreground)",
+                  backgroundColor: active ? ORANGE : "var(--surface-elevated)",
+                  color: active ? "#1A0E08" : "var(--foreground)",
                   border: active ? "none" : `1px solid ${subtleBorder}`,
                   minWidth: 56,
                 }}
@@ -125,7 +125,7 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
           })}
         </div>
 
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)", marginTop: 24, marginBottom: 12 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--foreground)", marginTop: 24, marginBottom: 12 }}>
           Pick a time
         </h3>
         <div className="grid grid-cols-3 gap-2">
@@ -137,8 +137,8 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
                 onClick={() => setSelectedTime(t)}
                 className="rounded-xl py-2.5 text-center transition-colors"
                 style={{
-                  backgroundColor: active ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                  color: active ? "#1A0E08" : "var(--card-foreground)",
+                  backgroundColor: active ? ORANGE : "var(--surface-elevated)",
+                  color: active ? "#1A0E08" : "var(--foreground)",
                   border: active ? "none" : `1px solid ${subtleBorder}`,
                   fontSize: 13,
                   fontWeight: 600,
