@@ -401,6 +401,22 @@ export function DevStateToggle() {
                   onChange={(v) => set("searchingStage", v)}
                 />
               </Field>
+
+              <Field label="Schedule state" hint="Drives scheduled booking flow">
+                <Stacked<ScheduleState>
+                  value={state.scheduleState}
+                  options={[
+                    { value: "none", label: "None" },
+                    { value: "slot-picked", label: "Slot picked" },
+                    { value: "slot-expired", label: "Slot expired" },
+                    { value: "pending-pro", label: "Pending pro" },
+                    { value: "auto-accepted", label: "Auto-accepted" },
+                    { value: "pro-declined", label: "Pro declined" },
+                    { value: "24h-timeout", label: "24h timeout" },
+                  ]}
+                  onChange={(v) => set("scheduleState", v)}
+                />
+              </Field>
             </div>
 
             <div className="mt-6 flex flex-col gap-2">
