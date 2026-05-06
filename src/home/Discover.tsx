@@ -24,7 +24,6 @@ import {
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
 const LIVE_GREEN = "var(--live-green)";
-const LIVE_GREEN = "var(--live-green)";
 const INFO = "#3B82F6";
 
 /** Mock NYC neighborhoods for address search dropdown. */
