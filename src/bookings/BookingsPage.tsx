@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/sheet";
 
 const ORANGE = "var(--bagel)";
-const SUCCESS = "#16A34A";
+const MUTED_PILL_BG = "rgba(11,18,32,0.06)";
+const MUTED_PILL_FG = "var(--on-card-muted)";
 const DANGER = "#DC2626";
 const STAR = "#F5A623";
 
