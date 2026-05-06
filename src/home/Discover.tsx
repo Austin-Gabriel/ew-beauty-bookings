@@ -789,8 +789,8 @@ function HeroCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: LIVE_GREEN }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
             Available 2:00 PM
           </span>
           <span className="inline-flex items-center gap-1" style={{ fontSize: 11.5, fontWeight: 500, color: "#2A3544" }}>
