@@ -94,6 +94,7 @@ export function BookingsPage() {
                 onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
                 onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
                 onTap={() => goPro(active.proId)}
+                onCancel={() => setCancelTarget(active.id)}
               />
             )}
             <UpcomingList
