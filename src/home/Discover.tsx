@@ -64,7 +64,32 @@ export function DiscoverPage() {
   const isNow = mode === "now";
   const accent = isNow ? BAGEL_ACCENT : ORANGE;
   const [activeChip, setActiveChip] = useState<ChipId>("All");
-  const [search, setSearch] = useState("");
+
+  // Address search state
+  const [addressQuery, setAddressQuery] = useState("");
+  const [addressFocused, setAddressFocused] = useState(false);
+  const [searchedLocation, setSearchedLocation] = useState<typeof MOCK_NEIGHBORHOODS[number] | null>(null);
+  const activeLocation = searchedLocation ?? DEFAULT_LOCATION;
+  const isCustomLocation = searchedLocation !== null;
+
+  const addressSuggestions = useMemo(() => {
+    if (!addressQuery.trim()) return [];
+    const q = addressQuery.toLowerCase();
+    return MOCK_NEIGHBORHOODS.filter(
+      (n) => n.name.toLowerCase().includes(q) || n.borough.toLowerCase().includes(q),
+    );
+  }, [addressQuery]);
+
+  const handleSelectLocation = (loc: typeof MOCK_NEIGHBORHOODS[number]) => {
+    setSearchedLocation(loc);
+    setAddressQuery(loc.name);
+    setAddressFocused(false);
+  };
+
+  const handleResetLocation = () => {
+    setSearchedLocation(null);
+    setAddressQuery("");
+  };
 
   // Sheet open state
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
