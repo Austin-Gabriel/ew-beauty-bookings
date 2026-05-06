@@ -103,7 +103,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
             </span>
           </div>
 
-          <h1 style={{ marginTop: 20, fontSize: 28, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.025em" }}>
+          <h1 style={{ marginTop: 20, fontSize: 28, fontWeight: 600, color: "var(--foreground)", letterSpacing: "-0.025em" }}>
             All done!
           </h1>
           <p style={{ marginTop: 8, fontSize: 15, color: muted, textAlign: "center", maxWidth: 280 }}>
@@ -150,8 +150,8 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
               rows={3}
               className="mt-2 w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
               style={{
-                backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                color: "var(--card-foreground)",
+                backgroundColor: "var(--surface-elevated)",
+                color: "var(--foreground)",
                 fontSize: 14,
                 fontFamily: SANS_STACK,
                 lineHeight: 1.5,
@@ -184,7 +184,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
         ) : (
           <div className="mt-8">
             {!tipExpanded ? (
-              <p style={{ fontSize: 14, color: "var(--card-foreground)", textAlign: "center" }}>
+              <p style={{ fontSize: 14, color: "var(--foreground)", textAlign: "center" }}>
                 Tip: ${tipAmount}
                 <span style={{ margin: "0 6px", color: muted }}>·</span>
                 <button
