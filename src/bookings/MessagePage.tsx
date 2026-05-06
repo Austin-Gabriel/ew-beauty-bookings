@@ -63,7 +63,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
           <p style={{ fontSize: 11, color: muted }}>{booking.service.name}</p>
         </div>
       </header>
@@ -78,7 +78,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
             >
               {initials}
             </div>
-            <p style={{ marginTop: 12, fontSize: 15, fontWeight: 600, color: "var(--card-foreground)" }}>{pro.name}</p>
+            <p style={{ marginTop: 12, fontSize: 15, fontWeight: 600, color: "var(--foreground)" }}>{pro.name}</p>
             <p style={{ marginTop: 4, fontSize: 13, color: muted, maxWidth: 240, lineHeight: 1.4 }}>
               Send a message about your upcoming {booking.service.name} appointment.
             </p>
@@ -117,7 +117,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           className="min-w-0 flex-1 rounded-xl border-none px-3.5 py-2.5 outline-none"
           style={{
             backgroundColor: "var(--surface-elevated)",
-            color: "var(--card-foreground)",
+            color: "var(--foreground)",
             fontSize: 14,
             fontFamily: SANS_STACK,
           }}

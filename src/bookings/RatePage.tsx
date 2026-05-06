@@ -59,7 +59,7 @@ export function RatePage({ bookingId }: { bookingId: string }) {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)" }}>Rate your experience</h1>
+        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)" }}>Rate your experience</h1>
       </header>
 
       <div className="flex-1 px-5 pt-8 pb-28">
@@ -70,7 +70,7 @@ export function RatePage({ bookingId }: { bookingId: string }) {
           >
             {initials}
           </div>
-          <p style={{ marginTop: 12, fontSize: 18, fontWeight: 700, color: "var(--card-foreground)" }}>{pro.name}</p>
+          <p style={{ marginTop: 12, fontSize: 18, fontWeight: 700, color: "var(--foreground)" }}>{pro.name}</p>
           <p style={{ marginTop: 4, fontSize: 13, color: muted }}>
             {booking.service.name} · {new Date(booking.when).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
           </p>
@@ -119,7 +119,7 @@ export function RatePage({ bookingId }: { bookingId: string }) {
               className="w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
               style={{
                 backgroundColor: "var(--surface-elevated)",
-                color: "var(--card-foreground)",
+                color: "var(--foreground)",
                 fontSize: 14,
                 fontFamily: SANS_STACK,
                 lineHeight: 1.5,
