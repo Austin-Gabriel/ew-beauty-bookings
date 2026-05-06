@@ -847,7 +847,7 @@ function OnlineCard({
         <span
           className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5"
           style={{
-            backgroundColor: BAGEL_ACCENT,
+            backgroundColor: LIVE_GREEN,
             color: "#fff",
             fontSize: 9,
             fontWeight: 700,
