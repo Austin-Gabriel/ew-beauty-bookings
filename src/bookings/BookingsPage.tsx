@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { AppShell } from "@/home/AppShell";
@@ -11,6 +11,11 @@ import {
   type Booking,
   type BookingStatus,
 } from "@/data/bookings-store";
+import {
+  formatBookingDate,
+  formatBookingDateHeader,
+  formatBookingTime,
+} from "@/lib/format-booking-date";
 import {
   Sheet,
   SheetContent,
