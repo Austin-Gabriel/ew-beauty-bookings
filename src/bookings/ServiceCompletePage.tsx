@@ -275,7 +275,7 @@ function TipSelector({
   onSelectPreset,
   onCustom,
   onCustomChange,
-  isDark,
+  _isDark,
   subtleBorder,
 }: {
   servicePrice: number;
@@ -285,7 +285,7 @@ function TipSelector({
   onSelectPreset: (f: number) => void;
   onCustom: () => void;
   onCustomChange: (v: string) => void;
-  isDark: boolean;
+  _isDark?: boolean;
   subtleBorder: string;
 }) {
   return (
