@@ -124,14 +124,12 @@ export function DiscoverPage() {
   const filtered = useMemo(() => {
     let list = MOCK_PROS;
     if (activeChip !== "All") list = list.filter((p) => p.professionalType === activeChip);
-    // Filter by radius
-    list = list.filter((p) => p.distanceMi <= radiusMi);
-    // Filter by searched neighborhood location
+    // Filter by searched neighborhood — strict match when a location is selected
     if (searchedLocation) {
-      list = list.filter(
-        (p) => p.neighborhood === searchedLocation.name || p.distanceMi <= radiusMi,
-      );
+      list = list.filter((p) => p.neighborhood === searchedLocation.name);
     }
+    // Then apply radius filter on the remaining
+    list = list.filter((p) => p.distanceMi <= radiusMi);
     if (priceFilter !== "any") {
       list = list.filter((p) => {
         if (priceFilter === "$") return p.priceFrom < 80;
