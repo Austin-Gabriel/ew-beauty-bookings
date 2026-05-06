@@ -405,6 +405,17 @@ function ActiveBookingHero({
             Call
           </button>
         </div>
+        {/* Cancel link — only before in-progress */}
+        {(["confirmed", "getting-ready", "enroute", "arrived"] as BookingStatus[]).includes(status) && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onCancel(); }}
+            className="mt-3 w-full text-center"
+            style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, opacity: 0.8, background: "none", border: "none", cursor: "pointer" }}
+          >
+            Cancel booking
+          </button>
+        )}
       </div>
     </div>
   );
