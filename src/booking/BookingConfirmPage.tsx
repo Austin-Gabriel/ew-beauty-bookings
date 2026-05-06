@@ -161,10 +161,7 @@ export function BookingConfirmPage({
           when: scheduledWhen,
           notes: notes.trim() || undefined,
         });
-        // Update to pending_pro_approval
-        // The booking is created with status "searching" by default, update it
-        // Actually let's just navigate — the createBooking sets status to "searching"
-        // We need updateBookingStatus
+        updateBookingStatus(newId, "pending_pro_approval");
         navigate({
           to: "/booking/pending/$bookingId",
           params: { bookingId: newId },
