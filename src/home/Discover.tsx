@@ -701,8 +701,8 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(255,130,63,0.18)",
-        color: BAGEL_ACCENT,
+        backgroundColor: "rgba(34,197,94,0.18)",
+        color: LIVE_GREEN,
         fontFamily: SANS_STACK,
         fontSize: 10,
         fontWeight: 700,
@@ -710,7 +710,7 @@ function LiveBadge() {
         textTransform: "uppercase",
       }}
     >
-      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
       Live
     </span>
   );
