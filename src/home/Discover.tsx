@@ -85,6 +85,8 @@ export function DiscoverPage() {
   const filtered = useMemo(() => {
     let list = MOCK_PROS;
     if (activeChip !== "All") list = list.filter((p) => p.professionalType === activeChip);
+    // Filter by radius
+    list = list.filter((p) => p.distanceMi <= radiusMi);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -92,6 +94,7 @@ export function DiscoverPage() {
           p.name.toLowerCase().includes(q) ||
           p.headline.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q) ||
+          p.neighborhood.toLowerCase().includes(q) ||
           p.specializations.some((s) => s.toLowerCase().includes(q)),
       );
     }
@@ -109,7 +112,7 @@ export function DiscoverPage() {
       list = list.filter((p) => p.online);
     }
     return list;
-  }, [activeChip, search, priceFilter, ratingFilter, availabilityFilter]);
+  }, [activeChip, search, priceFilter, ratingFilter, availabilityFilter, radiusMi]);
 
   const onlineList = useMemo(() => filtered.filter((p) => p.online), [filtered]);
   const spotlight = useMemo(
