@@ -24,10 +24,11 @@ const STAR = "#F5A623";
 type Tab = "upcoming" | "past";
 
 export function BookingsPage() {
-  const { bookings, activeBookings, pastBookings } = useBookings();
+  const { bookings, activeBookings, pastBookings, cancelBooking } = useBookings();
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
