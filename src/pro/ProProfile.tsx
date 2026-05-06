@@ -9,7 +9,7 @@ import { formatProLocation, getLocationContext } from "@/lib/location";
 import { TAB_BAR_HEIGHT_PX } from "@/home/TabBar";
 
 const ORANGE = "#FF823F";
-const SUCCESS = "#16A34A";
+const BAGEL_ACCENT = "var(--bagel)";
 const STAR = "#F5A623";
 const INK_900 = "#0B1220";
 const INK_700 = "#2A3544";
@@ -186,7 +186,7 @@ export function ProProfile({ proId }: { proId: string }) {
                     width: 22,
                     height: 22,
                     borderRadius: 9999,
-                    backgroundColor: SUCCESS,
+                    backgroundColor: BAGEL_ACCENT,
                     color: "#fff",
                     border: "3px solid #fff",
                     display: "grid",
@@ -240,12 +240,12 @@ export function ProProfile({ proId }: { proId: string }) {
                 style={{
                   padding: "5px 10px",
                   backgroundColor: "#DCFCE7",
-                  color: SUCCESS,
+                  color: BAGEL_ACCENT,
                   fontSize: 11.5,
                   fontWeight: 600,
                 }}
               >
-                <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
+                <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
                 Available today 2 PM
               </span>
             )}
