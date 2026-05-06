@@ -24,6 +24,7 @@ import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
+import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
 import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
@@ -123,6 +124,11 @@ const FavoritesIndexRoute = FavoritesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => FavoritesRoute,
+} as any)
+const BookingsIndexRoute = BookingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BookingsRoute,
 } as any)
 const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
   id: '/see-all/$category',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
@@ -292,7 +299,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
-  '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
@@ -314,6 +320,7 @@ export interface FileRoutesByTo {
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/bookings': typeof BookingsIndexRoute
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
@@ -356,6 +363,7 @@ export interface FileRoutesById {
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
@@ -399,6 +407,7 @@ export interface FileRouteTypes {
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
+    | '/bookings/'
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
@@ -416,7 +425,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/biometric-enroll'
-    | '/bookings'
     | '/discover'
     | '/join-as-pro'
     | '/notifications'
@@ -438,6 +446,7 @@ export interface FileRouteTypes {
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
+    | '/bookings'
     | '/favorites'
     | '/profile'
     | '/booking/call/$bookingId'
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
     | '/profile/theme'
     | '/profile/tipping'
     | '/see-all/$category'
+    | '/bookings/'
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
@@ -628,6 +638,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/favorites/'
       preLoaderRoute: typeof FavoritesIndexRouteImport
       parentRoute: typeof FavoritesRoute
+    }
+    '/bookings/': {
+      id: '/bookings/'
+      path: '/'
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof BookingsRoute
     }
     '/see-all/$category': {
       id: '/see-all/$category'
@@ -802,10 +819,12 @@ declare module '@tanstack/react-router' {
 
 interface BookingsRouteChildren {
   BookingsBookingIdRoute: typeof BookingsBookingIdRoute
+  BookingsIndexRoute: typeof BookingsIndexRoute
 }
 
 const BookingsRouteChildren: BookingsRouteChildren = {
   BookingsBookingIdRoute: BookingsBookingIdRoute,
+  BookingsIndexRoute: BookingsIndexRoute,
 }
 
 const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
@@ -887,3 +906,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

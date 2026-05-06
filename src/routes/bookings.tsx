@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { BookingsPage } from "@/bookings/BookingsPage";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/bookings")({
   head: () => ({
@@ -8,5 +7,5 @@ export const Route = createFileRoute("/bookings")({
       { name: "description", content: "Your upcoming and past Ewà bookings." },
     ],
   }),
-  component: BookingsPage,
+  component: () => <Outlet />,
 });
