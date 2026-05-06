@@ -36,7 +36,7 @@ export function BookingConfirmPage({
     addAddress,
     addCard,
   } = useCustomerProfile();
-  const { createBooking } = useBookings();
+  const { createBooking, updateBookingStatus } = useBookings();
 
   const addresses = profile.savedAddresses;
   const cards = profile.paymentMethods;
