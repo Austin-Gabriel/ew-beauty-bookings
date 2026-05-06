@@ -505,7 +505,9 @@ function UpcomingCard({
   cardShadow: string;
 }) {
   const navigate = useNavigate();
+  const { cancelBooking } = useBookings();
   const status = booking.status;
+  const isPending = status === "pending_pro_approval";
   const pill = statusPillFor(status);
 
   return (
@@ -543,6 +545,11 @@ function UpcomingCard({
           <p style={{ fontSize: 12, color: "var(--on-card-muted)", marginTop: 2 }}>
             {booking.service.name} · {booking.service.durationLabel}
           </p>
+          {isPending && (
+            <p style={{ fontSize: 11.5, color: "var(--on-card-muted)", marginTop: 3, fontStyle: "italic" }}>
+              Awaiting {pro.name.split(" ")[0]}&apos;s response
+            </p>
+          )}
         </div>
         <span
           className="shrink-0 rounded-full"
@@ -580,8 +587,8 @@ function UpcomingCard({
         </span>
       </div>
 
-      {/* PIN — visible on every upcoming booking the customer is responsible for */}
-      {booking.pin && (
+      {/* PIN — visible on confirmed upcoming bookings, NOT pending */}
+      {booking.pin && !isPending && (
         <div
           className="mt-3 flex items-center justify-between rounded-xl px-3 py-2.5"
           style={{ backgroundColor: "var(--card)", border: "1px solid var(--hairline)" }}
@@ -610,47 +617,62 @@ function UpcomingCard({
         </div>
       )}
 
-      <div className="mt-3 flex gap-2">
+      {/* Pending: Cancel request only. Confirmed+: Message + Reschedule */}
+      {isPending ? (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+            cancelBooking(booking.id);
           }}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
-          style={{
-            backgroundColor: "transparent",
-            border: `1px solid ${subtleBorder}`,
-            color: "var(--card-foreground)",
-            fontSize: 12.5,
-            fontWeight: 600,
-            fontFamily: SANS_STACK,
-          }}
+          className="mt-3 w-full text-center"
+          style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          Message
+          Cancel request
         </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
-          }}
-          className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
-          style={{
-            backgroundColor: "transparent",
-            border: `1px solid ${subtleBorder}`,
-            color: "var(--card-foreground)",
-            fontSize: 12.5,
-            fontWeight: 600,
-            fontFamily: SANS_STACK,
-          }}
-        >
-          Reschedule
-        </button>
-      </div>
+      ) : (
+        <div className="mt-3 flex gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+            }}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
+            style={{
+              backgroundColor: "transparent",
+              border: `1px solid ${subtleBorder}`,
+              color: "var(--card-foreground)",
+              fontSize: 12.5,
+              fontWeight: 600,
+              fontFamily: SANS_STACK,
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Message
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
+            }}
+            className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
+            style={{
+              backgroundColor: "transparent",
+              border: `1px solid ${subtleBorder}`,
+              color: "var(--card-foreground)",
+              fontSize: 12.5,
+              fontWeight: 600,
+              fontFamily: SANS_STACK,
+            }}
+          >
+            Reschedule
+          </button>
+        </div>
+      )}
     </div>
   );
 }

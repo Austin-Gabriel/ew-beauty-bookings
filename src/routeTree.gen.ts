@@ -38,9 +38,11 @@ import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
+import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
 import { Route as BookingReceiptBookingIdRouteImport } from './routes/booking.receipt.$bookingId'
 import { Route as BookingRateBookingIdRouteImport } from './routes/booking.rate.$bookingId'
+import { Route as BookingPendingBookingIdRouteImport } from './routes/booking.pending.$bookingId'
 import { Route as BookingMessageBookingIdRouteImport } from './routes/booking.message.$bookingId'
 import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
 import { Route as BookingCompleteBookingIdRouteImport } from './routes/booking.complete.$bookingId'
@@ -192,6 +194,11 @@ const BookingSearchingBookingIdRoute =
     path: '/booking/searching/$bookingId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BookingScheduleProIdRoute = BookingScheduleProIdRouteImport.update({
+  id: '/booking/schedule/$proId',
+  path: '/booking/schedule/$proId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingRescheduleBookingIdRoute =
   BookingRescheduleBookingIdRouteImport.update({
     id: '/booking/reschedule/$bookingId',
@@ -206,6 +213,11 @@ const BookingReceiptBookingIdRoute = BookingReceiptBookingIdRouteImport.update({
 const BookingRateBookingIdRoute = BookingRateBookingIdRouteImport.update({
   id: '/booking/rate/$bookingId',
   path: '/booking/rate/$bookingId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingPendingBookingIdRoute = BookingPendingBookingIdRouteImport.update({
+  id: '/booking/pending/$bookingId',
+  path: '/booking/pending/$bookingId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingMessageBookingIdRoute = BookingMessageBookingIdRouteImport.update({
@@ -262,9 +274,11 @@ export interface FileRoutesByFullPath {
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
+  '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
+  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
@@ -298,9 +312,11 @@ export interface FileRoutesByTo {
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
+  '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
+  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
@@ -337,9 +353,11 @@ export interface FileRoutesById {
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
+  '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
+  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
@@ -377,9 +395,11 @@ export interface FileRouteTypes {
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
+    | '/booking/pending/$bookingId'
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
+    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
@@ -413,9 +433,11 @@ export interface FileRouteTypes {
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
+    | '/booking/pending/$bookingId'
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
+    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   id:
@@ -451,9 +473,11 @@ export interface FileRouteTypes {
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
+    | '/booking/pending/$bookingId'
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
+    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
@@ -478,9 +502,11 @@ export interface RootRouteChildren {
   BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
   BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
   BookingMessageBookingIdRoute: typeof BookingMessageBookingIdRoute
+  BookingPendingBookingIdRoute: typeof BookingPendingBookingIdRoute
   BookingRateBookingIdRoute: typeof BookingRateBookingIdRoute
   BookingReceiptBookingIdRoute: typeof BookingReceiptBookingIdRoute
   BookingRescheduleBookingIdRoute: typeof BookingRescheduleBookingIdRoute
+  BookingScheduleProIdRoute: typeof BookingScheduleProIdRoute
   BookingSearchingBookingIdRoute: typeof BookingSearchingBookingIdRoute
 }
 
@@ -689,6 +715,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingSearchingBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/schedule/$proId': {
+      id: '/booking/schedule/$proId'
+      path: '/booking/schedule/$proId'
+      fullPath: '/booking/schedule/$proId'
+      preLoaderRoute: typeof BookingScheduleProIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/reschedule/$bookingId': {
       id: '/booking/reschedule/$bookingId'
       path: '/booking/reschedule/$bookingId'
@@ -708,6 +741,13 @@ declare module '@tanstack/react-router' {
       path: '/booking/rate/$bookingId'
       fullPath: '/booking/rate/$bookingId'
       preLoaderRoute: typeof BookingRateBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/pending/$bookingId': {
+      id: '/booking/pending/$bookingId'
+      path: '/booking/pending/$bookingId'
+      fullPath: '/booking/pending/$bookingId'
+      preLoaderRoute: typeof BookingPendingBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/booking/message/$bookingId': {
@@ -806,9 +846,11 @@ const rootRouteChildren: RootRouteChildren = {
   BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
   BookingConfirmProIdRoute: BookingConfirmProIdRoute,
   BookingMessageBookingIdRoute: BookingMessageBookingIdRoute,
+  BookingPendingBookingIdRoute: BookingPendingBookingIdRoute,
   BookingRateBookingIdRoute: BookingRateBookingIdRoute,
   BookingReceiptBookingIdRoute: BookingReceiptBookingIdRoute,
   BookingRescheduleBookingIdRoute: BookingRescheduleBookingIdRoute,
+  BookingScheduleProIdRoute: BookingScheduleProIdRoute,
   BookingSearchingBookingIdRoute: BookingSearchingBookingIdRoute,
 }
 export const routeTree = rootRouteImport
