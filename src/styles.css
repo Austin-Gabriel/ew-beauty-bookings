@@ -73,6 +73,7 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-hairline: var(--hairline);
   --color-on-card-muted: var(--on-card-muted);
+  --color-live-green: var(--live-green);
 
   --font-sans: "Uncut Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
