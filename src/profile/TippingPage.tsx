@@ -50,13 +50,23 @@ export function TippingPage() {
   }
 
   function handleCustomChange(val: string) {
+    if (val === "" || val === "-") {
+      setCustomValue(0);
+      return;
+    }
     const num = parseInt(val, 10);
-    if (!isNaN(num) && num >= 1 && num <= 50) {
+    if (isNaN(num) || num < 0) {
+      setCustomValue(0);
+      setTippingPreference({ type: "custom", value: 0 });
+      set("tippingCustomValue", 0);
+    } else if (num > 100) {
+      setCustomValue(100);
+      setTippingPreference({ type: "custom", value: 100 });
+      set("tippingCustomValue", 100);
+    } else {
       setCustomValue(num);
       setTippingPreference({ type: "custom", value: num });
       set("tippingCustomValue", num);
-    } else if (val === "") {
-      setCustomValue(0);
     }
   }
 
