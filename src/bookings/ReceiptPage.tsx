@@ -20,7 +20,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
   if (!booking || !pro) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5" style={{ fontFamily: SANS_STACK }}>
-        <p style={{ color: "var(--card-foreground)", fontSize: 16, fontWeight: 600 }}>Booking not found</p>
+        <p style={{ color: "var(--foreground)", fontSize: 16, fontWeight: 600 }}>Booking not found</p>
         <button onClick={() => navigate({ to: "/bookings" })} className="mt-4" style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>
           Back to Bookings
         </button>
@@ -46,12 +46,12 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ backgroundColor: "var(--background)", borderBottom: `1px solid ${subtleBorder}` }}
       >
-        <button onClick={() => window.history.back()} className="shrink-0 p-1" style={{ color: "var(--card-foreground)" }}>
+        <button onClick={() => window.history.back()} className="shrink-0 p-1" style={{ color: "var(--foreground)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)" }}>Receipt</h1>
+        <h1 style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)" }}>Receipt</h1>
       </header>
 
       <div className="flex-1 px-5 pt-6 pb-10">
