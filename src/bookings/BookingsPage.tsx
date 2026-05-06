@@ -505,7 +505,9 @@ function UpcomingCard({
   cardShadow: string;
 }) {
   const navigate = useNavigate();
+  const { cancelBooking } = useBookings();
   const status = booking.status;
+  const isPending = status === "pending_pro_approval";
   const pill = statusPillFor(status);
 
   return (
