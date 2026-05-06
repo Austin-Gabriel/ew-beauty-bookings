@@ -1630,7 +1630,7 @@ function RadiusSheet({
       <SheetContent side="bottom" className="rounded-t-3xl">
         <SheetShell
           title="Search radius"
-          description={`How far should we look from your spot in ${activeLocation.name}?`}
+          description="How far should we look from your current location?"
         >
           <ul className="flex flex-col gap-1 pt-2">
             {RADIUS_OPTIONS.map((opt) => {
