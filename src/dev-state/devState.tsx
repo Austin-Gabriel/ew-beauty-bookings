@@ -129,6 +129,7 @@ const DEFAULTS: DevState = {
   editProfileState: "default",
   bookingConfirmState: "default",
   searchingStage: "searching",
+  scheduleState: "none",
 };
 
 const STORAGE_KEY = "ewa.devstate.v1";
