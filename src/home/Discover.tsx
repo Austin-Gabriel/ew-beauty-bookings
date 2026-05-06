@@ -23,6 +23,7 @@ import {
 
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
+const LIVE_GREEN = "var(--live-green)";
 const INFO = "#3B82F6";
 
 type ChipId = "All" | (typeof PROFESSIONAL_TYPES)[number];
