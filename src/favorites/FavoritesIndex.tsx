@@ -9,7 +9,7 @@ import { FavoriteEmptyState } from "./FavoriteEmptyState";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 
 const ORANGE = "#FF823F";
-const SUCCESS = "#16A34A";
+const BAGEL_ACCENT = "var(--bagel)";
 const INK_900 = "#0B1220";
 const INK_500 = "#6B7684";
 const INK_400 = "#8D97A3";
@@ -526,7 +526,7 @@ function SavedStylistCard({
               <span
                 aria-hidden
                 className="inline-grid shrink-0 place-items-center rounded-full"
-                style={{ width: 13, height: 13, backgroundColor: SUCCESS, color: "#fff" }}
+                style={{ width: 13, height: 13, backgroundColor: BAGEL_ACCENT, color: "#fff" }}
               >
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
@@ -546,7 +546,7 @@ function SavedStylistCard({
             style={{
               fontSize: 11.5,
               fontWeight: 600,
-              color: availabilityNow ? SUCCESS : INK_500,
+              color: availabilityNow ? BAGEL_ACCENT : INK_500,
             }}
           >
             <span
@@ -556,7 +556,7 @@ function SavedStylistCard({
                 width: 5,
                 height: 5,
                 borderRadius: 9999,
-                backgroundColor: availabilityNow ? SUCCESS : INK_400,
+                backgroundColor: availabilityNow ? BAGEL_ACCENT : INK_400,
               }}
             />
             {availabilityText}

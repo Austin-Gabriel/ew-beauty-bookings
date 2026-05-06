@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/sheet";
 
 const ORANGE = "var(--bagel)";
-const SUCCESS = "#16A34A";
+const MUTED_PILL_BG = "rgba(11,18,32,0.06)";
+const MUTED_PILL_FG = "var(--on-card-muted)";
 const DANGER = "#DC2626";
 const STAR = "#F5A623";
 
@@ -583,7 +584,7 @@ function UpcomingCard({
       {booking.pin && (
         <div
           className="mt-3 flex items-center justify-between rounded-xl px-3 py-2.5"
-          style={{ backgroundColor: subtleSurface }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--hairline)" }}
         >
           <div>
             <p style={{ fontSize: 10, color: "var(--on-card-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -800,7 +801,7 @@ function PastCard({
             {booking.refundUsd ? `Refunded $${booking.refundUsd}` : "Cancelled"}
           </span>
         ) : booking.rating ? (
-          <span className="inline-flex items-center gap-1.5" style={{ color: SUCCESS, fontWeight: 600 }}>
+          <span className="inline-flex items-center gap-1.5" style={{ color: ORANGE, fontWeight: 600 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
@@ -923,7 +924,7 @@ function VerifiedTick() {
     <span
       aria-hidden
       className="inline-grid shrink-0 place-items-center rounded-full"
-      style={{ width: 13, height: 13, backgroundColor: SUCCESS, color: "#fff" }}
+      style={{ width: 13, height: 13, backgroundColor: ORANGE, color: "#fff" }}
     >
       <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
@@ -933,29 +934,32 @@ function VerifiedTick() {
 }
 
 function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: string } {
+  const BAGEL_PILL = { bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+  const NEUTRAL_PILL = { bg: MUTED_PILL_BG, fg: MUTED_PILL_FG };
+
   switch (status) {
     case "searching":
-      return { text: "Searching", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "Searching", ...BAGEL_PILL };
     case "pending_pro_approval":
-      return { text: "Pending", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "Pending", ...BAGEL_PILL };
     case "confirmed":
-      return { text: "Confirmed", bg: "rgba(22,163,74,0.14)", fg: SUCCESS };
+      return { text: "Confirmed", ...BAGEL_PILL };
     case "getting-ready":
-      return { text: "Getting ready", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "Getting ready", ...BAGEL_PILL };
     case "enroute":
-      return { text: "On the way", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "On the way", ...BAGEL_PILL };
     case "arrived":
-      return { text: "Arrived", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "Arrived", ...BAGEL_PILL };
     case "in-progress":
-      return { text: "In progress", bg: "rgba(255,130,63,0.14)", fg: ORANGE };
+      return { text: "In progress", ...BAGEL_PILL };
     case "completed":
-      return { text: "Completed", bg: "rgba(11,18,32,0.06)", fg: "var(--on-card-muted)" };
+      return { text: "Completed", ...NEUTRAL_PILL };
     case "cancelled":
-      return { text: "Cancelled", bg: "rgba(220,38,38,0.14)", fg: DANGER };
+      return { text: "Cancelled", ...NEUTRAL_PILL };
     case "declined":
-      return { text: "Declined", bg: "rgba(220,38,38,0.14)", fg: DANGER };
+      return { text: "Declined", ...NEUTRAL_PILL };
     default:
-      return { text: String(status), bg: "rgba(11,18,32,0.06)", fg: "var(--on-card-muted)" };
+      return { text: String(status), ...NEUTRAL_PILL };
   }
 }
 
@@ -969,7 +973,7 @@ function livePillFor(status: BookingStatus): { text: string; bg: string; fg: str
     case "enroute":
       return { text: "On the way", bg: ORANGE, fg: "#1A0E08", dot: "#1A0E08" };
     case "arrived":
-      return { text: "Arrived", bg: SUCCESS, fg: "#fff", dot: "#fff" };
+      return { text: "Arrived", bg: ORANGE, fg: "#1A0E08", dot: "#1A0E08" };
     case "in-progress":
       return { text: "In progress", bg: ORANGE, fg: "#1A0E08", dot: "#1A0E08" };
     default:

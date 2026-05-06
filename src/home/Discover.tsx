@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sheet";
 
 const ORANGE = "#FF823F";
-const SUCCESS = "#16A34A";
+const BAGEL_ACCENT = "var(--bagel)";
 const INFO = "#3B82F6";
 
 type ChipId = "All" | (typeof PROFESSIONAL_TYPES)[number];
@@ -48,7 +48,7 @@ export function DiscoverPage() {
 
   const [mode, setMode] = useState<"now" | "later">("later");
   const isNow = mode === "now";
-  const accent = isNow ? SUCCESS : ORANGE;
+  const accent = isNow ? BAGEL_ACCENT : ORANGE;
   const [activeChip, setActiveChip] = useState<ChipId>("All");
   const [search, setSearch] = useState("");
 
@@ -151,7 +151,7 @@ export function DiscoverPage() {
   // Card shadow lifts white cards off the white page in light mode; no shadow on dark
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   // Online card border — bumped to 50% opacity in light mode so the live signal stays strong on white
-  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
+  const onlineBorder = isDark ? "rgba(255,130,63,0.30)" : "rgba(255,130,63,0.50)";
   // Header bottom border — visible separator between sticky chrome and scrollable content in light mode
   const headerBottomBorder = isDark ? "transparent" : "#EEF1F4";
 
@@ -312,14 +312,14 @@ export function DiscoverPage() {
         <div
           className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
           style={{
-            backgroundColor: isDark ? "rgba(22,163,74,0.10)" : "#DCFCE7",
-            color: SUCCESS,
+            backgroundColor: isDark ? "rgba(255,130,63,0.10)" : "rgba(255,130,63,0.10)",
+            color: BAGEL_ACCENT,
             fontFamily: SANS_STACK,
             fontSize: 11.5,
             fontWeight: 600,
           }}
         >
-          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
           {onlineList.length} stylists ready in Brooklyn
         </div>
       )}
@@ -550,7 +550,7 @@ function ModeSwitch({
       {(["now", "later"] as const).map((m) => {
         const active = mode === m;
         const isNow = m === "now";
-        const activeBg = isNow ? SUCCESS : ORANGE;
+        const activeBg = isNow ? BAGEL_ACCENT : ORANGE;
         const activeColor = isNow ? "#fff" : "#1A0E08";
         return (
           <button
@@ -563,7 +563,7 @@ function ModeSwitch({
               color: active ? activeColor : "var(--muted-foreground)",
               fontSize: 12.5,
               fontWeight: 600,
-              boxShadow: active ? (isNow ? "0 1px 3px rgba(22,163,74,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
+              boxShadow: active ? (isNow ? "0 1px 3px rgba(255,130,63,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
               minWidth: 0,
             }}
           >
@@ -604,7 +604,7 @@ function Chip({
   subtleSurface: string;
   subtleBorder: string;
 }) {
-  const activeText = accent === SUCCESS ? "#fff" : "#1A0E08";
+  const activeText = "#1A0E08";
   return (
     <button
       type="button"
@@ -700,8 +700,8 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(22,163,74,0.18)",
-        color: SUCCESS,
+        backgroundColor: "rgba(255,130,63,0.18)",
+        color: BAGEL_ACCENT,
         fontFamily: SANS_STACK,
         fontSize: 10,
         fontWeight: 700,
@@ -709,7 +709,7 @@ function LiveBadge() {
         textTransform: "uppercase",
       }}
     >
-      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
+      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
       Live
     </span>
   );
@@ -788,8 +788,8 @@ function HeroCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
             Available 2:00 PM
           </span>
           <span className="inline-flex items-center gap-1" style={{ fontSize: 11.5, fontWeight: 500, color: "#2A3544" }}>
@@ -817,7 +817,7 @@ function OnlineCard({
   onTap,
   onFavorite,
   shadow = "none",
-  border = "rgba(22,163,74,0.30)",
+  border = "rgba(255,130,63,0.30)",
 }: {
   pro: Pro;
   favorited: boolean;
@@ -846,7 +846,7 @@ function OnlineCard({
         <span
           className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5"
           style={{
-            backgroundColor: SUCCESS,
+            backgroundColor: BAGEL_ACCENT,
             color: "#fff",
             fontSize: 9,
             fontWeight: 700,
@@ -870,8 +870,8 @@ function OnlineCard({
           <span className="truncate">· {pro.reviewCount} reviews · {pro.category}</span>
         </div>
         <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
             Available now
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
@@ -989,7 +989,7 @@ function VerifiedTick({ small = false }: { small?: boolean }) {
     <span
       aria-hidden
       className="inline-grid shrink-0 place-items-center rounded-full"
-      style={{ width: s, height: s, backgroundColor: SUCCESS, color: "#fff" }}
+      style={{ width: s, height: s, backgroundColor: BAGEL_ACCENT, color: "#fff" }}
     >
       <svg width={s - 4} height={s - 4} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
@@ -1318,7 +1318,7 @@ function NotificationsSheet({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div
                 className="grid h-14 w-14 place-items-center rounded-full"
-                style={{ backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS }}
+                style={{ backgroundColor: "rgba(255,130,63,0.12)", color: BAGEL_ACCENT }}
               >
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
@@ -1332,7 +1332,7 @@ function NotificationsSheet({
           ) : (
             <ul className="flex flex-col gap-1 pt-1">
               {notifications.map((n) => {
-                const dot = n.kind === "booking" ? SUCCESS : n.kind === "new-pro" ? ORANGE : INFO;
+                const dot = n.kind === "booking" ? BAGEL_ACCENT : n.kind === "new-pro" ? ORANGE : INFO;
                 return (
                   <li key={n.id}>
                     <button

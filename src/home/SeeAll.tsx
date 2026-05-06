@@ -8,7 +8,7 @@ import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 
 const ORANGE = "#FF823F";
-const SUCCESS = "#16A34A";
+const BAGEL_ACCENT = "var(--bagel)";
 const CARD_BG = "#FFFFFF";
 const INK_900 = "#0B1220";
 const INK_500 = "#6B7684";
@@ -50,7 +50,7 @@ export function SeeAllPage() {
   const muted = "var(--muted-foreground)";
   const faint = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
-  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
+  const onlineBorder = isDark ? "rgba(255,130,63,0.30)" : "rgba(255,130,63,0.50)";
 
   const meta = TITLE_MAP[cat];
 
@@ -172,10 +172,10 @@ function FilterRow({
         <FilterPill
           active
           label="Online now"
-          dot={SUCCESS}
-          activeBg="rgba(22,163,74,0.14)"
-          activeColor={SUCCESS}
-          activeBorder="rgba(22,163,74,0.30)"
+          dot={BAGEL_ACCENT}
+          activeBg="rgba(255,130,63,0.14)"
+          activeColor={BAGEL_ACCENT}
+          activeBorder="rgba(255,130,63,0.30)"
           subtleSurface={subtleSurface}
           subtleBorder={subtleBorder}
           text={text}
@@ -291,8 +291,8 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(22,163,74,0.18)",
-        color: SUCCESS,
+        backgroundColor: "rgba(255,130,63,0.18)",
+        color: BAGEL_ACCENT,
         fontFamily: SANS_STACK,
         fontSize: 10,
         fontWeight: 700,
@@ -300,7 +300,7 @@ function LiveBadge() {
         textTransform: "uppercase",
       }}
     >
-      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: SUCCESS }} />
+      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
       Live
     </span>
   );
@@ -359,7 +359,7 @@ function OnlineCardSplit({
   favorited,
   when,
   shadow = "none",
-  border = "rgba(22,163,74,0.30)",
+  border = "rgba(255,130,63,0.30)",
 }: {
   pro: Pro;
   onTap: () => void;
@@ -388,7 +388,7 @@ function OnlineCardSplit({
         <span
           className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5"
           style={{
-            backgroundColor: SUCCESS,
+            backgroundColor: BAGEL_ACCENT,
             color: "#fff",
             fontSize: 9,
             fontWeight: 700,
@@ -430,8 +430,8 @@ function OnlineCardSplit({
           </div>
         </div>
         <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
             {when} · {formatProLocation(pro, getLocationContext())}
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
@@ -658,8 +658,8 @@ function HeroResultCard({
         </div>
 
         <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t pt-2.5" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: SUCCESS }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: SUCCESS }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
             Available {slot}
           </span>
           <span className="inline-flex items-center gap-1" style={{ fontSize: 11.5, fontWeight: 500, color: INK_700 }}>
@@ -955,7 +955,7 @@ function VerifiedTick({ small = false }: { small?: boolean }) {
     <span
       aria-hidden
       className="inline-grid shrink-0 place-items-center rounded-full"
-      style={{ width: s, height: s, backgroundColor: SUCCESS, color: "#fff" }}
+      style={{ width: s, height: s, backgroundColor: BAGEL_ACCENT, color: "#fff" }}
     >
       <svg width={s - 4} height={s - 4} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
