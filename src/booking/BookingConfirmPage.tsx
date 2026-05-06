@@ -186,11 +186,9 @@ export function BookingConfirmPage({
           when: scheduledWhen,
           notes: notes.trim() || undefined,
         });
-        navigate({
-          to: "/booking/searching/$bookingId",
-          params: { bookingId: newId },
-          search: { proId },
-        });
+        updateBookingStatus(newId, "confirmed");
+        toast.success("Booking confirmed instantly!");
+        navigate({ to: "/bookings" });
       } else {
         // On-demand "Book now" flow
         const newId = createBooking({
