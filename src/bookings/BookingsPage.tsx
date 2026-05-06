@@ -244,12 +244,14 @@ function ActiveBookingHero({
   onMessage,
   onCall,
   onTap,
+  onCancel,
 }: {
   booking: Booking;
   pro: Pro;
   onMessage: () => void;
   onCall: () => void;
   onTap: () => void;
+  onCancel: () => void;
 }) {
   const status = booking.status;
   const livePill = livePillFor(status);
