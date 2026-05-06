@@ -70,7 +70,7 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
       <header
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
-        style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
+        style={{ backgroundColor: "var(--background)", borderBottom: `1px solid ${subtleBorder}` }}
       >
         <button onClick={() => navigate({ to: "/bookings" })} className="shrink-0 p-1" style={{ color: text }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -25,8 +25,8 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -219,7 +219,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
         {/* Total summary card */}
         <div
           className="mt-6 overflow-hidden rounded-2xl"
-          style={{ backgroundColor: "var(--cream-elevated)", border: `1px solid ${subtleBorder}` }}
+          style={{ backgroundColor: "var(--card)", border: `1px solid ${subtleBorder}` }}
         >
           <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${subtleBorder}` }}>
             <span style={{ fontSize: 14, color: "var(--card-foreground)" }}>Service</span>

@@ -14,8 +14,8 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   if (!booking || !pro) {
     return (
@@ -44,7 +44,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
       {/* Header */}
       <header
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
-        style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
+        style={{ backgroundColor: "var(--background)", borderBottom: `1px solid ${subtleBorder}` }}
       >
         <button onClick={() => window.history.back()} className="shrink-0 p-1" style={{ color: "var(--card-foreground)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
