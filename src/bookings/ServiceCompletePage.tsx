@@ -177,7 +177,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
               onSelectPreset={(f) => { setSelectedTipFactor(f); setIsCustom(false); }}
               onCustom={() => setIsCustom(true)}
               onCustomChange={setCustomTip}
-              isDark={isDark}
+              
               subtleBorder={subtleBorder}
             />
           </div>
@@ -208,7 +208,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
                   onSelectPreset={(f) => { setSelectedTipFactor(f); setIsCustom(false); }}
                   onCustom={() => setIsCustom(true)}
                   onCustomChange={setCustomTip}
-                  isDark={isDark}
+                  
                   subtleBorder={subtleBorder}
                 />
               </div>
