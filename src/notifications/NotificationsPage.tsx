@@ -70,9 +70,9 @@ export function NotificationsPage() {
   const navigate = useNavigate();
   const router = useRouter();
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.62)";
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#FFFFFF";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "rgba(6,28,39,0.10)";
+  const muted = "var(--muted-foreground)";
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
 
   // -------- Promo code input --------
   const [promo, setPromo] = useState("");
