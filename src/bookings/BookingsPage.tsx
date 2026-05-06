@@ -276,12 +276,12 @@ function ActiveBookingHero({
     bigSub = `Getting ready · leaves in ${booking.etaMinutes ?? 5} min`;
   } else if (status === "enroute") {
     bigLabel = `${booking.etaMinutes ?? 12} min`;
-    bigSub = `Estimated arrival · ${formatTime(booking.when)} appointment`;
+    bigSub = `Estimated arrival · ${formatBookingTime(booking.when)} appointment`;
   } else if (status === "arrived") {
     bigLabel = booking.pin ?? "—";
     bigSub = `Share PIN with ${pro.name.split(" ")[0]} to start`;
   } else if (status === "in-progress") {
-    bigLabel = formatTime(booking.startedAt ?? booking.when);
+    bigLabel = formatBookingTime(booking.startedAt ?? booking.when);
     bigSub = `Service started · ${booking.service.name} · ${booking.service.durationLabel}`;
   }
 
@@ -587,7 +587,7 @@ function UpcomingCard({
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          <strong style={{ color: "var(--card-foreground)", fontWeight: 600 }}>{formatTime(booking.when)}</strong>
+          <strong style={{ color: "var(--card-foreground)", fontWeight: 600 }}>{formatBookingDate(booking.when)}</strong>
         </span>
         <span className="inline-flex items-center gap-1.5">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -827,7 +827,7 @@ function PastCard({
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          {formatDateAndTime(booking.when)}
+          {formatBookingDate(booking.when)}
         </span>
         {isCancelled ? (
           <span style={{ color: DANGER }}>
