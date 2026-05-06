@@ -36,6 +36,7 @@ import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
+import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
@@ -183,6 +184,11 @@ const FavoritesCollectionIdRoute = FavoritesCollectionIdRouteImport.update({
   path: '/$collectionId',
   getParentRoute: () => FavoritesRoute,
 } as any)
+const BookingsBookingIdRoute = BookingsBookingIdRouteImport.update({
+  id: '/$bookingId',
+  path: '/$bookingId',
+  getParentRoute: () => BookingsRoute,
+} as any)
 const FavoritesSharedShareIdRoute = FavoritesSharedShareIdRouteImport.update({
   id: '/shared/$shareId',
   path: '/shared/$shareId',
@@ -245,7 +251,7 @@ const BookingCallBookingIdRoute = BookingCallBookingIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
-  '/bookings': typeof BookingsRoute
+  '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/join-as-pro': typeof JoinAsProRoute
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
@@ -285,7 +292,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
-  '/bookings': typeof BookingsRoute
+  '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
@@ -324,7 +332,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
-  '/bookings': typeof BookingsRoute
+  '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/join-as-pro': typeof JoinAsProRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
@@ -377,6 +386,7 @@ export interface FileRouteTypes {
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/profile/addresses'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/profile/addresses'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/pro/$proId'
     | '/profile/addresses'
@@ -485,7 +497,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BiometricEnrollRoute: typeof BiometricEnrollRoute
-  BookingsRoute: typeof BookingsRoute
+  BookingsRoute: typeof BookingsRouteWithChildren
   DiscoverRoute: typeof DiscoverRoute
   FavoritesRoute: typeof FavoritesRouteWithChildren
   JoinAsProRoute: typeof JoinAsProRoute
@@ -701,6 +713,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesCollectionIdRouteImport
       parentRoute: typeof FavoritesRoute
     }
+    '/bookings/$bookingId': {
+      id: '/bookings/$bookingId'
+      path: '/$bookingId'
+      fullPath: '/bookings/$bookingId'
+      preLoaderRoute: typeof BookingsBookingIdRouteImport
+      parentRoute: typeof BookingsRoute
+    }
     '/favorites/shared/$shareId': {
       id: '/favorites/shared/$shareId'
       path: '/shared/$shareId'
@@ -781,6 +800,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface BookingsRouteChildren {
+  BookingsBookingIdRoute: typeof BookingsBookingIdRoute
+}
+
+const BookingsRouteChildren: BookingsRouteChildren = {
+  BookingsBookingIdRoute: BookingsBookingIdRoute,
+}
+
+const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
+  BookingsRouteChildren,
+)
+
 interface FavoritesRouteChildren {
   FavoritesCollectionIdRoute: typeof FavoritesCollectionIdRoute
   FavoritesIndexRoute: typeof FavoritesIndexRoute
@@ -829,7 +860,7 @@ const ProfileRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
-  BookingsRoute: BookingsRoute,
+  BookingsRoute: BookingsRouteWithChildren,
   DiscoverRoute: DiscoverRoute,
   FavoritesRoute: FavoritesRouteWithChildren,
   JoinAsProRoute: JoinAsProRoute,
