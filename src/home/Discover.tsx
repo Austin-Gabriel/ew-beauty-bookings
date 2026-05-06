@@ -245,78 +245,113 @@ export function DiscoverPage() {
           </div>
         </div>
 
-        {/* Search bar */}
-        <div
-          className="flex h-11 items-center gap-2.5 rounded-2xl border pl-4 pr-1.5"
-          style={{ borderColor: subtleBorder, backgroundColor: subtleSurface }}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search styles, stylists, neighborhoods…"
-            className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
-            style={{
-              color: text,
-              fontFamily: SANS_STACK,
-              fontSize: 13.5,
-              fontWeight: 400,
-              minWidth: 0,
-            }}
-          />
-          <button
-            type="button"
-            aria-label={activeFilterCount > 0 ? `Filters (${activeFilterCount} active)` : "Filters"}
-            onClick={() => setFiltersSheetOpen(true)}
-            className="relative grid h-8 w-8 place-items-center rounded-xl transition-transform hover:scale-105 active:scale-95"
-            style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+        {/* Address search bar */}
+        <div className="relative">
+          <div
+            className="flex h-11 items-center gap-2.5 rounded-2xl border pl-4 pr-1.5"
+            style={{ borderColor: subtleBorder, backgroundColor: subtleSurface }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="7" y1="12" x2="20" y2="12" />
-              <line x1="10" y1="18" x2="20" y2="18" />
-              <circle cx="7" cy="6" r="2" fill="currentColor" />
-              <circle cx="13" cy="12" r="2" fill="currentColor" />
-              <circle cx="16" cy="18" r="2" fill="currentColor" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {activeFilterCount > 0 && (
-              <span
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  top: -4,
-                  right: -4,
-                  minWidth: 16,
-                  height: 16,
-                  padding: "0 4px",
-                  borderRadius: 9999,
-                  backgroundColor: "#1A0E08",
-                  color: ORANGE,
-                  fontFamily: SANS_STACK,
-                  fontSize: 10,
-                  fontWeight: 700,
-                  display: "grid",
-                  placeItems: "center",
-                  border: `2px solid ${isDark ? "#061C27" : "#F0EBD8"}`,
-                }}
-              >
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
+            <input
+              type="text"
+              value={addressQuery}
+              onChange={(e) => { setAddressQuery(e.target.value); if (searchedLocation && e.target.value !== searchedLocation.name) setSearchedLocation(null); }}
+              onFocus={() => setAddressFocused(true)}
+              onBlur={() => setTimeout(() => setAddressFocused(false), 200)}
+              placeholder="Enter address"
+              className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
+              style={{
+                color: text,
+                fontFamily: SANS_STACK,
+                fontSize: 13.5,
+                fontWeight: 400,
+                minWidth: 0,
+              }}
+            />
+            <button
+              type="button"
+              aria-label={activeFilterCount > 0 ? `Filters (${activeFilterCount} active)` : "Filters"}
+              onClick={() => setFiltersSheetOpen(true)}
+              className="relative grid h-8 w-8 place-items-center rounded-xl transition-transform hover:scale-105 active:scale-95"
+              style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="7" y1="12" x2="20" y2="12" />
+                <line x1="10" y1="18" x2="20" y2="18" />
+                <circle cx="7" cy="6" r="2" fill="currentColor" />
+                <circle cx="13" cy="12" r="2" fill="currentColor" />
+                <circle cx="16" cy="18" r="2" fill="currentColor" />
+              </svg>
+              {activeFilterCount > 0 && (
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: -4,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    borderRadius: 9999,
+                    backgroundColor: "#1A0E08",
+                    color: ORANGE,
+                    fontFamily: SANS_STACK,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    display: "grid",
+                    placeItems: "center",
+                    border: `2px solid ${isDark ? "#061C27" : "#F0EBD8"}`,
+                  }}
+                >
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Address dropdown suggestions */}
+          {addressFocused && addressQuery.trim() && addressSuggestions.length > 0 && (
+            <div
+              className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border shadow-lg"
+              style={{
+                backgroundColor: "var(--card)",
+                borderColor: subtleBorder,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              {addressSuggestions.map((loc) => (
+                <button
+                  key={loc.name}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelectLocation(loc)}
+                  className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-muted/30"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--on-card-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                  <div>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)" }}>{loc.name}</span>
+                    <span style={{ fontSize: 12, color: "var(--on-card-muted)", marginLeft: 6 }}>{loc.borough}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mode switch + compact location */}
-        <div className="mt-2 flex items-stretch gap-2">
+        <div className="mt-2 flex items-center gap-2">
           <ModeSwitch mode={mode} onChange={setMode} subtleSurface={subtleSurface} subtleBorder={subtleBorder} />
           <button
             type="button"
             onClick={() => setRadiusSheetOpen(true)}
-            className="inline-flex shrink-0 items-center gap-1 rounded-xl border px-3 transition-transform active:scale-95"
+            className="inline-flex shrink-0 items-center gap-1 rounded-xl border px-3 py-2 transition-transform active:scale-95"
             style={{
               borderColor: subtleBorder,
               backgroundColor: subtleSurface,
@@ -330,11 +365,29 @@ export function DiscoverPage() {
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {radiusMi} mi
+            {activeLocation.name} · {radiusMi} mi
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={faint} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
+          {isCustomLocation && (
+            <button
+              type="button"
+              onClick={handleResetLocation}
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 11.5,
+                fontWeight: 600,
+                color: BAGEL_ACCENT,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Reset to your location
+            </button>
+          )}
         </div>
       </header>
 
