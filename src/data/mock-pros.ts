@@ -18,7 +18,7 @@ export type Pro = {
   avatar: string;
   portfolio: string[];
   headline: string;
-  neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "Newark Central" | "Atlanta West End";
+  neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "Williamsburg" | "Park Slope" | "Bushwick" | "Prospect Heights" | "Newark Central" | "Atlanta West End";
   /** Broader area used by the search/distance system (city + state). */
   area: { city: string; state: string };
   /** Mock straight-line distance from this pro to the area's center, in miles.
@@ -268,6 +268,114 @@ export const MOCK_PROS: Pro[] = [
     newOnEwa: false,
     priceFrom: 260,
   },
+  {
+    id: "sade-williams",
+    name: "Sade Williams",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 1.8,
+    avatar: PHOTO("1494790108377-be9c29b29330"),
+    portfolio: [
+      PHOTO("1522337360788-8b13dee7a37e"),
+      PHOTO("1580618672591-eb180b1a973f"),
+    ],
+    headline: "Lash extensions & brow sculpt",
+    neighborhood: "Williamsburg",
+    travelRadiusMi: 5,
+    specializations: ["Classic lashes", "Volume lashes", "Brow lamination"],
+    professionalType: "Lash Tech",
+    category: "Makeup",
+    services: [
+      { name: "Classic full set", priceFrom: 140 },
+      { name: "Volume full set", priceFrom: 200 },
+    ],
+    rating: 4.91,
+    reviewCount: 67,
+    certified: true,
+    online: true,
+    newOnEwa: false,
+    priceFrom: 140,
+  },
+  {
+    id: "zara-osei",
+    name: "Zara Osei",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 2.5,
+    avatar: PHOTO("1507003211169-0a1dd7228f2d"),
+    portfolio: [
+      PHOTO("1605497788044-5a32c7078486"),
+      PHOTO("1599351431202-1e0f0137899a"),
+    ],
+    headline: "Wash & style, natural hair care",
+    neighborhood: "Park Slope",
+    travelRadiusMi: 6,
+    specializations: ["Wash & style", "Twist-outs", "Blow-outs"],
+    professionalType: "Hairdresser",
+    category: "Wash & Style",
+    services: [
+      { name: "Wash & style", priceFrom: 85 },
+      { name: "Deep condition + style", priceFrom: 110 },
+    ],
+    rating: 4.82,
+    reviewCount: 44,
+    certified: true,
+    online: false,
+    newOnEwa: true,
+    priceFrom: 85,
+  },
+  {
+    id: "khalil-brown",
+    name: "Khalil Brown",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 1.4,
+    avatar: PHOTO("1506794778202-cad84cf45f1d"),
+    portfolio: [
+      PHOTO("1605497788044-5a32c7078486"),
+      PHOTO("1599351431202-1e0f0137899a"),
+    ],
+    headline: "Precision fades & beard work",
+    neighborhood: "Bushwick",
+    travelRadiusMi: 7,
+    specializations: ["Fades", "Beard trim", "Designs"],
+    professionalType: "Barber",
+    category: "Barbering",
+    services: [
+      { name: "Skin fade + lineup", priceFrom: 55 },
+      { name: "Beard sculpt", priceFrom: 30 },
+    ],
+    rating: 4.87,
+    reviewCount: 73,
+    certified: false,
+    online: true,
+    newOnEwa: false,
+    priceFrom: 55,
+  },
+  {
+    id: "nia-grant",
+    name: "Nia Grant",
+    area: { city: "Brooklyn", state: "NY" },
+    distanceMi: 2.0,
+    avatar: PHOTO("1488426862026-3ee34a7d66df"),
+    portfolio: [
+      PHOTO("1522335789203-aabd1fc54bc9"),
+      PHOTO("1503104834685-7205e8607eb9"),
+    ],
+    headline: "Gel nails & custom nail art",
+    neighborhood: "Prospect Heights",
+    travelRadiusMi: 5,
+    specializations: ["Gel-X", "Chrome nails", "Hand-painted art"],
+    professionalType: "Nail Tech",
+    category: "Nails",
+    services: [
+      { name: "Gel-X set", priceFrom: 100 },
+      { name: "Gel manicure", priceFrom: 50 },
+    ],
+    rating: 4.93,
+    reviewCount: 58,
+    certified: true,
+    online: true,
+    newOnEwa: true,
+    priceFrom: 50,
+  },
 ];
 
 export const SERVICE_CATEGORIES = [
@@ -281,7 +389,7 @@ export const SERVICE_CATEGORIES = [
   "Wash & Style",
 ] as const;
 
-export const NEIGHBORHOODS = ["Bed-Stuy", "Crown Heights", "Fort Greene"] as const;
+export const NEIGHBORHOODS = ["Bed-Stuy", "Crown Heights", "Fort Greene", "Williamsburg", "Park Slope", "Bushwick", "Prospect Heights"] as const;
 
 export const PROFESSIONAL_TYPES: readonly ProfessionalType[] = [
   "Hairdresser",

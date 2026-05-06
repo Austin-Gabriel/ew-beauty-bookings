@@ -258,7 +258,7 @@ export function DiscoverPage() {
               value={addressQuery}
               onChange={(e) => { setAddressQuery(e.target.value); if (searchedLocation && e.target.value !== searchedLocation.name) setSearchedLocation(null); }}
               onFocus={() => setAddressFocused(true)}
-              onBlur={() => setTimeout(() => setAddressFocused(false), 200)}
+              onBlur={() => setTimeout(() => setAddressFocused(false), 300)}
               placeholder="Enter address"
               className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
               style={{
