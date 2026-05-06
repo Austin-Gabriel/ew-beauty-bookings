@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,7 +19,15 @@ import { useBookings } from "@/data/bookings-store";
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export function BookingConfirmPage({ proId, serviceId }: { proId: string; serviceId?: string }) {
+export function BookingConfirmPage({
+  proId,
+  serviceId,
+  scheduledWhen,
+}: {
+  proId: string;
+  serviceId?: string;
+  scheduledWhen?: number;
+}) {
   const pro = MOCK_PROS.find((p) => p.id === proId);
   const router = useRouter();
   const navigate = useNavigate();
@@ -37,12 +46,10 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
     ? Math.max(0, pro.services.findIndex((s) => s.name === serviceId))
     : 0;
   const [selectedServiceIdx, setSelectedServiceIdx] = useState(initialServiceIdx);
-  // Selected address id — default to the default address
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(() => {
     const def = addresses.find((a) => a.isDefault) ?? addresses[0];
     return def?.id ?? null;
   });
-  // Selected card id — default to the default card
   const [selectedCardId, setSelectedCardId] = useState<string | null>(() => {
     const def = cards.find((c) => c.isDefault) ?? cards[0];
     return def?.id ?? null;
@@ -54,11 +61,31 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   const [showCardSheet, setShowCardSheet] = useState(false);
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [notes, setNotes] = useState("");
-  const [showScheduledStub, setShowScheduledStub] = useState(false);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [showAddCardForm, setShowAddCardForm] = useState(false);
-  // Loading
   const [confirming, setConfirming] = useState(false);
+
+  // Slot reservation timer (5 min countdown)
+  const reservationEnd = useRef<number | null>(
+    scheduledWhen ? Date.now() + 5 * 60 * 1000 : null,
+  );
+  const [reservationExpired, setReservationExpired] = useState(false);
+
+  useEffect(() => {
+    if (!scheduledWhen || !reservationEnd.current) return;
+    const interval = setInterval(() => {
+      if (Date.now() >= reservationEnd.current!) {
+        setReservationExpired(true);
+        clearInterval(interval);
+        toast.error("Your slot expired. Pick another time.");
+        navigate({
+          to: "/booking/schedule/$proId",
+          params: { proId },
+        });
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [scheduledWhen, proId, navigate]);
 
   // Auto-select newly added address/card if none selected
   const selectedAddress = useMemo(() => {
@@ -92,13 +119,9 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
 
   const selectedService = pro.services[selectedServiceIdx] ?? pro.services[0];
 
-  // Tipping logic — read from shared store
+  // Tipping logic
   const tipPref = profile.tippingPreference;
-  const tipPct =
-    tipPref.type === "ask"
-      ? null
-      : tipPref.value ?? 20;
-
+  const tipPct = tipPref.type === "ask" ? null : tipPref.value ?? 20;
   const servicePrice = selectedService?.priceFrom ?? 0;
   const tipAmount = tipPct != null ? (servicePrice * tipPct) / 100 : null;
   const total = tipAmount != null ? servicePrice + tipAmount : servicePrice;
@@ -108,32 +131,94 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
   const initials = initialsOf(pro.name);
   const proFirstName = pro.name.split(" ")[0];
 
+  const isScheduled = !!scheduledWhen;
+
+  const whenLabel = isScheduled
+    ? formatScheduledWhen(scheduledWhen!)
+    : "Now — earliest available";
+
   const handleConfirm = () => {
     if (!pro || !selectedService) return;
     setConfirming(true);
     setTimeout(() => {
-      const newId = createBooking({
-        proId,
-        service: {
-          name: selectedService.name,
-          durationLabel: "60 min",
-          price: selectedService.priceFrom,
-        },
-        location: selectedAddress
-          ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
-          : { type: "mobile", label: "Your home" },
-        bookingType: "on-demand",
-        total,
-        tipAmount: tipAmount ?? undefined,
-        addressId: selectedAddress?.id,
-        paymentMethodId: selectedCard?.id,
-        notes: notes.trim() || undefined,
-      });
-      navigate({
-        to: "/booking/searching/$bookingId",
-        params: { bookingId: newId },
-        search: { proId },
-      });
+      if (isScheduled && !pro.autoAccept) {
+        // Pending pro approval flow
+        const newId = createBooking({
+          proId,
+          service: {
+            name: selectedService.name,
+            durationLabel: "60 min",
+            price: selectedService.priceFrom,
+          },
+          location: selectedAddress
+            ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
+            : { type: "mobile", label: "Your home" },
+          bookingType: "scheduled",
+          total,
+          tipAmount: tipAmount ?? undefined,
+          addressId: selectedAddress?.id,
+          paymentMethodId: selectedCard?.id,
+          when: scheduledWhen,
+          notes: notes.trim() || undefined,
+        });
+        // Update to pending_pro_approval
+        // The booking is created with status "searching" by default, update it
+        // Actually let's just navigate — the createBooking sets status to "searching"
+        // We need updateBookingStatus
+        navigate({
+          to: "/booking/pending/$bookingId",
+          params: { bookingId: newId },
+        });
+      } else if (isScheduled && pro.autoAccept) {
+        // Auto-accept: instant confirmation
+        const newId = createBooking({
+          proId,
+          service: {
+            name: selectedService.name,
+            durationLabel: "60 min",
+            price: selectedService.priceFrom,
+          },
+          location: selectedAddress
+            ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
+            : { type: "mobile", label: "Your home" },
+          bookingType: "scheduled",
+          total,
+          tipAmount: tipAmount ?? undefined,
+          addressId: selectedAddress?.id,
+          paymentMethodId: selectedCard?.id,
+          when: scheduledWhen,
+          notes: notes.trim() || undefined,
+        });
+        navigate({
+          to: "/booking/searching/$bookingId",
+          params: { bookingId: newId },
+          search: { proId },
+        });
+      } else {
+        // On-demand "Book now" flow
+        const newId = createBooking({
+          proId,
+          service: {
+            name: selectedService.name,
+            durationLabel: "60 min",
+            price: selectedService.priceFrom,
+          },
+          location: selectedAddress
+            ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
+            : { type: "mobile", label: "Your home" },
+          bookingType: "on-demand",
+          total,
+          tipAmount: tipAmount ?? undefined,
+          addressId: selectedAddress?.id,
+          paymentMethodId: selectedCard?.id,
+          notes: notes.trim() || undefined,
+        });
+        navigate({
+          to: "/booking/searching/$bookingId",
+          params: { bookingId: newId },
+          search: { proId },
+        });
+      }
     }, 600);
   };
 
@@ -190,9 +275,15 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
           <DetailRow
             icon={<Clock size={18} />}
             label="When"
-            value="Now — earliest available"
+            value={whenLabel}
             onTap={() => setShowWhenSheet(true)}
           />
+          {/* Slot reservation copy — only for scheduled bookings */}
+          {isScheduled && (
+            <p className="px-4 pb-2 text-[12px] italic text-on-card-muted">
+              Slot reserved for 5 min while you complete booking.
+            </p>
+          )}
           <Divider />
           <DetailRow
             icon={<Scissors size={18} />}
@@ -310,29 +401,32 @@ export function BookingConfirmPage({ proId, serviceId }: { proId: string; servic
 
       {showWhenSheet && (
         <Sheet title="When" onClose={() => setShowWhenSheet(false)}>
-          <SheetOption label="Now — earliest available" selected onTap={() => setShowWhenSheet(false)} />
           <SheetOption
-            label="Schedule for later"
-            selected={false}
+            label="Now — earliest available"
+            selected={!isScheduled}
             onTap={() => {
               setShowWhenSheet(false);
-              setShowScheduledStub(true);
+              if (isScheduled) {
+                // Switch back to now — navigate without scheduledWhen
+                navigate({
+                  to: "/booking/confirm/$proId",
+                  params: { proId },
+                  search: { service: selectedService?.name ?? "" },
+                });
+              }
             }}
           />
-        </Sheet>
-      )}
-
-      {showScheduledStub && (
-        <Sheet title="Schedule for later" onClose={() => setShowScheduledStub(false)}>
-          <div className="px-4 py-8 text-center">
-            <p className="text-[17px] font-semibold text-card-foreground">
-              Scheduled bookings — coming soon
-            </p>
-            <p className="mt-2 text-[14px] text-on-card-muted">
-              We're building scheduled booking support. For now, choose "Now" to
-              book with the earliest available slot.
-            </p>
-          </div>
+          <SheetOption
+            label="Schedule for later"
+            selected={isScheduled}
+            onTap={() => {
+              setShowWhenSheet(false);
+              navigate({
+                to: "/booking/schedule/$proId",
+                params: { proId },
+              });
+            }}
+          />
         </Sheet>
       )}
 
@@ -764,4 +858,17 @@ function brandLabel(brand: string): string {
     case "discover": return "Discover";
     default: return brand;
   }
+}
+
+function formatScheduledWhen(ts: number): string {
+  const d = new Date(ts);
+  const dayName = d.toLocaleDateString(undefined, { weekday: "short" });
+  const month = d.toLocaleDateString(undefined, { month: "short" });
+  const day = d.getDate();
+  const h = d.getHours();
+  const m = d.getMinutes().toString().padStart(2, "0");
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  const time = m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
+  return `${dayName}, ${month} ${day} · ${time}`;
 }
