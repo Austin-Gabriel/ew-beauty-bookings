@@ -82,6 +82,16 @@ export type SearchingStage =
   | "declined"
   | "timeout";
 
+/** Schedule state — drives scheduled booking flow variations. */
+export type ScheduleState =
+  | "none"
+  | "slot-picked"
+  | "slot-expired"
+  | "pending-pro"
+  | "auto-accepted"
+  | "pro-declined"
+  | "24h-timeout";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
