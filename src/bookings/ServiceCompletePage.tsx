@@ -20,13 +20,16 @@ const TIP_PRESETS = [
 export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
-  const { getBooking } = useBookings();
+  const { getBooking, setBookings, bookings } = useBookings();
   const { profile } = useCustomerProfile();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
   const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
 
   const tippingPref = profile.tippingPreference;
   const isAlwaysAsk = tippingPref.type === "ask";
@@ -36,6 +39,16 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
     tippingPref.type === "percent" ? (tippingPref.value ?? 20) / 100
     : tippingPref.type === "custom" ? (tippingPref.value ?? 20) / 100
     : 0.20;
+
+  const [selectedTipFactor, setSelectedTipFactor] = useState<number>(defaultTipPercent);
+  const [customTip, setCustomTip] = useState<string>("");
+  const [isCustom, setIsCustom] = useState(false);
+  const [tipExpanded, setTipExpanded] = useState(isAlwaysAsk);
+
+  const tipAmount = isCustom
+    ? (parseFloat(customTip) || 0)
+    : Math.round(servicePrice * selectedTipFactor);
+  const total = servicePrice + tipAmount;
 
   if (!booking || !pro) {
     return (
@@ -50,66 +63,6 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
 
   const initials = pro.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
   const proFirstName = pro.name.split(" ")[0];
-
-  return (
-    <ServiceCompleteInner
-      booking={booking}
-      pro={pro}
-      bookingId={bookingId}
-      isDark={isDark}
-      text={text}
-      muted={muted}
-      subtleBorder={subtleBorder}
-      isAlwaysAsk={isAlwaysAsk}
-      defaultTipPercent={defaultTipPercent}
-      servicePrice={servicePrice}
-      initials={initials}
-      proFirstName={proFirstName}
-    />
-  );
-}
-
-function ServiceCompleteInner({
-  booking: initialBooking,
-  pro,
-  bookingId,
-  isDark,
-  muted,
-  subtleBorder,
-  isAlwaysAsk,
-  defaultTipPercent,
-  servicePrice,
-  initials,
-  proFirstName,
-}: {
-  booking: any;
-  pro: any;
-  bookingId: string;
-  isDark: boolean;
-  text: string;
-  muted: string;
-  subtleBorder: string;
-  isAlwaysAsk: boolean;
-  defaultTipPercent: number;
-  servicePrice: number;
-  initials: string;
-  proFirstName: string;
-}) {
-  const navigate = useNavigate();
-  const { setBookings, bookings } = useBookings();
-
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
-  const [tipExpanded, setTipExpanded] = useState(isAlwaysAsk);
-
-  const [selectedTipFactor, setSelectedTipFactor] = useState<number>(defaultTipPercent);
-  const [customTip, setCustomTip] = useState<string>("");
-  const [isCustom, setIsCustom] = useState(false);
-
-  const tipAmount = isCustom
-    ? (parseFloat(customTip) || 0)
-    : Math.round(servicePrice * selectedTipFactor);
-  const total = servicePrice + tipAmount;
 
   const handleDone = () => {
     setBookings(
@@ -131,6 +84,7 @@ function ServiceCompleteInner({
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
       <div className="flex-1 px-5 pt-12 pb-32">
+        {/* Pro avatar with checkmark badge */}
         <div className="flex flex-col items-center">
           <div className="relative">
             <div
@@ -153,10 +107,11 @@ function ServiceCompleteInner({
             All done!
           </h1>
           <p style={{ marginTop: 8, fontSize: 15, color: muted, textAlign: "center", maxWidth: 280 }}>
-            How was your {initialBooking!.service.name.toLowerCase()} with {proFirstName}?
+            How was your {booking.service.name.toLowerCase()} with {proFirstName}?
           </p>
         </div>
 
+        {/* Star rating */}
         <div className="mt-8 flex items-center justify-center gap-3">
           {[1, 2, 3, 4, 5].map((star) => {
             const filled = star <= rating;
@@ -185,6 +140,7 @@ function ServiceCompleteInner({
           })}
         </div>
 
+        {/* Review text — expands when rating is given */}
         {rating > 0 && (
           <div className="mt-4 flex flex-col items-center">
             <textarea
@@ -207,6 +163,7 @@ function ServiceCompleteInner({
           </div>
         )}
 
+        {/* Tip adjustment */}
         {isAlwaysAsk ? (
           <div className="mt-8">
             <p style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: muted, marginBottom: 10 }}>
@@ -259,24 +216,26 @@ function ServiceCompleteInner({
           </div>
         )}
 
+        {/* Total summary card */}
         <div
           className="mt-6 overflow-hidden rounded-2xl"
           style={{ backgroundColor: "var(--cream-elevated)", border: `1px solid ${subtleBorder}` }}
         >
           <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${subtleBorder}` }}>
             <span style={{ fontSize: 14, color: "var(--card-foreground)" }}>Service</span>
-            <span className="tabular" style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${servicePrice}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${servicePrice}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${subtleBorder}` }}>
             <span style={{ fontSize: 14, color: "var(--card-foreground)" }}>Tip</span>
-            <span className="tabular" style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${tipAmount}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${tipAmount}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3.5">
             <span style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)" }}>Total</span>
-            <span className="tabular" style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${total}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>${total}</span>
           </div>
         </div>
 
+        {/* View receipt link */}
         <div className="mt-3 flex justify-center">
           <button
             type="button"
@@ -288,6 +247,7 @@ function ServiceCompleteInner({
         </div>
       </div>
 
+      {/* Sticky Done CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-30 px-5 pb-8 pt-4" style={{ backgroundColor: "var(--background)" }}>
         <button
           onClick={handleDone}
@@ -308,6 +268,7 @@ function ServiceCompleteInner({
 }
 
 function TipSelector({
+  servicePrice,
   selectedFactor,
   isCustom,
   customTip,

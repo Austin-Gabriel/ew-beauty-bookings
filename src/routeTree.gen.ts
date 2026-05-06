@@ -16,6 +16,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as JoinAsProRouteImport } from './routes/join-as-pro'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
@@ -42,6 +43,7 @@ import { Route as BookingReceiptBookingIdRouteImport } from './routes/booking.re
 import { Route as BookingRateBookingIdRouteImport } from './routes/booking.rate.$bookingId'
 import { Route as BookingMessageBookingIdRouteImport } from './routes/booking.message.$bookingId'
 import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
+import { Route as BookingCompleteBookingIdRouteImport } from './routes/booking.complete.$bookingId'
 import { Route as BookingCallBookingIdRouteImport } from './routes/booking.call.$bookingId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -77,6 +79,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinAsProRoute = JoinAsProRouteImport.update({
+  id: '/join-as-pro',
+  path: '/join-as-pro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -211,6 +218,12 @@ const BookingConfirmProIdRoute = BookingConfirmProIdRouteImport.update({
   path: '/booking/confirm/$proId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingCompleteBookingIdRoute =
+  BookingCompleteBookingIdRouteImport.update({
+    id: '/booking/complete/$bookingId',
+    path: '/booking/complete/$bookingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BookingCallBookingIdRoute = BookingCallBookingIdRouteImport.update({
   id: '/booking/call/$bookingId',
   path: '/booking/call/$bookingId',
@@ -223,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
+  '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/signin': typeof SigninRoute
@@ -245,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
@@ -258,6 +273,7 @@ export interface FileRoutesByTo {
   '/biometric-enroll': typeof BiometricEnrollRoute
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
+  '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
@@ -279,6 +295,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
@@ -294,6 +311,7 @@ export interface FileRoutesById {
   '/bookings': typeof BookingsRoute
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
+  '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/signin': typeof SigninRoute
@@ -316,6 +334,7 @@ export interface FileRoutesById {
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
@@ -332,6 +351,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/discover'
     | '/favorites'
+    | '/join-as-pro'
     | '/notifications'
     | '/profile'
     | '/signin'
@@ -354,6 +374,7 @@ export interface FileRouteTypes {
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
+    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/rate/$bookingId'
@@ -367,6 +388,7 @@ export interface FileRouteTypes {
     | '/biometric-enroll'
     | '/bookings'
     | '/discover'
+    | '/join-as-pro'
     | '/notifications'
     | '/signin'
     | '/signup'
@@ -388,6 +410,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/profile'
     | '/booking/call/$bookingId'
+    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/rate/$bookingId'
@@ -402,6 +425,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/discover'
     | '/favorites'
+    | '/join-as-pro'
     | '/notifications'
     | '/profile'
     | '/signin'
@@ -424,6 +448,7 @@ export interface FileRouteTypes {
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
+    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/rate/$bookingId'
@@ -439,6 +464,7 @@ export interface RootRouteChildren {
   BookingsRoute: typeof BookingsRoute
   DiscoverRoute: typeof DiscoverRoute
   FavoritesRoute: typeof FavoritesRouteWithChildren
+  JoinAsProRoute: typeof JoinAsProRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   SigninRoute: typeof SigninRoute
@@ -449,6 +475,7 @@ export interface RootRouteChildren {
   ProProIdRoute: typeof ProProIdRoute
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
+  BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
   BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
   BookingMessageBookingIdRoute: typeof BookingMessageBookingIdRoute
   BookingRateBookingIdRoute: typeof BookingRateBookingIdRoute
@@ -506,6 +533,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-as-pro': {
+      id: '/join-as-pro'
+      path: '/join-as-pro'
+      fullPath: '/join-as-pro'
+      preLoaderRoute: typeof JoinAsProRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -690,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmProIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/complete/$bookingId': {
+      id: '/booking/complete/$bookingId'
+      path: '/booking/complete/$bookingId'
+      fullPath: '/booking/complete/$bookingId'
+      preLoaderRoute: typeof BookingCompleteBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/call/$bookingId': {
       id: '/booking/call/$bookingId'
       path: '/booking/call/$bookingId'
@@ -751,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingsRoute: BookingsRoute,
   DiscoverRoute: DiscoverRoute,
   FavoritesRoute: FavoritesRouteWithChildren,
+  JoinAsProRoute: JoinAsProRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
   SigninRoute: SigninRoute,
@@ -761,6 +803,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProProIdRoute: ProProIdRoute,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
+  BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
   BookingConfirmProIdRoute: BookingConfirmProIdRoute,
   BookingMessageBookingIdRoute: BookingMessageBookingIdRoute,
   BookingRateBookingIdRoute: BookingRateBookingIdRoute,
