@@ -144,10 +144,10 @@ export function DiscoverPage() {
   const unreadCount = allNotifications.filter((n) => n.unread).length;
 
   // Theme tokens — light mode is white-on-white with surface-muted chrome (per design system)
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "#6B7684";
-  const faint = isDark ? "rgba(240,235,216,0.32)" : "#C7CDD4";
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
+  const muted = "var(--muted-foreground)";
+  const faint = "var(--muted-foreground)";
   // Card shadow lifts white cards off the white page in light mode; no shadow on dark
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   // Online card border — bumped to 50% opacity in light mode so the live signal stays strong on white

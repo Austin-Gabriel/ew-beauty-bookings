@@ -30,9 +30,9 @@ export function BookingsPage() {
   const [tab, setTab] = useState<Tab>("upcoming");
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "var(--card)";
 

@@ -26,9 +26,9 @@ export function FavoritesIndex() {
   const [newOpen, setNewOpen] = useState(false);
 
   // Theme tokens — light mode is white-on-white per design system
-  const muted = isDark ? "rgba(240,235,216,0.55)" : INK_500;
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
+  const muted = "var(--muted-foreground)";
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
 

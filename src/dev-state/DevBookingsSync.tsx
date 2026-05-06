@@ -2,6 +2,11 @@
  * DevBookingsSync — bridges dev-state toggles (bookingsSeed, activeBooking,
  * searchingStage) to the shared BookingsProvider.
  * Runs as an effect child of both providers.
+ *
+ * IMPORTANT: Only reacts to booking-specific dev toggles (bookingsSeed,
+ * activeBooking). Other dev toggles (theme, profile, customer state, etc.)
+ * do NOT overwrite real bookings created via the booking flow.
+ *
  * When activeBooking is "completed", auto-navigates to the Service Complete screen.
  */
 import { useEffect, useRef } from "react";
@@ -16,16 +21,19 @@ import {
 
 export function DevBookingsSync() {
   const { state } = useDevState();
-  const { setBookings } = useBookings();
+  const { setBookings, bookings } = useBookings();
   const navigate = useNavigate();
   const prevRef = useRef<string>("");
+  const bookingsRef = useRef<Booking[]>([]);
+  bookingsRef.current = bookings;
 
   useEffect(() => {
-    const key = `${state.customerState}|${state.bookingsSeed}|${state.activeBooking}`;
+    // Only react to booking-specific toggles — NOT customerState or other fields
+    const key = `${state.bookingsSeed}|${state.activeBooking}`;
     if (key === prevRef.current) return;
     prevRef.current = key;
 
-    if (state.customerState === "new" || state.bookingsSeed === "empty") {
+    if (state.bookingsSeed === "empty") {
       setBookings([]);
       return;
     }
@@ -49,13 +57,17 @@ export function DevBookingsSync() {
       })
       .filter((b): b is Booking => b !== null);
 
-    setBookings(pool);
+    // Preserve any user-created bookings (ids not in seed data)
+    const seedIds = new Set(SEED_BOOKINGS.map((b) => b.id));
+    const userBookings = bookingsRef.current.filter((b) => !seedIds.has(b.id));
+
+    setBookings([...userBookings, ...pool]);
 
     // Auto-navigate to Service Complete screen when toggled to "completed"
     if (state.activeBooking === "completed") {
       navigate({ to: "/booking/complete/$bookingId", params: { bookingId: "bk-active-amara" } });
     }
-  }, [state.customerState, state.bookingsSeed, state.activeBooking, setBookings, navigate]);
+  }, [state.bookingsSeed, state.activeBooking, setBookings, navigate]);
 
   return null;
 }

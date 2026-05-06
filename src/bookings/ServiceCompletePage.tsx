@@ -25,8 +25,8 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -103,7 +103,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
             </span>
           </div>
 
-          <h1 style={{ marginTop: 20, fontSize: 28, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.025em" }}>
+          <h1 style={{ marginTop: 20, fontSize: 28, fontWeight: 600, color: "var(--foreground)", letterSpacing: "-0.025em" }}>
             All done!
           </h1>
           <p style={{ marginTop: 8, fontSize: 15, color: muted, textAlign: "center", maxWidth: 280 }}>
@@ -150,8 +150,8 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
               rows={3}
               className="mt-2 w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
               style={{
-                backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                color: "var(--card-foreground)",
+                backgroundColor: "var(--surface-elevated)",
+                color: "var(--foreground)",
                 fontSize: 14,
                 fontFamily: SANS_STACK,
                 lineHeight: 1.5,
@@ -177,14 +177,14 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
               onSelectPreset={(f) => { setSelectedTipFactor(f); setIsCustom(false); }}
               onCustom={() => setIsCustom(true)}
               onCustomChange={setCustomTip}
-              isDark={isDark}
+              
               subtleBorder={subtleBorder}
             />
           </div>
         ) : (
           <div className="mt-8">
             {!tipExpanded ? (
-              <p style={{ fontSize: 14, color: "var(--card-foreground)", textAlign: "center" }}>
+              <p style={{ fontSize: 14, color: "var(--foreground)", textAlign: "center" }}>
                 Tip: ${tipAmount}
                 <span style={{ margin: "0 6px", color: muted }}>·</span>
                 <button
@@ -208,7 +208,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
                   onSelectPreset={(f) => { setSelectedTipFactor(f); setIsCustom(false); }}
                   onCustom={() => setIsCustom(true)}
                   onCustomChange={setCustomTip}
-                  isDark={isDark}
+                  
                   subtleBorder={subtleBorder}
                 />
               </div>
@@ -219,7 +219,7 @@ export function ServiceCompletePage({ bookingId }: { bookingId: string }) {
         {/* Total summary card */}
         <div
           className="mt-6 overflow-hidden rounded-2xl"
-          style={{ backgroundColor: "var(--cream-elevated)", border: `1px solid ${subtleBorder}` }}
+          style={{ backgroundColor: "var(--card)", border: `1px solid ${subtleBorder}` }}
         >
           <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${subtleBorder}` }}>
             <span style={{ fontSize: 14, color: "var(--card-foreground)" }}>Service</span>
@@ -275,7 +275,7 @@ function TipSelector({
   onSelectPreset,
   onCustom,
   onCustomChange,
-  isDark,
+  _isDark,
   subtleBorder,
 }: {
   servicePrice: number;
@@ -285,7 +285,7 @@ function TipSelector({
   onSelectPreset: (f: number) => void;
   onCustom: () => void;
   onCustomChange: (v: string) => void;
-  isDark: boolean;
+  _isDark?: boolean;
   subtleBorder: string;
 }) {
   return (
@@ -300,8 +300,8 @@ function TipSelector({
               onClick={() => onSelectPreset(p.factor)}
               className="flex-1 rounded-xl py-2.5 text-center transition-colors"
               style={{
-                backgroundColor: active ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                color: active ? "#1A0E08" : "var(--card-foreground)",
+                backgroundColor: active ? ORANGE : "var(--surface-elevated)",
+                color: active ? "#1A0E08" : "var(--foreground)",
                 border: active ? "none" : `1px solid ${subtleBorder}`,
                 fontSize: 13,
                 fontWeight: 600,
@@ -317,8 +317,8 @@ function TipSelector({
           onClick={onCustom}
           className="flex-1 rounded-xl py-2.5 text-center transition-colors"
           style={{
-            backgroundColor: isCustom ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-            color: isCustom ? "#1A0E08" : "var(--card-foreground)",
+            backgroundColor: isCustom ? ORANGE : "var(--surface-elevated)",
+            color: isCustom ? "#1A0E08" : "var(--foreground)",
             border: isCustom ? "none" : `1px solid ${subtleBorder}`,
             fontSize: 13,
             fontWeight: 600,
@@ -330,7 +330,7 @@ function TipSelector({
       </div>
       {isCustom && (
         <div className="mt-3 flex items-center gap-2">
-          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)" }}>$</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--foreground)" }}>$</span>
           <input
             type="number"
             inputMode="numeric"
@@ -339,8 +339,8 @@ function TipSelector({
             placeholder="0"
             className="flex-1 rounded-xl border-none px-3 py-2.5 outline-none"
             style={{
-              backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-              color: "var(--card-foreground)",
+              backgroundColor: "var(--surface-elevated)",
+              color: "var(--foreground)",
               fontSize: 16,
               fontWeight: 600,
               fontFamily: SANS_STACK,

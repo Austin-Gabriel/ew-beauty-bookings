@@ -15,8 +15,8 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean; ts: number }[]>([]);
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   if (!booking || !pro) {
     return (
@@ -63,7 +63,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
           <p style={{ fontSize: 11, color: muted }}>{booking.service.name}</p>
         </div>
       </header>
@@ -78,7 +78,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
             >
               {initials}
             </div>
-            <p style={{ marginTop: 12, fontSize: 15, fontWeight: 600, color: "var(--card-foreground)" }}>{pro.name}</p>
+            <p style={{ marginTop: 12, fontSize: 15, fontWeight: 600, color: "var(--foreground)" }}>{pro.name}</p>
             <p style={{ marginTop: 4, fontSize: 13, color: muted, maxWidth: 240, lineHeight: 1.4 }}>
               Send a message about your upcoming {booking.service.name} appointment.
             </p>
@@ -91,7 +91,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
               <div
                 className="max-w-[75%] rounded-2xl px-3.5 py-2.5"
                 style={{
-                  backgroundColor: m.fromMe ? ORANGE : isDark ? "rgba(240,235,216,0.08)" : "#F4F6F8",
+                  backgroundColor: m.fromMe ? ORANGE : "var(--surface-elevated)",
                   color: m.fromMe ? "#1A0E08" : "var(--card-foreground)",
                   fontSize: 14,
                   lineHeight: 1.4,
@@ -116,8 +116,8 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           placeholder="Type a message..."
           className="min-w-0 flex-1 rounded-xl border-none px-3.5 py-2.5 outline-none"
           style={{
-            backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-            color: "var(--card-foreground)",
+            backgroundColor: "var(--surface-elevated)",
+            color: "var(--foreground)",
             fontSize: 14,
             fontFamily: SANS_STACK,
           }}
