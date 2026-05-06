@@ -109,6 +109,7 @@ export type DevState = {
   editProfileState: EditProfileState;
   bookingConfirmState: BookingConfirmState;
   searchingStage: SearchingStage;
+  scheduleState: ScheduleState;
 };
 
 const DEFAULTS: DevState = {
