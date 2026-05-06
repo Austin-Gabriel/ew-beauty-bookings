@@ -314,30 +314,64 @@ export function DiscoverPage() {
           </div>
 
           {/* Address dropdown suggestions */}
-          {addressFocused && addressQuery.trim() && addressSuggestions.length > 0 && (
+          {addressFocused && addressSuggestions.length > 0 && (
             <div
               className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border shadow-lg"
               style={{
                 backgroundColor: "var(--card)",
                 borderColor: subtleBorder,
                 fontFamily: SANS_STACK,
+                maxHeight: 380,
+                overflowY: "auto",
               }}
             >
+              {/* Use my current location */}
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => { handleResetLocation(); setAddressFocused(false); toast("Using your current location"); }}
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/30"
+                style={{ borderBottom: `1px solid ${subtleBorder}` }}
+              >
+                <div
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full"
+                  style={{ backgroundColor: "rgba(255,130,63,0.14)" }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={BAGEL_ACCENT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="3" />
+                    <line x1="12" y1="2" x2="12" y2="6" />
+                    <line x1="12" y1="18" x2="12" y2="22" />
+                    <line x1="2" y1="12" x2="6" y2="12" />
+                    <line x1="18" y1="12" x2="22" y2="12" />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <span style={{ fontSize: 14, fontWeight: 600, color: BAGEL_ACCENT }}>Use my current location</span>
+                  <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>Find pros nearby</span>
+                </div>
+              </button>
+
+              {/* Suggestions header */}
+              <div className="px-4 pt-3.5 pb-1.5">
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--muted-foreground)", textTransform: "uppercase" as const }}>Suggestions</span>
+              </div>
+
               {addressSuggestions.map((loc) => (
                 <button
                   key={loc.name}
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelectLocation(loc)}
-                  className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-muted/30"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/30"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--on-card-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
                     <circle cx="12" cy="9" r="2.5" />
                   </svg>
-                  <div>
+                  <div className="flex flex-col">
                     <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)" }}>{loc.name}</span>
-                    <span style={{ fontSize: 12, color: "var(--on-card-muted)", marginLeft: 6 }}>{loc.borough}</span>
+                    <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>{loc.borough}, NY</span>
                   </div>
                 </button>
               ))}
