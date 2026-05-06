@@ -7,24 +7,23 @@ import { useDevState } from "@/dev-state/devState";
 import { MOCK_PROS } from "@/data/mock-pros";
 
 const ORANGE = "#FF823F";
-const SUCCESS = "#16A34A";
 const DANGER = "#DC2626";
 const INFO = "#3B82F6";
 const INK_900 = "#0B1220";
 const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
-// Status tone palette — matches the brand's success/danger/accent/info system.
+// Status tone palette — brand system uses bagel orange for positive states.
 type StatusTone = "success" | "danger" | "accent" | "info" | "neutral";
 
 const TONE_BG: Record<StatusTone, string> = {
-  success: "rgba(22,163,74,0.14)",
+  success: "rgba(255,130,63,0.14)",
   danger: "rgba(220,38,38,0.14)",
   accent: "rgba(255,130,63,0.14)",
   info: "rgba(59,130,246,0.14)",
   neutral: "rgba(11,18,32,0.06)",
 };
 const TONE_FG: Record<StatusTone, string> = {
-  success: SUCCESS,
+  success: ORANGE,
   danger: DANGER,
   accent: ORANGE,
   info: INFO,
