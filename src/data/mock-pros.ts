@@ -415,3 +415,87 @@ export const PROFESSIONAL_TYPES: readonly ProfessionalType[] = [
   "Esthetician",
   "Tattoo Artist",
 ] as const;
+
+/* ------------------------------------------------------------------ */
+/*  Mock schedule availability — keyed by proId                        */
+/* ------------------------------------------------------------------ */
+
+export type ProSchedule = {
+  /** Working hours by day-of-week (0=Sun, 6=Sat). null = day off. */
+  hours: Record<number, { start: number; end: number } | null>;
+  /** Dates (YYYY-MM-DD) that are fully blocked (vacation, etc). */
+  blockedDates: string[];
+  /** Specific booked slots (YYYY-MM-DD HH:mm) already taken. */
+  bookedSlots: string[];
+};
+
+const WD_9_6 = { start: 9, end: 18 };
+const WD_10_4 = { start: 10, end: 16 };
+const WD_10_7 = { start: 10, end: 19 };
+
+function makeSchedule(
+  weekday: { start: number; end: number },
+  weekend: { start: number; end: number } | null,
+  blockedDates: string[],
+  bookedSlots: string[],
+): ProSchedule {
+  return {
+    hours: {
+      0: weekend,       // Sun
+      1: weekday,
+      2: weekday,
+      3: weekday,
+      4: weekday,
+      5: weekday,
+      6: weekend,       // Sat
+    },
+    blockedDates,
+    bookedSlots,
+  };
+}
+
+/** Returns an ISO date string N days from today. */
+function daysFromNow(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+export const PRO_SCHEDULES: Record<string, ProSchedule> = {
+  "amara-okafor": makeSchedule(WD_9_6, WD_10_4,
+    [daysFromNow(5), daysFromNow(12)],
+    [`${daysFromNow(2)} 10:00`, `${daysFromNow(2)} 10:30`, `${daysFromNow(2)} 14:00`, `${daysFromNow(3)} 11:00`],
+  ),
+  "joelle-pierre": makeSchedule(WD_9_6, WD_10_4,
+    [daysFromNow(7)],
+    [`${daysFromNow(1)} 09:00`, `${daysFromNow(1)} 09:30`, `${daysFromNow(1)} 15:00`, `${daysFromNow(4)} 10:00`, `${daysFromNow(4)} 10:30`, `${daysFromNow(4)} 11:00`, `${daysFromNow(4)} 11:30`, `${daysFromNow(4)} 12:00`, `${daysFromNow(4)} 12:30`, `${daysFromNow(4)} 13:00`, `${daysFromNow(4)} 13:30`, `${daysFromNow(4)} 14:00`, `${daysFromNow(4)} 14:30`, `${daysFromNow(4)} 15:00`, `${daysFromNow(4)} 15:30`],
+  ),
+  "marcus-bell": makeSchedule(WD_10_7, WD_10_4,
+    [daysFromNow(3), daysFromNow(14)],
+    [`${daysFromNow(1)} 12:00`, `${daysFromNow(2)} 10:00`],
+  ),
+  "kemi-adesanya": makeSchedule(WD_9_6, null,
+    [daysFromNow(8)],
+    [`${daysFromNow(1)} 11:00`, `${daysFromNow(1)} 11:30`],
+  ),
+  "dani-rivera": makeSchedule(WD_9_6, WD_10_4,
+    [],
+    [`${daysFromNow(2)} 09:00`, `${daysFromNow(2)} 09:30`],
+  ),
+  "tomi-balogun": makeSchedule(WD_10_7, WD_10_4,
+    [daysFromNow(6)],
+    [`${daysFromNow(1)} 10:00`, `${daysFromNow(3)} 14:00`],
+  ),
+  "ife-johnson": makeSchedule(WD_9_6, null,
+    [daysFromNow(4), daysFromNow(10)],
+    [`${daysFromNow(1)} 09:00`, `${daysFromNow(2)} 15:00`],
+  ),
+  "naima-davis": makeSchedule(WD_9_6, WD_10_4,
+    [daysFromNow(9)],
+    [],
+  ),
+  "sade-williams": makeSchedule(WD_9_6, WD_10_4, [], []),
+  "zara-osei": makeSchedule(WD_9_6, null, [daysFromNow(3)], [`${daysFromNow(1)} 14:00`]),
+  "khalil-brown": makeSchedule(WD_10_7, WD_10_4, [], [`${daysFromNow(2)} 12:00`]),
+  "nia-grant": makeSchedule(WD_9_6, WD_10_4, [daysFromNow(11)], []),
+};
