@@ -24,7 +24,21 @@ import {
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
 const LIVE_GREEN = "var(--live-green)";
+const LIVE_GREEN = "var(--live-green)";
 const INFO = "#3B82F6";
+
+/** Mock NYC neighborhoods for address search dropdown. */
+const MOCK_NEIGHBORHOODS = [
+  { name: "Bed-Stuy", borough: "Brooklyn" },
+  { name: "Crown Heights", borough: "Brooklyn" },
+  { name: "Fort Greene", borough: "Brooklyn" },
+  { name: "Williamsburg", borough: "Brooklyn" },
+  { name: "Park Slope", borough: "Brooklyn" },
+  { name: "Bushwick", borough: "Brooklyn" },
+  { name: "Prospect Heights", borough: "Brooklyn" },
+];
+
+const DEFAULT_LOCATION = MOCK_NEIGHBORHOODS[0]!; // Bed-Stuy
 
 type ChipId = "All" | (typeof PROFESSIONAL_TYPES)[number];
 type PriceFilter = "any" | "$" | "$$" | "$$$";
