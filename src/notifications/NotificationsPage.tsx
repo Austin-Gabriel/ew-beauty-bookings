@@ -488,7 +488,7 @@ export function NotificationsPage() {
 
 function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
   const { text, isDark } = useAuthTheme();
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "rgba(6,28,39,0.62)";
+  const muted = "var(--muted-foreground)";
   return (
     <div>
       <h2 style={{ fontFamily: SANS_STACK, fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em", color: text, margin: 0 }}>{title}</h2>
