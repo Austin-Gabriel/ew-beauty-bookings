@@ -24,6 +24,8 @@ export function DevBookingsSync() {
   const { setBookings, bookings } = useBookings();
   const navigate = useNavigate();
   const prevRef = useRef<string>("");
+  const bookingsRef = useRef<Booking[]>([]);
+  bookingsRef.current = bookings;
 
   useEffect(() => {
     // Only react to booking-specific toggles — NOT customerState or other fields
@@ -55,11 +57,9 @@ export function DevBookingsSync() {
       })
       .filter((b): b is Booking => b !== null);
 
-    // Preserve any user-created bookings (ids that don't start with seed prefixes)
-    const seedIds = new Set(pool.map((b) => b.id));
-    const userBookings = bookings.filter(
-      (b) => !seedIds.has(b.id) && !b.id.startsWith("bk-active-amara") && !SEED_BOOKINGS.some((s) => s.id === b.id),
-    );
+    // Preserve any user-created bookings (ids not in seed data)
+    const seedIds = new Set(SEED_BOOKINGS.map((b) => b.id));
+    const userBookings = bookingsRef.current.filter((b) => !seedIds.has(b.id));
 
     setBookings([...userBookings, ...pool]);
 
@@ -67,7 +67,7 @@ export function DevBookingsSync() {
     if (state.activeBooking === "completed") {
       navigate({ to: "/booking/complete/$bookingId", params: { bookingId: "bk-active-amara" } });
     }
-  }, [state.bookingsSeed, state.activeBooking, setBookings, navigate, bookings]);
+  }, [state.bookingsSeed, state.activeBooking, setBookings, navigate]);
 
   return null;
 }
