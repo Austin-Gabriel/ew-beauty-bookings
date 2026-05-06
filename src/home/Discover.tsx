@@ -871,8 +871,8 @@ function OnlineCard({
           <span className="truncate">· {pro.reviewCount} reviews · {pro.category}</span>
         </div>
         <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: LIVE_GREEN }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
             Available now
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
