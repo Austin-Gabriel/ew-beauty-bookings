@@ -19,6 +19,8 @@ export type Pro = {
   portfolio: string[];
   headline: string;
   neighborhood: "Bed-Stuy" | "Crown Heights" | "Fort Greene" | "Williamsburg" | "Park Slope" | "Bushwick" | "Prospect Heights" | "Newark Central" | "Atlanta West End";
+  /** Whether this pro auto-accepts bookings (instant confirm) or requires manual approval. */
+  autoAccept: boolean;
   /** Broader area used by the search/distance system (city + state). */
   area: { city: string; state: string };
   /** Mock straight-line distance from this pro to the area's center, in miles.
