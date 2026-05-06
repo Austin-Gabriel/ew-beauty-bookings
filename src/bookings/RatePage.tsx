@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useBookings } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
+import { formatBookingDate } from "@/lib/format-booking-date";
 
 const ORANGE = "var(--bagel)";
 const STAR_FILLED = "var(--bagel)";
@@ -72,7 +73,7 @@ export function RatePage({ bookingId }: { bookingId: string }) {
           </div>
           <p style={{ marginTop: 12, fontSize: 18, fontWeight: 700, color: "var(--foreground)" }}>{pro.name}</p>
           <p style={{ marginTop: 4, fontSize: 13, color: muted }}>
-            {booking.service.name} · {new Date(booking.when).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+            {booking.service.name} · {formatBookingDate(booking.when)}
           </p>
         </div>
 

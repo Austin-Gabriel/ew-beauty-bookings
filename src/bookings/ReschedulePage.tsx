@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useBookings } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
+import { formatBookingDate } from "@/lib/format-booking-date";
 
 const ORANGE = "var(--bagel)";
 
@@ -61,8 +62,8 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
       bookings.map((b) => b.id === bookingId ? { ...b, when: newWhen } : b)
     );
 
-    const dateLabel = newDate.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-    toast.success(`Booking rescheduled to ${dateLabel}, ${selectedTime}`);
+    const dateLabel = formatBookingDate(newWhen);
+    toast.success(`Booking rescheduled to ${dateLabel}`);
     navigate({ to: "/bookings" });
   };
 
@@ -92,7 +93,7 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
             {booking.service.name} with {pro.name}
           </p>
           <p style={{ fontSize: 12.5, color: muted, marginTop: 2 }}>
-            {new Date(booking.when).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })} · {formatTime(booking.when)}
+            {formatBookingDate(booking.when)}
           </p>
         </div>
 
@@ -172,11 +173,4 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
   );
 }
 
-function formatTime(ts: number): string {
-  const d = new Date(ts);
-  const h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
-}
+// formatTime removed — use formatBookingDate from @/lib/format-booking-date

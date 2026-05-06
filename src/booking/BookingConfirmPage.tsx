@@ -14,6 +14,7 @@ import {
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
 import { useBookings } from "@/data/bookings-store";
+import { formatBookingDate } from "@/lib/format-booking-date";
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -134,7 +135,7 @@ export function BookingConfirmPage({
   const isScheduled = !!scheduledWhen;
 
   const whenLabel = isScheduled
-    ? formatScheduledWhen(scheduledWhen!)
+    ? formatBookingDate(scheduledWhen!)
     : "Now — earliest available";
 
   const handleConfirm = () => {
@@ -855,15 +856,4 @@ function brandLabel(brand: string): string {
   }
 }
 
-function formatScheduledWhen(ts: number): string {
-  const d = new Date(ts);
-  const dayName = d.toLocaleDateString(undefined, { weekday: "short" });
-  const month = d.toLocaleDateString(undefined, { month: "short" });
-  const day = d.getDate();
-  const h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  const time = m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
-  return `${dayName}, ${month} ${day} · ${time}`;
-}
+// formatScheduledWhen removed — use formatBookingDate from @/lib/format-booking-date

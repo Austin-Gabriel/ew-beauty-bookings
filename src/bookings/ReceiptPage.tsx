@@ -3,6 +3,7 @@ import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useBookings } from "@/data/bookings-store";
 import { useCustomerProfile } from "@/data/customer-store";
 import { MOCK_PROS } from "@/data/mock-pros";
+import { formatBookingDate } from "@/lib/format-booking-date";
 
 const ORANGE = "var(--bagel)";
 
@@ -66,7 +67,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
           <div>
             <p style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)" }}>{pro.name}</p>
             <p style={{ fontSize: 12.5, color: muted }}>
-              {booking.service.name} · {new Date(booking.when).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+              {booking.service.name} · {formatBookingDate(booking.when)}
             </p>
           </div>
         </div>

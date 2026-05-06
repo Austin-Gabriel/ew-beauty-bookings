@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { AppShell } from "@/home/AppShell";
@@ -11,6 +11,11 @@ import {
   type Booking,
   type BookingStatus,
 } from "@/data/bookings-store";
+import {
+  formatBookingDate,
+  formatBookingDateHeader,
+  formatBookingTime,
+} from "@/lib/format-booking-date";
 import {
   Sheet,
   SheetContent,
@@ -47,7 +52,13 @@ export function BookingsPage() {
   const upcomingCount = (active ? 1 : 0) + upcomingRest.length;
   const pastCount = past.length;
 
-  const goPro = (proId: string) => navigate({ to: "/pro/$proId", params: { proId } });
+  const goBooking = (b: Booking) => {
+    if (b.status === "pending_pro_approval") {
+      navigate({ to: "/booking/pending/$bookingId", params: { bookingId: b.id } });
+    } else {
+      navigate({ to: "/bookings/$bookingId", params: { bookingId: b.id } });
+    }
+  };
 
   return (
     <AppShell editorial>
@@ -94,7 +105,7 @@ export function BookingsPage() {
                 pro={MOCK_PROS.find((p) => p.id === active.proId)!}
                 onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
                 onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
-                onTap={() => goPro(active.proId)}
+                onTap={() => goBooking(active)}
                 onCancel={() => setCancelTarget(active.id)}
               />
             )}
@@ -105,7 +116,7 @@ export function BookingsPage() {
               subtleBorder={subtleBorder}
               subtleSurface={subtleSurface}
               cardShadow={cardShadow}
-              onTap={(b) => goPro(b.proId)}
+              onTap={(b) => goBooking(b)}
             />
           </div>
         )
@@ -126,7 +137,7 @@ export function BookingsPage() {
             muted={muted}
             subtleBorder={subtleBorder}
             cardShadow={cardShadow}
-            onTap={(b) => goPro(b.proId)}
+            onTap={(b) => goBooking(b)}
           />
         </div>
       )}
@@ -265,12 +276,12 @@ function ActiveBookingHero({
     bigSub = `Getting ready · leaves in ${booking.etaMinutes ?? 5} min`;
   } else if (status === "enroute") {
     bigLabel = `${booking.etaMinutes ?? 12} min`;
-    bigSub = `Estimated arrival · ${formatTime(booking.when)} appointment`;
+    bigSub = `Estimated arrival · ${formatBookingTime(booking.when)} appointment`;
   } else if (status === "arrived") {
     bigLabel = booking.pin ?? "—";
     bigSub = `Share PIN with ${pro.name.split(" ")[0]} to start`;
   } else if (status === "in-progress") {
-    bigLabel = formatTime(booking.startedAt ?? booking.when);
+    bigLabel = formatBookingTime(booking.startedAt ?? booking.when);
     bigSub = `Service started · ${booking.service.name} · ${booking.service.durationLabel}`;
   }
 
@@ -576,7 +587,7 @@ function UpcomingCard({
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          <strong style={{ color: "var(--card-foreground)", fontWeight: 600 }}>{formatTime(booking.when)}</strong>
+          <strong style={{ color: "var(--card-foreground)", fontWeight: 600 }}>{formatBookingDate(booking.when)}</strong>
         </span>
         <span className="inline-flex items-center gap-1.5">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={"var(--on-card-muted)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -816,7 +827,7 @@ function PastCard({
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          {formatDateAndTime(booking.when)}
+          {formatBookingDate(booking.when)}
         </span>
         {isCancelled ? (
           <span style={{ color: DANGER }}>
@@ -1020,21 +1031,7 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
-function formatTime(ts: number): string {
-  const d = new Date(ts);
-  const h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
-}
-
-function formatDateAndTime(ts: number): string {
-  const d = new Date(ts);
-  const month = d.toLocaleDateString(undefined, { month: "short" });
-  const day = d.getDate();
-  return `${month} ${day} · ${formatTime(ts)}`;
-}
+// formatTime and formatDateAndTime removed — use formatBookingDate / formatBookingTime from @/lib/format-booking-date
 
 function locationLabel(b: Booking): string {
   // All Ewà bookings come to the customer — no need to label "Mobile" anywhere
@@ -1044,15 +1041,15 @@ function locationLabel(b: Booking): string {
 
 function groupByDay(bookings: Booking[]): { label: string; items: Booking[] }[] {
   const sorted = [...bookings].sort((a, b) => a.when - b.when);
-  const groups = new Map<string, Booking[]>();
+  const groups = new Map<string, { label: string; items: Booking[] }>();
   for (const b of sorted) {
-    const d = new Date(b.when);
-    const key = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-    const arr = groups.get(key) ?? [];
-    arr.push(b);
-    groups.set(key, arr);
+    const dayKey = new Date(b.when).toDateString();
+    if (!groups.has(dayKey)) {
+      groups.set(dayKey, { label: formatBookingDateHeader(b.when), items: [] });
+    }
+    groups.get(dayKey)!.items.push(b);
   }
-  return Array.from(groups.entries()).map(([label, items]) => ({ label, items }));
+  return Array.from(groups.values());
 }
 
 function groupByMonth(bookings: Booking[]): { label: string; items: Booking[] }[] {

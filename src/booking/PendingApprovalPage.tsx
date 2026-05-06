@@ -7,18 +7,7 @@ import { Clock } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useBookings } from "@/data/bookings-store";
 import { SANS_STACK } from "@/auth/auth-shell";
-
-function formatDateAndTime(ts: number): string {
-  const d = new Date(ts);
-  const month = d.toLocaleDateString(undefined, { month: "short" });
-  const day = d.getDate();
-  const h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  const time = m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
-  return `${month} ${day} · ${time}`;
-}
+import { formatBookingDate } from "@/lib/format-booking-date";
 
 function initialsOf(name: string): string {
   return name
@@ -119,7 +108,7 @@ export function PendingApprovalPage({ bookingId }: { bookingId: string }) {
           <div className="flex items-center justify-between" style={{ fontSize: 14 }}>
             <span style={{ color: "var(--on-card-muted)" }}>When</span>
             <span className="tabular" style={{ color: "var(--card-foreground)", fontWeight: 600 }}>
-              {formatDateAndTime(booking.when)}
+              {formatBookingDate(booking.when)}
             </span>
           </div>
           <div
