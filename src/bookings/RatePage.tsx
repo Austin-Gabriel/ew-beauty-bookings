@@ -6,20 +6,21 @@ import { useBookings } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
 
 const ORANGE = "var(--bagel)";
-const STAR_COLOR = "#F5A623";
+const STAR_FILLED = "var(--bagel)";
+const STAR_EMPTY_LIGHT = "#D1D5DB";
+const STAR_EMPTY_DARK = "rgba(240,235,216,0.3)";
 
 export function RatePage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
-  const { getBooking } = useBookings();
+  const { getBooking, setBookings, bookings } = useBookings();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
   const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
 
-  const [rating, setRating] = useState(0);
-  const [hoveredStar, setHoveredStar] = useState(0);
+  const [rating, setRating] = useState(booking?.rating ?? 0);
   const [review, setReview] = useState("");
 
   if (!booking || !pro) {
@@ -36,6 +37,11 @@ export function RatePage({ bookingId }: { bookingId: string }) {
   const initials = pro.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
 
   const handleSubmit = () => {
+    if (rating > 0) {
+      setBookings(
+        bookings.map((b) => b.id === bookingId ? { ...b, rating } : b)
+      );
+    }
     toast.success("Thanks for your review!");
     navigate({ to: "/bookings" });
   };
@@ -44,7 +50,6 @@ export function RatePage({ bookingId }: { bookingId: string }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
-      {/* Header */}
       <header
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
@@ -58,7 +63,6 @@ export function RatePage({ bookingId }: { bookingId: string }) {
       </header>
 
       <div className="flex-1 px-5 pt-8 pb-28">
-        {/* Pro avatar + name */}
         <div className="flex flex-col items-center">
           <div
             className="grid h-20 w-20 place-items-center rounded-full"
@@ -72,17 +76,14 @@ export function RatePage({ bookingId }: { bookingId: string }) {
           </p>
         </div>
 
-        {/* Stars */}
         <div className="mt-8 flex items-center justify-center gap-3">
           {[1, 2, 3, 4, 5].map((star) => {
-            const filled = star <= (hoveredStar || rating);
+            const filled = star <= rating;
             return (
               <button
                 key={star}
                 type="button"
                 onClick={() => setRating(star)}
-                onMouseEnter={() => setHoveredStar(star)}
-                onMouseLeave={() => setHoveredStar(0)}
                 className="transition-transform active:scale-110"
                 style={{ padding: 4 }}
               >
@@ -90,8 +91,8 @@ export function RatePage({ bookingId }: { bookingId: string }) {
                   width="36"
                   height="36"
                   viewBox="0 0 24 24"
-                  fill={filled ? STAR_COLOR : "none"}
-                  stroke={filled ? STAR_COLOR : isDark ? "rgba(240,235,216,0.3)" : "#D1D5DB"}
+                  fill={filled ? STAR_FILLED : "none"}
+                  stroke={filled ? STAR_FILLED : isDark ? STAR_EMPTY_DARK : STAR_EMPTY_LIGHT}
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -103,23 +104,19 @@ export function RatePage({ bookingId }: { bookingId: string }) {
           })}
         </div>
         {rating > 0 && (
-          <p className="mt-2 text-center" style={{ fontSize: 14, fontWeight: 600, color: STAR_COLOR }}>
+          <p className="mt-2 text-center" style={{ fontSize: 14, fontWeight: 600, color: ORANGE }}>
             {ratingLabels[rating]}
           </p>
         )}
 
-        {/* Review text */}
         {rating > 0 && (
           <div className="mt-8">
-            <label style={{ fontSize: 13, fontWeight: 600, color: "var(--card-foreground)" }}>
-              Leave a note (optional)
-            </label>
             <textarea
               value={review}
               onChange={(e) => setReview(e.target.value)}
-              placeholder={`How was your ${booking.service.name} with ${pro.name.split(" ")[0]}?`}
-              rows={4}
-              className="mt-2 w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
+              placeholder="Add a note about your visit (optional)"
+              rows={3}
+              className="w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
               style={{
                 backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
                 color: "var(--card-foreground)",
@@ -128,11 +125,13 @@ export function RatePage({ bookingId }: { bookingId: string }) {
                 lineHeight: 1.5,
               }}
             />
+            <p style={{ marginTop: 6, fontSize: 11.5, color: muted, textAlign: "center" }}>
+              Your rating helps other customers find great pros.
+            </p>
           </div>
         )}
       </div>
 
-      {/* Sticky submit */}
       <div className="fixed bottom-0 left-0 right-0 z-30 px-5 pb-8 pt-4" style={{ backgroundColor: "var(--background)" }}>
         <button
           onClick={handleSubmit}
