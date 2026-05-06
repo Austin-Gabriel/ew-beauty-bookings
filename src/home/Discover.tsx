@@ -73,7 +73,7 @@ export function DiscoverPage() {
   const isCustomLocation = searchedLocation !== null;
 
   const addressSuggestions = useMemo(() => {
-    if (!addressQuery.trim()) return [];
+    if (!addressQuery.trim()) return MOCK_NEIGHBORHOODS;
     const q = addressQuery.toLowerCase();
     return MOCK_NEIGHBORHOODS.filter(
       (n) => n.name.toLowerCase().includes(q) || n.borough.toLowerCase().includes(q),
