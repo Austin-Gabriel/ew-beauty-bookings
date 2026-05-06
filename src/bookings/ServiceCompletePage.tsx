@@ -300,8 +300,8 @@ function TipSelector({
               onClick={() => onSelectPreset(p.factor)}
               className="flex-1 rounded-xl py-2.5 text-center transition-colors"
               style={{
-                backgroundColor: active ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-                color: active ? "#1A0E08" : "var(--card-foreground)",
+                backgroundColor: active ? ORANGE : "var(--surface-elevated)",
+                color: active ? "#1A0E08" : "var(--foreground)",
                 border: active ? "none" : `1px solid ${subtleBorder}`,
                 fontSize: 13,
                 fontWeight: 600,
@@ -317,8 +317,8 @@ function TipSelector({
           onClick={onCustom}
           className="flex-1 rounded-xl py-2.5 text-center transition-colors"
           style={{
-            backgroundColor: isCustom ? ORANGE : isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-            color: isCustom ? "#1A0E08" : "var(--card-foreground)",
+            backgroundColor: isCustom ? ORANGE : "var(--surface-elevated)",
+            color: isCustom ? "#1A0E08" : "var(--foreground)",
             border: isCustom ? "none" : `1px solid ${subtleBorder}`,
             fontSize: 13,
             fontWeight: 600,
@@ -330,7 +330,7 @@ function TipSelector({
       </div>
       {isCustom && (
         <div className="mt-3 flex items-center gap-2">
-          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)" }}>$</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--foreground)" }}>$</span>
           <input
             type="number"
             inputMode="numeric"
@@ -339,8 +339,8 @@ function TipSelector({
             placeholder="0"
             className="flex-1 rounded-xl border-none px-3 py-2.5 outline-none"
             style={{
-              backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
-              color: "var(--card-foreground)",
+              backgroundColor: "var(--surface-elevated)",
+              color: "var(--foreground)",
               fontSize: 16,
               fontWeight: 600,
               fontFamily: SANS_STACK,
