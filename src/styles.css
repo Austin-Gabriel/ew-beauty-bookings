@@ -86,6 +86,7 @@
   --cream: oklch(0.945 0.025 92);       /* #F0EBD8 */
   --cream-elevated: oklch(0.975 0.018 92);
   --bagel: oklch(0.745 0.165 50);       /* #FF823F — full saturation */
+  --live-green: oklch(0.72 0.19 145);   /* #22C55E — real-time availability ONLY */
   --bagel-foreground: oklch(0.225 0.028 235);
 
   /* Light mode mapping — pure white for an iOS-style clean surface */
