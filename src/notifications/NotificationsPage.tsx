@@ -469,7 +469,7 @@ export function NotificationsPage() {
         {/* Empty state for "new" customers with no notifs */}
         {activities.length === 0 && (
           <section className="mt-8 rounded-2xl px-5 py-6 text-center" style={{ backgroundColor: subtleSurface, border: `1px solid ${subtleBorder}` }}>
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "rgba(22,163,74,0.12)", color: ORANGE }}>
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "rgba(255,130,63,0.12)", color: ORANGE }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
