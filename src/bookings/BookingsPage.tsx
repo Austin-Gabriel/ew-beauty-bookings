@@ -129,6 +129,47 @@ export function BookingsPage() {
           />
         </div>
       )}
+
+      {/* Cancel confirmation sheet */}
+      <Sheet open={cancelTarget !== null} onOpenChange={(open) => { if (!open) setCancelTarget(null); }}>
+        <SheetContent side="bottom" className="rounded-t-3xl">
+          <div className="flex flex-col items-center px-2 pb-6 pt-2" style={{ fontFamily: SANS_STACK }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)", marginBottom: 6 }}>
+              Cancel this booking?
+            </h2>
+            <p style={{ fontSize: 13, color: muted, textAlign: "center", maxWidth: 280, lineHeight: 1.5 }}>
+              Your card hasn't been charged. You can rebook anytime.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (cancelTarget) {
+                  cancelBooking(cancelTarget);
+                  setCancelTarget(null);
+                }
+              }}
+              className="mt-5 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
+              style={{ backgroundColor: "#DC2626", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: SANS_STACK }}
+            >
+              Cancel booking
+            </button>
+            <button
+              type="button"
+              onClick={() => setCancelTarget(null)}
+              className="mt-2 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
+              style={{
+                backgroundColor: "var(--cream-elevated)",
+                color: "var(--midnight)",
+                fontSize: 15,
+                fontWeight: 700,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Keep booking
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </AppShell>
   );
 }
