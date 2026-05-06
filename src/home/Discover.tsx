@@ -23,7 +23,21 @@ import {
 
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
+const LIVE_GREEN = "var(--live-green)";
 const INFO = "#3B82F6";
+
+/** Mock NYC neighborhoods for address search dropdown. */
+const MOCK_NEIGHBORHOODS = [
+  { name: "Bed-Stuy", borough: "Brooklyn" },
+  { name: "Crown Heights", borough: "Brooklyn" },
+  { name: "Fort Greene", borough: "Brooklyn" },
+  { name: "Williamsburg", borough: "Brooklyn" },
+  { name: "Park Slope", borough: "Brooklyn" },
+  { name: "Bushwick", borough: "Brooklyn" },
+  { name: "Prospect Heights", borough: "Brooklyn" },
+];
+
+const DEFAULT_LOCATION = MOCK_NEIGHBORHOODS[0]!; // Bed-Stuy
 
 type ChipId = "All" | (typeof PROFESSIONAL_TYPES)[number];
 type PriceFilter = "any" | "$" | "$$" | "$$$";
@@ -50,7 +64,32 @@ export function DiscoverPage() {
   const isNow = mode === "now";
   const accent = isNow ? BAGEL_ACCENT : ORANGE;
   const [activeChip, setActiveChip] = useState<ChipId>("All");
-  const [search, setSearch] = useState("");
+
+  // Address search state
+  const [addressQuery, setAddressQuery] = useState("");
+  const [addressFocused, setAddressFocused] = useState(false);
+  const [searchedLocation, setSearchedLocation] = useState<typeof MOCK_NEIGHBORHOODS[number] | null>(null);
+  const activeLocation = searchedLocation ?? DEFAULT_LOCATION;
+  const isCustomLocation = searchedLocation !== null;
+
+  const addressSuggestions = useMemo(() => {
+    if (!addressQuery.trim()) return [];
+    const q = addressQuery.toLowerCase();
+    return MOCK_NEIGHBORHOODS.filter(
+      (n) => n.name.toLowerCase().includes(q) || n.borough.toLowerCase().includes(q),
+    );
+  }, [addressQuery]);
+
+  const handleSelectLocation = (loc: typeof MOCK_NEIGHBORHOODS[number]) => {
+    setSearchedLocation(loc);
+    setAddressQuery(loc.name);
+    setAddressFocused(false);
+  };
+
+  const handleResetLocation = () => {
+    setSearchedLocation(null);
+    setAddressQuery("");
+  };
 
   // Sheet open state
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
@@ -87,15 +126,10 @@ export function DiscoverPage() {
     if (activeChip !== "All") list = list.filter((p) => p.professionalType === activeChip);
     // Filter by radius
     list = list.filter((p) => p.distanceMi <= radiusMi);
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    // Filter by searched neighborhood location
+    if (searchedLocation) {
       list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.headline.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.neighborhood.toLowerCase().includes(q) ||
-          p.specializations.some((s) => s.toLowerCase().includes(q)),
+        (p) => p.neighborhood === searchedLocation.name || p.distanceMi <= radiusMi,
       );
     }
     if (priceFilter !== "any") {
@@ -112,7 +146,7 @@ export function DiscoverPage() {
       list = list.filter((p) => p.online);
     }
     return list;
-  }, [activeChip, search, priceFilter, ratingFilter, availabilityFilter, radiusMi]);
+  }, [activeChip, searchedLocation, priceFilter, ratingFilter, availabilityFilter, radiusMi]);
 
   const onlineList = useMemo(() => filtered.filter((p) => p.online), [filtered]);
   const spotlight = useMemo(
@@ -158,15 +192,12 @@ export function DiscoverPage() {
   const handleTrendingTap = (label: string) => {
     if (label === "Knotless braids") {
       setActiveChip("Hairdresser");
-      setSearch("knotless");
       toast("Showing hairdressers for knotless");
     } else if (label === "Silk press") {
       setActiveChip("Hairdresser");
-      setSearch("silk press");
       toast("Showing hairdressers for silk press");
     } else if (label === "Locs") {
       setActiveChip("Loctician");
-      setSearch("");
       toast("Showing locticians");
     } else {
       navigate({ to: "/see-all/$category", params: { category: "trending" } });
@@ -214,78 +245,113 @@ export function DiscoverPage() {
           </div>
         </div>
 
-        {/* Search bar */}
-        <div
-          className="flex h-11 items-center gap-2.5 rounded-2xl border pl-4 pr-1.5"
-          style={{ borderColor: subtleBorder, backgroundColor: subtleSurface }}
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search styles, stylists, neighborhoods…"
-            className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
-            style={{
-              color: text,
-              fontFamily: SANS_STACK,
-              fontSize: 13.5,
-              fontWeight: 400,
-              minWidth: 0,
-            }}
-          />
-          <button
-            type="button"
-            aria-label={activeFilterCount > 0 ? `Filters (${activeFilterCount} active)` : "Filters"}
-            onClick={() => setFiltersSheetOpen(true)}
-            className="relative grid h-8 w-8 place-items-center rounded-xl transition-transform hover:scale-105 active:scale-95"
-            style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+        {/* Address search bar */}
+        <div className="relative">
+          <div
+            className="flex h-11 items-center gap-2.5 rounded-2xl border pl-4 pr-1.5"
+            style={{ borderColor: subtleBorder, backgroundColor: subtleSurface }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="7" y1="12" x2="20" y2="12" />
-              <line x1="10" y1="18" x2="20" y2="18" />
-              <circle cx="7" cy="6" r="2" fill="currentColor" />
-              <circle cx="13" cy="12" r="2" fill="currentColor" />
-              <circle cx="16" cy="18" r="2" fill="currentColor" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+              <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {activeFilterCount > 0 && (
-              <span
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  top: -4,
-                  right: -4,
-                  minWidth: 16,
-                  height: 16,
-                  padding: "0 4px",
-                  borderRadius: 9999,
-                  backgroundColor: "#1A0E08",
-                  color: ORANGE,
-                  fontFamily: SANS_STACK,
-                  fontSize: 10,
-                  fontWeight: 700,
-                  display: "grid",
-                  placeItems: "center",
-                  border: `2px solid ${isDark ? "#061C27" : "#F0EBD8"}`,
-                }}
-              >
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
+            <input
+              type="text"
+              value={addressQuery}
+              onChange={(e) => { setAddressQuery(e.target.value); if (searchedLocation && e.target.value !== searchedLocation.name) setSearchedLocation(null); }}
+              onFocus={() => setAddressFocused(true)}
+              onBlur={() => setTimeout(() => setAddressFocused(false), 200)}
+              placeholder="Enter address"
+              className="flex-1 border-0 bg-transparent outline-none placeholder:text-current/50"
+              style={{
+                color: text,
+                fontFamily: SANS_STACK,
+                fontSize: 13.5,
+                fontWeight: 400,
+                minWidth: 0,
+              }}
+            />
+            <button
+              type="button"
+              aria-label={activeFilterCount > 0 ? `Filters (${activeFilterCount} active)` : "Filters"}
+              onClick={() => setFiltersSheetOpen(true)}
+              className="relative grid h-8 w-8 place-items-center rounded-xl transition-transform hover:scale-105 active:scale-95"
+              style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="7" y1="12" x2="20" y2="12" />
+                <line x1="10" y1="18" x2="20" y2="18" />
+                <circle cx="7" cy="6" r="2" fill="currentColor" />
+                <circle cx="13" cy="12" r="2" fill="currentColor" />
+                <circle cx="16" cy="18" r="2" fill="currentColor" />
+              </svg>
+              {activeFilterCount > 0 && (
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: -4,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    borderRadius: 9999,
+                    backgroundColor: "#1A0E08",
+                    color: ORANGE,
+                    fontFamily: SANS_STACK,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    display: "grid",
+                    placeItems: "center",
+                    border: `2px solid ${isDark ? "#061C27" : "#F0EBD8"}`,
+                  }}
+                >
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Address dropdown suggestions */}
+          {addressFocused && addressQuery.trim() && addressSuggestions.length > 0 && (
+            <div
+              className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border shadow-lg"
+              style={{
+                backgroundColor: "var(--card)",
+                borderColor: subtleBorder,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              {addressSuggestions.map((loc) => (
+                <button
+                  key={loc.name}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelectLocation(loc)}
+                  className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-muted/30"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--on-card-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                  <div>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)" }}>{loc.name}</span>
+                    <span style={{ fontSize: 12, color: "var(--on-card-muted)", marginLeft: 6 }}>{loc.borough}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mode switch + compact location */}
-        <div className="mt-2 flex items-stretch gap-2">
+        <div className="mt-2 flex items-center gap-2">
           <ModeSwitch mode={mode} onChange={setMode} subtleSurface={subtleSurface} subtleBorder={subtleBorder} />
           <button
             type="button"
             onClick={() => setRadiusSheetOpen(true)}
-            className="inline-flex shrink-0 items-center gap-1 rounded-xl border px-3 transition-transform active:scale-95"
+            className="inline-flex shrink-0 items-center gap-1 rounded-xl border px-3 py-2 transition-transform active:scale-95"
             style={{
               borderColor: subtleBorder,
               backgroundColor: subtleSurface,
@@ -299,11 +365,29 @@ export function DiscoverPage() {
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
             </svg>
-            {radiusMi} mi
+            {activeLocation.name} · {radiusMi} mi
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={faint} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
+          {isCustomLocation && (
+            <button
+              type="button"
+              onClick={handleResetLocation}
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 11.5,
+                fontWeight: 600,
+                color: BAGEL_ACCENT,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Reset to your location
+            </button>
+          )}
         </div>
       </header>
 
@@ -312,14 +396,14 @@ export function DiscoverPage() {
         <div
           className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
           style={{
-            backgroundColor: isDark ? "rgba(255,130,63,0.10)" : "rgba(255,130,63,0.10)",
-            color: BAGEL_ACCENT,
+            backgroundColor: isDark ? "rgba(34,197,94,0.10)" : "rgba(34,197,94,0.10)",
+            color: LIVE_GREEN,
             fontFamily: SANS_STACK,
             fontSize: 11.5,
             fontWeight: 600,
           }}
         >
-          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
           {onlineList.length} stylists ready in Brooklyn
         </div>
       )}
@@ -700,8 +784,8 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(255,130,63,0.18)",
-        color: BAGEL_ACCENT,
+        backgroundColor: "rgba(34,197,94,0.18)",
+        color: LIVE_GREEN,
         fontFamily: SANS_STACK,
         fontSize: 10,
         fontWeight: 700,
@@ -709,7 +793,7 @@ function LiveBadge() {
         textTransform: "uppercase",
       }}
     >
-      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+      <span aria-hidden className="ewa-pulse" style={{ width: 5, height: 5, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
       Live
     </span>
   );
@@ -788,8 +872,8 @@ function HeroCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: LIVE_GREEN }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
             Available 2:00 PM
           </span>
           <span className="inline-flex items-center gap-1" style={{ fontSize: 11.5, fontWeight: 500, color: "#2A3544" }}>
@@ -846,7 +930,7 @@ function OnlineCard({
         <span
           className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5"
           style={{
-            backgroundColor: BAGEL_ACCENT,
+            backgroundColor: LIVE_GREEN,
             color: "#fff",
             fontSize: 9,
             fontWeight: 700,
@@ -870,8 +954,8 @@ function OnlineCard({
           <span className="truncate">· {pro.reviewCount} reviews · {pro.category}</span>
         </div>
         <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: LINE }}>
-          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: BAGEL_ACCENT }}>
-            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: BAGEL_ACCENT }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 600, color: LIVE_GREEN }}>
+            <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: LIVE_GREEN }} />
             Available now
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: INK_900 }}>${pro.priceFrom}+</span>
@@ -1546,7 +1630,7 @@ function RadiusSheet({
       <SheetContent side="bottom" className="rounded-t-3xl">
         <SheetShell
           title="Search radius"
-          description="How far should we look from your spot in Bed-Stuy?"
+          description="How far should we look from your current location?"
         >
           <ul className="flex flex-col gap-1 pt-2">
             {RADIUS_OPTIONS.map((opt) => {
