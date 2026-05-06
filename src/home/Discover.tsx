@@ -151,7 +151,7 @@ export function DiscoverPage() {
   // Card shadow lifts white cards off the white page in light mode; no shadow on dark
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   // Online card border — bumped to 50% opacity in light mode so the live signal stays strong on white
-  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
+  const onlineBorder = isDark ? "rgba(255,130,63,0.30)" : "rgba(255,130,63,0.50)";
   // Header bottom border — visible separator between sticky chrome and scrollable content in light mode
   const headerBottomBorder = isDark ? "transparent" : "#EEF1F4";
 
@@ -312,7 +312,7 @@ export function DiscoverPage() {
         <div
           className="mx-5 mt-2 flex items-center justify-center gap-1.5 rounded-lg px-4 py-2"
           style={{
-            backgroundColor: isDark ? "rgba(22,163,74,0.10)" : "#DCFCE7",
+            backgroundColor: isDark ? "rgba(255,130,63,0.10)" : "rgba(255,130,63,0.10)",
             color: BAGEL_ACCENT,
             fontFamily: SANS_STACK,
             fontSize: 11.5,
@@ -563,7 +563,7 @@ function ModeSwitch({
               color: active ? activeColor : "var(--muted-foreground)",
               fontSize: 12.5,
               fontWeight: 600,
-              boxShadow: active ? (isNow ? "0 1px 3px rgba(22,163,74,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
+              boxShadow: active ? (isNow ? "0 1px 3px rgba(255,130,63,0.4)" : "0 1px 3px rgba(255,130,63,0.3)") : "none",
               minWidth: 0,
             }}
           >
@@ -700,7 +700,7 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(22,163,74,0.18)",
+        backgroundColor: "rgba(255,130,63,0.18)",
         color: BAGEL_ACCENT,
         fontFamily: SANS_STACK,
         fontSize: 10,
@@ -817,7 +817,7 @@ function OnlineCard({
   onTap,
   onFavorite,
   shadow = "none",
-  border = "rgba(22,163,74,0.30)",
+  border = "rgba(255,130,63,0.30)",
 }: {
   pro: Pro;
   favorited: boolean;
@@ -1318,7 +1318,7 @@ function NotificationsSheet({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div
                 className="grid h-14 w-14 place-items-center rounded-full"
-                style={{ backgroundColor: "rgba(22,163,74,0.12)", color: BAGEL_ACCENT }}
+                style={{ backgroundColor: "rgba(255,130,63,0.12)", color: BAGEL_ACCENT }}
               >
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />

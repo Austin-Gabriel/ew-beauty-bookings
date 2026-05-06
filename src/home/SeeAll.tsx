@@ -50,7 +50,7 @@ export function SeeAllPage() {
   const muted = "var(--muted-foreground)";
   const faint = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
-  const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
+  const onlineBorder = isDark ? "rgba(255,130,63,0.30)" : "rgba(255,130,63,0.50)";
 
   const meta = TITLE_MAP[cat];
 
@@ -173,9 +173,9 @@ function FilterRow({
           active
           label="Online now"
           dot={BAGEL_ACCENT}
-          activeBg="rgba(22,163,74,0.14)"
+          activeBg="rgba(255,130,63,0.14)"
           activeColor={BAGEL_ACCENT}
-          activeBorder="rgba(22,163,74,0.30)"
+          activeBorder="rgba(255,130,63,0.30)"
           subtleSurface={subtleSurface}
           subtleBorder={subtleBorder}
           text={text}
@@ -291,7 +291,7 @@ function LiveBadge() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5"
       style={{
-        backgroundColor: "rgba(22,163,74,0.18)",
+        backgroundColor: "rgba(255,130,63,0.18)",
         color: BAGEL_ACCENT,
         fontFamily: SANS_STACK,
         fontSize: 10,
@@ -359,7 +359,7 @@ function OnlineCardSplit({
   favorited,
   when,
   shadow = "none",
-  border = "rgba(22,163,74,0.30)",
+  border = "rgba(255,130,63,0.30)",
 }: {
   pro: Pro;
   onTap: () => void;
