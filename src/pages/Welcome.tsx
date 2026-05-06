@@ -100,14 +100,33 @@ function WelcomeBody() {
       </div>
 
       <div className="relative z-[1] mt-6 flex flex-col items-center px-4 pb-4 ewa-fade" style={{ animationDelay: "780ms" }}>
-        <a href="#" className="group text-center transition-opacity hover:opacity-100" style={{ fontFamily: SANS_STACK, fontWeight: 400, fontSize: 11.5 }}>
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/join-as-pro" })}
+          className="group text-center transition-opacity hover:opacity-100"
+          style={{ fontFamily: SANS_STACK, fontWeight: 400, fontSize: 11.5, background: "none", border: "none", cursor: "pointer" }}
+        >
           <span style={{ color: text, opacity: 0.45 }}>Are you a beauty pro? </span>
           <span style={{ color: "#FF823F", fontWeight: 500 }} className="transition-all group-hover:tracking-wide">
             Join as a pro →
           </span>
-        </a>
+        </button>
         <div style={{ marginTop: 10, fontFamily: SANS_STACK, fontSize: 10, letterSpacing: "0.02em", color: text, opacity: 0.35 }}>
-          Terms of Service · Privacy Policy
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/profile/terms" })}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", fontSize: "inherit", fontFamily: "inherit", textDecoration: "underline", textUnderlineOffset: 2 }}
+          >
+            Terms of Service
+          </button>
+          {" · "}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/profile/privacy" })}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", fontSize: "inherit", fontFamily: "inherit", textDecoration: "underline", textUnderlineOffset: 2 }}
+          >
+            Privacy Policy
+          </button>
         </div>
       </div>
     </>
