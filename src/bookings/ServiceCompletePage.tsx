@@ -288,6 +288,30 @@ function TipSelector({
   _isDark?: boolean;
   subtleBorder: string;
 }) {
+  const maxTip = servicePrice; // 100% of service price
+
+  const handleCustomChange = (raw: string) => {
+    // Allow empty for typing
+    if (raw === "" || raw === "-") {
+      onCustomChange("0");
+      return;
+    }
+    const num = parseFloat(raw);
+    if (isNaN(num) || num < 0) {
+      onCustomChange("0");
+    } else if (num > maxTip) {
+      onCustomChange(String(maxTip));
+    } else {
+      onCustomChange(raw);
+    }
+  };
+
+  const handleBlur = () => {
+    const num = parseFloat(customTip);
+    if (isNaN(num) || num < 0) onCustomChange("0");
+    else if (num > maxTip) onCustomChange(String(maxTip));
+  };
+
   return (
     <div>
       <div className="flex gap-2">
@@ -334,8 +358,11 @@ function TipSelector({
           <input
             type="number"
             inputMode="numeric"
+            min={0}
+            max={maxTip}
             value={customTip}
-            onChange={(e) => onCustomChange(e.target.value)}
+            onChange={(e) => handleCustomChange(e.target.value)}
+            onBlur={handleBlur}
             placeholder="0"
             className="flex-1 rounded-xl border-none px-3 py-2.5 outline-none"
             style={{
@@ -347,6 +374,7 @@ function TipSelector({
               fontVariantNumeric: "tabular-nums",
             }}
           />
+          <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>max ${maxTip}</span>
         </div>
       )}
     </div>
