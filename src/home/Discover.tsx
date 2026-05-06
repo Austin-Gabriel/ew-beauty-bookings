@@ -604,7 +604,7 @@ function Chip({
   subtleSurface: string;
   subtleBorder: string;
 }) {
-  const activeText = accent === BAGEL_ACCENT ? "#fff" : "#1A0E08";
+  const activeText = "#1A0E08";
   return (
     <button
       type="button"
