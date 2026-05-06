@@ -52,7 +52,13 @@ export function BookingsPage() {
   const upcomingCount = (active ? 1 : 0) + upcomingRest.length;
   const pastCount = past.length;
 
-  const goPro = (proId: string) => navigate({ to: "/pro/$proId", params: { proId } });
+  const goBooking = (b: Booking) => {
+    if (b.status === "pending_pro_approval") {
+      navigate({ to: "/booking/pending/$bookingId", params: { bookingId: b.id } });
+    } else {
+      navigate({ to: "/bookings/$bookingId", params: { bookingId: b.id } });
+    }
+  };
 
   return (
     <AppShell editorial>
