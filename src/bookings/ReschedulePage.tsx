@@ -15,14 +15,13 @@ const TIME_SLOTS = [
 export function ReschedulePage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
-  const { getBooking } = useBookings();
+  const { getBooking, setBookings, bookings } = useBookings();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
   const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
 
-  // Generate next 7 days
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i + 1);
@@ -44,13 +43,31 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
   }
 
   const handleConfirm = () => {
-    toast.success("Booking rescheduled successfully");
+    if (!selectedTime) return;
+
+    const newDate = days[selectedDay];
+    // Parse time slot
+    const [timePart, ampm] = selectedTime.split(" ");
+    const [hStr, mStr] = timePart.split(":");
+    let hours = parseInt(hStr, 10);
+    const mins = mStr ? parseInt(mStr, 10) : 0;
+    if (ampm === "PM" && hours !== 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+
+    newDate.setHours(hours, mins, 0, 0);
+    const newWhen = newDate.getTime();
+
+    setBookings(
+      bookings.map((b) => b.id === bookingId ? { ...b, when: newWhen } : b)
+    );
+
+    const dateLabel = newDate.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    toast.success(`Booking rescheduled to ${dateLabel}, ${selectedTime}`);
     navigate({ to: "/bookings" });
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
-      {/* Header */}
       <header
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
@@ -64,7 +81,6 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
       </header>
 
       <div className="flex-1 px-5 pt-5 pb-28">
-        {/* Current booking info */}
         <div
           className="rounded-2xl px-4 py-3.5"
           style={{ backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8" }}
@@ -80,7 +96,6 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
           </p>
         </div>
 
-        {/* Date picker */}
         <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)", marginTop: 24, marginBottom: 12 }}>
           Pick a new date
         </h3>
@@ -110,7 +125,6 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
           })}
         </div>
 
-        {/* Time slots */}
         <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)", marginTop: 24, marginBottom: 12 }}>
           Pick a time
         </h3>
@@ -138,7 +152,6 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
         </div>
       </div>
 
-      {/* Sticky confirm */}
       <div className="fixed bottom-0 left-0 right-0 z-30 px-5 pb-8 pt-4" style={{ backgroundColor: "var(--background)" }}>
         <button
           onClick={handleConfirm}

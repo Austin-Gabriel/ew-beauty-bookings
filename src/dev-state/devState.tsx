@@ -49,7 +49,8 @@ export type ActiveBookingStage =
   | "getting-ready"
   | "enroute"
   | "arrived"
-  | "in-progress";
+  | "in-progress"
+  | "completed";
 
 /** Profile completeness — drives identity header, addresses, payment pill. */
 export type ProfileState = "new" | "partial" | "complete";

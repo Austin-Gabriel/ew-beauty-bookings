@@ -1,14 +1,16 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useBookings } from "@/data/bookings-store";
+import { useCustomerProfile } from "@/data/customer-store";
 import { MOCK_PROS } from "@/data/mock-pros";
 
 const ORANGE = "var(--bagel)";
 
 export function ReceiptPage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
-  const { isDark, text } = useAuthTheme();
+  const { isDark } = useAuthTheme();
   const { getBooking } = useBookings();
+  const { profile } = useCustomerProfile();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
@@ -18,7 +20,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
   if (!booking || !pro) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5" style={{ fontFamily: SANS_STACK }}>
-        <p style={{ color: text, fontSize: 16, fontWeight: 600 }}>Booking not found</p>
+        <p style={{ color: "var(--card-foreground)", fontSize: 16, fontWeight: 600 }}>Booking not found</p>
         <button onClick={() => navigate({ to: "/bookings" })} className="mt-4" style={{ color: ORANGE, fontSize: 14, fontWeight: 600 }}>
           Back to Bookings
         </button>
@@ -28,9 +30,14 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
 
   const initials = pro.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
   const servicePrice = booking.service.price;
-  const tip = booking.tipAmount ?? Math.round(servicePrice * 0.2);
-  const serviceFee = Math.round(servicePrice * 0.05);
-  const total = booking.total ?? servicePrice + tip + serviceFee;
+  const tip = booking.tipAmount ?? 0;
+  const total = booking.total ?? servicePrice + tip;
+
+  // Payment method from customer profile
+  const defaultCard = profile.paymentMethods.find((c) => c.isDefault);
+  const paymentLabel = defaultCard
+    ? `${defaultCard.brand.charAt(0).toUpperCase() + defaultCard.brand.slice(1)} · ${defaultCard.last4}`
+    : "Card on file";
 
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
@@ -39,7 +46,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
       >
-        <button onClick={() => navigate({ to: "/bookings" })} className="shrink-0 p-1" style={{ color: text }}>
+        <button onClick={() => window.history.back()} className="shrink-0 p-1" style={{ color: "var(--card-foreground)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -59,7 +66,7 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
           <div>
             <p style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)" }}>{pro.name}</p>
             <p style={{ fontSize: 12.5, color: muted }}>
-              {new Date(booking.when).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+              {booking.service.name} · {new Date(booking.when).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
             </p>
           </div>
         </div>
@@ -71,7 +78,6 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
         >
           <ReceiptRow label={booking.service.name} sublabel={booking.service.durationLabel} value={`$${servicePrice}`} muted={muted} subtleBorder={subtleBorder} />
           <ReceiptRow label="Tip" value={`$${tip}`} muted={muted} subtleBorder={subtleBorder} />
-          <ReceiptRow label="Service fee" value={`$${serviceFee}`} muted={muted} subtleBorder={subtleBorder} />
           <div className="flex items-center justify-between px-4 py-3.5">
             <span style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)" }}>Total</span>
             <span style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", fontVariantNumeric: "tabular-nums" }}>
@@ -81,20 +87,12 @@ export function ReceiptPage({ bookingId }: { bookingId: string }) {
         </div>
 
         {/* Payment method */}
-        <div
-          className="mt-4 rounded-2xl px-4 py-3.5"
-          style={{ backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8" }}
-        >
-          <p style={{ fontSize: 10.5, color: muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            Payment method
-          </p>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)", marginTop: 4 }}>
-            •••• 4242
-          </p>
-        </div>
+        <p className="mt-5" style={{ fontSize: 13, color: muted }}>
+          Paid with {paymentLabel}
+        </p>
 
         {/* Booking ID */}
-        <p className="mt-6 text-center" style={{ fontSize: 11, color: muted }}>
+        <p className="mt-4" style={{ fontSize: 11, color: muted }}>
           Booking ID: {booking.id}
         </p>
       </div>

@@ -11,6 +11,10 @@ import {
   type Booking,
   type BookingStatus,
 } from "@/data/bookings-store";
+import {
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 
 const ORANGE = "var(--bagel)";
 const SUCCESS = "#16A34A";
@@ -20,10 +24,11 @@ const STAR = "#F5A623";
 type Tab = "upcoming" | "past";
 
 export function BookingsPage() {
-  const { bookings, activeBookings, pastBookings } = useBookings();
+  const { bookings, activeBookings, pastBookings, cancelBooking } = useBookings();
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
   const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
@@ -89,6 +94,7 @@ export function BookingsPage() {
                 onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
                 onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
                 onTap={() => goPro(active.proId)}
+                onCancel={() => setCancelTarget(active.id)}
               />
             )}
             <UpcomingList
@@ -123,6 +129,47 @@ export function BookingsPage() {
           />
         </div>
       )}
+
+      {/* Cancel confirmation sheet */}
+      <Sheet open={cancelTarget !== null} onOpenChange={(open) => { if (!open) setCancelTarget(null); }}>
+        <SheetContent side="bottom" className="rounded-t-3xl">
+          <div className="flex flex-col items-center px-2 pb-6 pt-2" style={{ fontFamily: SANS_STACK }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)", marginBottom: 6 }}>
+              Cancel this booking?
+            </h2>
+            <p style={{ fontSize: 13, color: muted, textAlign: "center", maxWidth: 280, lineHeight: 1.5 }}>
+              Your card hasn't been charged. You can rebook anytime.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (cancelTarget) {
+                  cancelBooking(cancelTarget);
+                  setCancelTarget(null);
+                }
+              }}
+              className="mt-5 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
+              style={{ backgroundColor: "#DC2626", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: SANS_STACK }}
+            >
+              Cancel booking
+            </button>
+            <button
+              type="button"
+              onClick={() => setCancelTarget(null)}
+              className="mt-2 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
+              style={{
+                backgroundColor: "var(--cream-elevated)",
+                color: "var(--midnight)",
+                fontSize: 15,
+                fontWeight: 700,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Keep booking
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </AppShell>
   );
 }
@@ -197,12 +244,14 @@ function ActiveBookingHero({
   onMessage,
   onCall,
   onTap,
+  onCancel,
 }: {
   booking: Booking;
   pro: Pro;
   onMessage: () => void;
   onCall: () => void;
   onTap: () => void;
+  onCancel: () => void;
 }) {
   const status = booking.status;
   const livePill = livePillFor(status);
@@ -356,6 +405,17 @@ function ActiveBookingHero({
             Call
           </button>
         </div>
+        {/* Cancel link — only before in-progress */}
+        {(["confirmed", "getting-ready", "enroute", "arrived"] as BookingStatus[]).includes(status) && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onCancel(); }}
+            className="mt-3 w-full text-center"
+            style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, opacity: 0.8, background: "none", border: "none", cursor: "pointer" }}
+          >
+            Cancel booking
+          </button>
+        )}
       </div>
     </div>
   );

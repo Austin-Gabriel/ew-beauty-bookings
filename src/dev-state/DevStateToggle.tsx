@@ -279,6 +279,7 @@ export function DevStateToggle() {
                     { value: "enroute", label: "Enroute — on the way" },
                     { value: "arrived", label: "Arrived — PIN entry" },
                     { value: "in-progress", label: "In progress" },
+                    { value: "completed", label: "Completed (→ Service Complete)" },
                   ]}
                   onChange={(v) => set("activeBooking", v)}
                 />
