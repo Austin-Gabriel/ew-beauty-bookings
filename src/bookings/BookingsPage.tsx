@@ -1031,21 +1031,7 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
-function formatTime(ts: number): string {
-  const d = new Date(ts);
-  const h = d.getHours();
-  const m = d.getMinutes().toString().padStart(2, "0");
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return m === "00" ? `${h12} ${ampm}` : `${h12}:${m} ${ampm}`;
-}
-
-function formatDateAndTime(ts: number): string {
-  const d = new Date(ts);
-  const month = d.toLocaleDateString(undefined, { month: "short" });
-  const day = d.getDate();
-  return `${month} ${day} · ${formatTime(ts)}`;
-}
+// formatTime and formatDateAndTime removed — use formatBookingDate / formatBookingTime from @/lib/format-booking-date
 
 function locationLabel(b: Booking): string {
   // All Ewà bookings come to the customer — no need to label "Mobile" anywhere
@@ -1055,15 +1041,15 @@ function locationLabel(b: Booking): string {
 
 function groupByDay(bookings: Booking[]): { label: string; items: Booking[] }[] {
   const sorted = [...bookings].sort((a, b) => a.when - b.when);
-  const groups = new Map<string, Booking[]>();
+  const groups = new Map<string, { label: string; items: Booking[] }>();
   for (const b of sorted) {
-    const d = new Date(b.when);
-    const key = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-    const arr = groups.get(key) ?? [];
-    arr.push(b);
-    groups.set(key, arr);
+    const dayKey = new Date(b.when).toDateString();
+    if (!groups.has(dayKey)) {
+      groups.set(dayKey, { label: formatBookingDateHeader(b.when), items: [] });
+    }
+    groups.get(dayKey)!.items.push(b);
   }
-  return Array.from(groups.entries()).map(([label, items]) => ({ label, items }));
+  return Array.from(groups.values());
 }
 
 function groupByMonth(bookings: Booking[]): { label: string; items: Booking[] }[] {
