@@ -45,10 +45,10 @@ export function SeeAllPage() {
   const navigate = useNavigate();
   const favorites = useFavorites();
 
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "#6B7684";
-  const faint = isDark ? "rgba(240,235,216,0.40)" : "#C7CDD4";
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
+  const muted = "var(--muted-foreground)";
+  const faint = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const onlineBorder = isDark ? "rgba(22,163,74,0.30)" : "rgba(22,163,74,0.50)";
 

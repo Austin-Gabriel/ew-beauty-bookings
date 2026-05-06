@@ -24,9 +24,9 @@ export function ProProfile({ proId }: { proId: string }) {
   const router = useRouter();
   const favorites = useFavorites();
 
-  const subtleSurface = isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "#EEF1F4";
-  const muted = isDark ? "rgba(240,235,216,0.55)" : INK_500;
+  const subtleSurface = "var(--surface-elevated)";
+  const subtleBorder = "var(--border)";
+  const muted = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
 

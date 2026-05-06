@@ -42,7 +42,7 @@ export function FavoriteEmptyState({
   onCta: () => void;
 }) {
   const { isDark, text } = useAuthTheme();
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "#6B7684";
+  const muted = "var(--muted-foreground)";
   const copy = COPY[variant];
 
   return (

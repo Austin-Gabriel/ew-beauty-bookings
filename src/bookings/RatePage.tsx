@@ -17,8 +17,8 @@ export function RatePage({ bookingId }: { bookingId: string }) {
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   const [rating, setRating] = useState(booking?.rating ?? 0);
   const [review, setReview] = useState("");
@@ -118,7 +118,7 @@ export function RatePage({ bookingId }: { bookingId: string }) {
               rows={3}
               className="w-full resize-none rounded-xl border-none px-3.5 py-3 outline-none"
               style={{
-                backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
+                backgroundColor: "var(--surface-elevated)",
                 color: "var(--card-foreground)",
                 fontSize: 14,
                 fontFamily: SANS_STACK,

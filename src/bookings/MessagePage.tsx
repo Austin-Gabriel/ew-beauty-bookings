@@ -15,8 +15,8 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean; ts: number }[]>([]);
 
-  const muted = isDark ? "rgba(240,235,216,0.55)" : "var(--on-card-muted)";
-  const subtleBorder = isDark ? "rgba(240,235,216,0.10)" : "var(--hairline)";
+  const muted = "var(--muted-foreground)";
+  const subtleBorder = "var(--border)";
 
   if (!booking || !pro) {
     return (
@@ -91,7 +91,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
               <div
                 className="max-w-[75%] rounded-2xl px-3.5 py-2.5"
                 style={{
-                  backgroundColor: m.fromMe ? ORANGE : isDark ? "rgba(240,235,216,0.08)" : "#F4F6F8",
+                  backgroundColor: m.fromMe ? ORANGE : "var(--surface-elevated)",
                   color: m.fromMe ? "#1A0E08" : "var(--card-foreground)",
                   fontSize: 14,
                   lineHeight: 1.4,
@@ -116,7 +116,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           placeholder="Type a message..."
           className="min-w-0 flex-1 rounded-xl border-none px-3.5 py-2.5 outline-none"
           style={{
-            backgroundColor: isDark ? "rgba(240,235,216,0.06)" : "#F4F6F8",
+            backgroundColor: "var(--surface-elevated)",
             color: "var(--card-foreground)",
             fontSize: 14,
             fontFamily: SANS_STACK,
