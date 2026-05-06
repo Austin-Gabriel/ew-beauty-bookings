@@ -2,6 +2,7 @@
  * DevBookingsSync — bridges dev-state toggles (bookingsSeed, activeBooking,
  * searchingStage) to the shared BookingsProvider.
  * Runs as an effect child of both providers.
+ * When activeBooking is "completed", auto-navigates to the Service Complete screen.
  */
 import { useEffect, useRef } from "react";
 import { useDevState } from "@/dev-state/devState";
