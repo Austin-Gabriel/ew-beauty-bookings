@@ -584,7 +584,7 @@ function UpcomingCard({
       {booking.pin && (
         <div
           className="mt-3 flex items-center justify-between rounded-xl px-3 py-2.5"
-          style={{ backgroundColor: subtleSurface }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--hairline)" }}
         >
           <div>
             <p style={{ fontSize: 10, color: "var(--on-card-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
