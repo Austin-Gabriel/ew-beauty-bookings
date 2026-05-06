@@ -126,15 +126,10 @@ export function DiscoverPage() {
     if (activeChip !== "All") list = list.filter((p) => p.professionalType === activeChip);
     // Filter by radius
     list = list.filter((p) => p.distanceMi <= radiusMi);
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    // Filter by searched neighborhood location
+    if (searchedLocation) {
       list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.headline.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.neighborhood.toLowerCase().includes(q) ||
-          p.specializations.some((s) => s.toLowerCase().includes(q)),
+        (p) => p.neighborhood === searchedLocation.name || p.distanceMi <= radiusMi,
       );
     }
     if (priceFilter !== "any") {
@@ -151,7 +146,7 @@ export function DiscoverPage() {
       list = list.filter((p) => p.online);
     }
     return list;
-  }, [activeChip, search, priceFilter, ratingFilter, availabilityFilter, radiusMi]);
+  }, [activeChip, searchedLocation, priceFilter, ratingFilter, availabilityFilter, radiusMi]);
 
   const onlineList = useMemo(() => filtered.filter((p) => p.online), [filtered]);
   const spotlight = useMemo(
