@@ -412,25 +412,46 @@ export function ProProfile({ proId }: { proId: string }) {
           bottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX + 16}px)`,
         }}
       >
-        <div className="mx-auto flex w-full max-w-[420px] justify-end px-5">
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
-            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-xl shadow-lg transition-transform active:scale-95"
-            style={{
-              padding: "12px 22px",
-              backgroundColor: ORANGE,
-              color: "#1A0E08",
-              fontSize: 14.5,
-              fontWeight: 600,
-              fontFamily: SANS_STACK,
-            }}
-          >
-            Book
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
+        <div className="mx-auto flex w-full max-w-[420px] items-end justify-end px-5">
+          <div className="pointer-events-auto flex flex-col items-end gap-1.5">
+            {/* Auto-accept indicator */}
+            <div className="flex items-center gap-1" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
+              {pro.autoAccept ? (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={ORANGE} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Books instantly</span>
+                </>
+              ) : (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>Confirms within 24h</span>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
+              className="inline-flex items-center gap-1.5 rounded-xl shadow-lg transition-transform active:scale-95"
+              style={{
+                padding: "12px 22px",
+                backgroundColor: ORANGE,
+                color: "#1A0E08",
+                fontSize: 14.5,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Book
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </AppShell>
