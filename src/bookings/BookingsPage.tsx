@@ -407,6 +407,7 @@ function UpcomingList({
   subtleSurface,
   cardShadow,
   onTap,
+  onCancel,
 }: {
   bookings: Booking[];
   text: string;
@@ -415,6 +416,7 @@ function UpcomingList({
   subtleSurface: string;
   cardShadow: string;
   onTap: (b: Booking) => void;
+  onCancel: (b: Booking) => void;
 }) {
   const groups = useMemo(() => groupByDay(bookings), [bookings]);
 
@@ -445,6 +447,7 @@ function UpcomingList({
                   booking={b}
                   pro={MOCK_PROS.find((p) => p.id === b.proId)!}
                   onTap={() => onTap(b)}
+                  onCancel={() => onCancel(b)}
                   text={text}
                   muted={muted}
                   subtleBorder={subtleBorder}
