@@ -27,7 +27,7 @@ const STAR = "#F5A623";
 type Tab = "upcoming" | "past";
 
 export function BookingsPage() {
-  const { bookings, activeBookings, pastBookings, cancelBooking } = useBookings();
+  const { bookings, activeBookings, pastBookings } = useBookings();
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
