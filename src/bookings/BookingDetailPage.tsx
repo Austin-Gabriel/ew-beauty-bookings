@@ -320,27 +320,55 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
         )}
 
         {/* Total summary card */}
-        <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
-          <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
-            <span>Service</span>
-            <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
+        {isCancelled ? (
+          /* Cancelled: show refund info instead of price breakdown */
+          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
+            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
+              <span>Service</span>
+              <span className="tabular font-medium" style={{ textDecoration: "line-through", color: "var(--on-card-muted)" }}>
+                ${servicePrice.toFixed(2)}
+              </span>
+            </div>
+            {booking.refundUsd != null && (
+              <div className="mt-2 flex items-center justify-between text-[15px]">
+                <span style={{ color: "var(--card-foreground)" }}>Refund</span>
+                <span className="tabular font-medium" style={{ color: "#16a34a" }}>
+                  ${booking.refundUsd.toFixed(2)}
+                </span>
+              </div>
+            )}
+            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
+            <p style={{ fontSize: 13, color: "var(--on-card-muted)", textAlign: "center", lineHeight: 1.5 }}>
+              {booking.refundUsd
+                ? "Refund processed — may take 5–10 business days."
+                : status === "declined"
+                  ? "This booking was declined by the pro. No charge."
+                  : "This booking was cancelled."}
+            </p>
           </div>
-          <div className="mt-2 flex items-center justify-between text-[15px]">
-            <span style={{ color: "var(--card-foreground)" }}>
-              {isComplete ? "Tip" : "Estimated tip"}
-            </span>
-            <span className="tabular font-medium" style={{ color: "var(--card-foreground)" }}>
-              ${tipAmount.toFixed(2)}
-            </span>
+        ) : (
+          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
+            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
+              <span>Service</span>
+              <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[15px]">
+              <span style={{ color: "var(--card-foreground)" }}>
+                {isComplete ? "Tip" : "Estimated tip"}
+              </span>
+              <span className="tabular font-medium" style={{ color: "var(--card-foreground)" }}>
+                ${tipAmount.toFixed(2)}
+              </span>
+            </div>
+            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
+            <div className="flex items-center justify-between">
+              <span className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>Total</span>
+              <span className="tabular text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
+                ${total.toFixed(2)}
+              </span>
+            </div>
           </div>
-          <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
-          <div className="flex items-center justify-between">
-            <span className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>Total</span>
-            <span className="tabular text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
-              ${total.toFixed(2)}
-            </span>
-          </div>
-        </div>
+        )}
 
         {/* Cancel link — visible for any cancellable status */}
         {canCancel(status) && (
@@ -350,7 +378,7 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
             className="mt-4 w-full text-center"
             style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
           >
-            Cancel booking
+            {isPending ? "Cancel request" : "Cancel booking"}
           </button>
         )}
       </div>
