@@ -108,9 +108,14 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
   // Active = not completed/cancelled/declined
   const isActive = !["completed", "cancelled", "declined"].includes(status);
   const isComplete = status === "completed";
+  const isCancelled = status === "cancelled" || status === "declined";
+  const isPending = status === "pending_pro_approval";
 
   // PIN visible only after pro accepted (confirmed or later, not pending)
   const showPin = booking.pin && !["searching", "pending_pro_approval"].includes(status) && isActive;
+
+  // Reschedule available for confirmed/scheduled bookings before in-progress
+  const canReschedule = ["confirmed", "getting-ready"].includes(status);
 
   const handleSaveNotes = () => {
     setBookings(
