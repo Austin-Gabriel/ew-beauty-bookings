@@ -467,6 +467,7 @@ function UpcomingCard({
   booking,
   pro,
   onTap,
+  onCancel,
   text,
   muted,
   subtleBorder,
@@ -476,6 +477,7 @@ function UpcomingCard({
   booking: Booking;
   pro: Pro;
   onTap: () => void;
+  onCancel: () => void;
   text: string;
   muted: string;
   subtleBorder: string;
@@ -483,7 +485,6 @@ function UpcomingCard({
   cardShadow: string;
 }) {
   const navigate = useNavigate();
-  const { cancelBooking } = useBookings();
   const status = booking.status;
   const isPending = status === "pending_pro_approval";
   const pill = statusPillFor(status);
