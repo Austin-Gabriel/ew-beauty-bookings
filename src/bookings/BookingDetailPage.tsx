@@ -108,9 +108,14 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
   // Active = not completed/cancelled/declined
   const isActive = !["completed", "cancelled", "declined"].includes(status);
   const isComplete = status === "completed";
+  const isCancelled = status === "cancelled" || status === "declined";
+  const isPending = status === "pending_pro_approval";
 
   // PIN visible only after pro accepted (confirmed or later, not pending)
   const showPin = booking.pin && !["searching", "pending_pro_approval"].includes(status) && isActive;
+
+  // Reschedule available for confirmed/scheduled bookings before in-progress
+  const canReschedule = ["confirmed", "getting-ready"].includes(status);
 
   const handleSaveNotes = () => {
     setBookings(
@@ -315,27 +320,55 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
         )}
 
         {/* Total summary card */}
-        <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
-          <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
-            <span>Service</span>
-            <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
+        {isCancelled ? (
+          /* Cancelled: show refund info instead of price breakdown */
+          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
+            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
+              <span>Service</span>
+              <span className="tabular font-medium" style={{ textDecoration: "line-through", color: "var(--on-card-muted)" }}>
+                ${servicePrice.toFixed(2)}
+              </span>
+            </div>
+            {booking.refundUsd != null && (
+              <div className="mt-2 flex items-center justify-between text-[15px]">
+                <span style={{ color: "var(--card-foreground)" }}>Refund</span>
+                <span className="tabular font-medium" style={{ color: "#16a34a" }}>
+                  ${booking.refundUsd.toFixed(2)}
+                </span>
+              </div>
+            )}
+            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
+            <p style={{ fontSize: 13, color: "var(--on-card-muted)", textAlign: "center", lineHeight: 1.5 }}>
+              {booking.refundUsd
+                ? "Refund processed — may take 5–10 business days."
+                : status === "declined"
+                  ? "This booking was declined by the pro. No charge."
+                  : "This booking was cancelled."}
+            </p>
           </div>
-          <div className="mt-2 flex items-center justify-between text-[15px]">
-            <span style={{ color: "var(--card-foreground)" }}>
-              {isComplete ? "Tip" : "Estimated tip"}
-            </span>
-            <span className="tabular font-medium" style={{ color: "var(--card-foreground)" }}>
-              ${tipAmount.toFixed(2)}
-            </span>
+        ) : (
+          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
+            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
+              <span>Service</span>
+              <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[15px]">
+              <span style={{ color: "var(--card-foreground)" }}>
+                {isComplete ? "Tip" : "Estimated tip"}
+              </span>
+              <span className="tabular font-medium" style={{ color: "var(--card-foreground)" }}>
+                ${tipAmount.toFixed(2)}
+              </span>
+            </div>
+            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
+            <div className="flex items-center justify-between">
+              <span className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>Total</span>
+              <span className="tabular text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
+                ${total.toFixed(2)}
+              </span>
+            </div>
           </div>
-          <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
-          <div className="flex items-center justify-between">
-            <span className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>Total</span>
-            <span className="tabular text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
-              ${total.toFixed(2)}
-            </span>
-          </div>
-        </div>
+        )}
 
         {/* Cancel link — visible for any cancellable status */}
         {canCancel(status) && (
@@ -345,13 +378,13 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
             className="mt-4 w-full text-center"
             style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
           >
-            Cancel booking
+            {isPending ? "Cancel request" : "Cancel booking"}
           </button>
         )}
       </div>
 
-      {/* Sticky bottom action row */}
-      {isActive && !["pending_pro_approval", "searching"].includes(status) && (
+      {/* Sticky bottom: active bookings (confirmed+) — Message, Call, Reschedule */}
+      {isActive && !isPending && status !== "searching" && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
           <div className="flex gap-2">
             <button
@@ -371,23 +404,59 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
               </svg>
               Message
             </button>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3 transition-transform active:scale-95"
-              style={{
-                backgroundColor: "var(--bagel)",
-                color: "var(--bagel-foreground)",
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              Call
-            </button>
+            {canReschedule ? (
+              <button
+                type="button"
+                onClick={() => navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId } })}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3 transition-transform active:scale-95"
+                style={{
+                  backgroundColor: "var(--bagel)",
+                  color: "var(--bagel-foreground)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}
+              >
+                Reschedule
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3 transition-transform active:scale-95"
+                style={{
+                  backgroundColor: "var(--bagel)",
+                  color: "var(--bagel-foreground)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                Call
+              </button>
+            )}
           </div>
+        </div>
+      )}
+
+      {/* Pending state: just a "Cancel request" in footer */}
+      {isPending && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
+            className="w-full rounded-2xl py-3 text-center transition-transform active:scale-[0.98]"
+            style={{
+              backgroundColor: "var(--surface-elevated)",
+              border: "1px solid var(--hairline)",
+              color: "var(--foreground)",
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            Message {proFirst}
+          </button>
         </div>
       )}
 
