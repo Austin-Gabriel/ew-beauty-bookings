@@ -36,6 +36,7 @@ import { Route as ProfileHelpRouteImport } from './routes/profile.help'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
+import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
 import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
@@ -185,6 +186,11 @@ const ProProIdRoute = ProProIdRouteImport.update({
   path: '/pro/$proId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PoliciesCancellationRoute = PoliciesCancellationRouteImport.update({
+  id: '/policies/cancellation',
+  path: '/policies/cancellation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FavoritesCollectionIdRoute = FavoritesCollectionIdRouteImport.update({
   id: '/$collectionId',
   path: '/$collectionId',
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
+  '/policies/cancellation': typeof PoliciesCancellationRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
+  '/policies/cancellation': typeof PoliciesCancellationRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
+  '/policies/cancellation': typeof PoliciesCancellationRoute
   '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
+    | '/policies/cancellation'
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
@@ -435,6 +445,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
+    | '/policies/cancellation'
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
@@ -477,6 +488,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
+    | '/policies/cancellation'
     | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
@@ -518,6 +530,7 @@ export interface RootRouteChildren {
   SplashRoute: typeof SplashRoute
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
+  PoliciesCancellationRoute: typeof PoliciesCancellationRoute
   ProProIdRoute: typeof ProProIdRoute
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
@@ -723,6 +736,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProProIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/policies/cancellation': {
+      id: '/policies/cancellation'
+      path: '/policies/cancellation'
+      fullPath: '/policies/cancellation'
+      preLoaderRoute: typeof PoliciesCancellationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/favorites/$collectionId': {
       id: '/favorites/$collectionId'
       path: '/$collectionId'
@@ -890,6 +910,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplashRoute: SplashRoute,
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
+  PoliciesCancellationRoute: PoliciesCancellationRoute,
   ProProIdRoute: ProProIdRoute,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
