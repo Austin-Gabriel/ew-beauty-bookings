@@ -16,10 +16,7 @@ import {
   formatBookingDateHeader,
   formatBookingTime,
 } from "@/lib/format-booking-date";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
+import { CancelSheet } from "@/bookings/CancelSheet";
 
 const ORANGE = "var(--bagel)";
 const MUTED_PILL_BG = "rgba(11,18,32,0.06)";
@@ -30,7 +27,7 @@ const STAR = "#F5A623";
 type Tab = "upcoming" | "past";
 
 export function BookingsPage() {
-  const { bookings, activeBookings, pastBookings, cancelBooking } = useBookings();
+  const { bookings, activeBookings, pastBookings } = useBookings();
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
@@ -117,6 +114,7 @@ export function BookingsPage() {
               subtleSurface={subtleSurface}
               cardShadow={cardShadow}
               onTap={(b) => goBooking(b)}
+              onCancel={(b) => setCancelTarget(b.id)}
             />
           </div>
         )
@@ -143,45 +141,11 @@ export function BookingsPage() {
       )}
 
       {/* Cancel confirmation sheet */}
-      <Sheet open={cancelTarget !== null} onOpenChange={(open) => { if (!open) setCancelTarget(null); }}>
-        <SheetContent side="bottom" className="rounded-t-3xl">
-          <div className="flex flex-col items-center px-2 pb-6 pt-2" style={{ fontFamily: SANS_STACK }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)", marginBottom: 6 }}>
-              Cancel this booking?
-            </h2>
-            <p style={{ fontSize: 13, color: muted, textAlign: "center", maxWidth: 280, lineHeight: 1.5 }}>
-              Your card hasn't been charged. You can rebook anytime.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                if (cancelTarget) {
-                  cancelBooking(cancelTarget);
-                  setCancelTarget(null);
-                }
-              }}
-              className="mt-5 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
-              style={{ backgroundColor: "#DC2626", color: "#fff", fontSize: 15, fontWeight: 700, fontFamily: SANS_STACK }}
-            >
-              Cancel booking
-            </button>
-            <button
-              type="button"
-              onClick={() => setCancelTarget(null)}
-              className="mt-2 w-full rounded-2xl py-3.5 text-center transition-transform active:scale-[0.98]"
-              style={{
-                backgroundColor: "var(--cream-elevated)",
-                color: "var(--midnight)",
-                fontSize: 15,
-                fontWeight: 700,
-                fontFamily: SANS_STACK,
-              }}
-            >
-              Keep booking
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
+      <CancelSheet
+        bookingId={cancelTarget}
+        open={cancelTarget !== null}
+        onClose={() => setCancelTarget(null)}
+      />
     </AppShell>
   );
 }
@@ -443,6 +407,7 @@ function UpcomingList({
   subtleSurface,
   cardShadow,
   onTap,
+  onCancel,
 }: {
   bookings: Booking[];
   text: string;
@@ -451,6 +416,7 @@ function UpcomingList({
   subtleSurface: string;
   cardShadow: string;
   onTap: (b: Booking) => void;
+  onCancel: (b: Booking) => void;
 }) {
   const groups = useMemo(() => groupByDay(bookings), [bookings]);
 
@@ -481,6 +447,7 @@ function UpcomingList({
                   booking={b}
                   pro={MOCK_PROS.find((p) => p.id === b.proId)!}
                   onTap={() => onTap(b)}
+                  onCancel={() => onCancel(b)}
                   text={text}
                   muted={muted}
                   subtleBorder={subtleBorder}
@@ -500,6 +467,7 @@ function UpcomingCard({
   booking,
   pro,
   onTap,
+  onCancel,
   text,
   muted,
   subtleBorder,
@@ -509,6 +477,7 @@ function UpcomingCard({
   booking: Booking;
   pro: Pro;
   onTap: () => void;
+  onCancel: () => void;
   text: string;
   muted: string;
   subtleBorder: string;
@@ -516,7 +485,6 @@ function UpcomingCard({
   cardShadow: string;
 }) {
   const navigate = useNavigate();
-  const { cancelBooking } = useBookings();
   const status = booking.status;
   const isPending = status === "pending_pro_approval";
   const pill = statusPillFor(status);
@@ -628,13 +596,13 @@ function UpcomingCard({
         </div>
       )}
 
-      {/* Pending: Cancel request only. Confirmed+: Message + Reschedule */}
+      {/* Pending: Cancel request only. Confirmed+: Message + Reschedule + Cancel */}
       {isPending ? (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            cancelBooking(booking.id);
+            onCancel();
           }}
           className="mt-3 w-full text-center"
           style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
@@ -642,47 +610,60 @@ function UpcomingCard({
           Cancel request
         </button>
       ) : (
-        <div className="mt-3 flex gap-2">
+        <>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+              }}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
+              style={{
+                backgroundColor: "transparent",
+                border: `1px solid ${subtleBorder}`,
+                color: "var(--card-foreground)",
+                fontSize: 12.5,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              Message
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
+              }}
+              className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
+              style={{
+                backgroundColor: "transparent",
+                border: `1px solid ${subtleBorder}`,
+                color: "var(--card-foreground)",
+                fontSize: 12.5,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Reschedule
+            </button>
+          </div>
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+              onCancel();
             }}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
-            style={{
-              backgroundColor: "transparent",
-              border: `1px solid ${subtleBorder}`,
-              color: "var(--card-foreground)",
-              fontSize: 12.5,
-              fontWeight: 600,
-              fontFamily: SANS_STACK,
-            }}
+            className="mt-2 w-full text-center"
+            style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            Message
+            Cancel booking
           </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
-            }}
-            className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
-            style={{
-              backgroundColor: "transparent",
-              border: `1px solid ${subtleBorder}`,
-              color: "var(--card-foreground)",
-              fontSize: 12.5,
-              fontWeight: 600,
-              fontFamily: SANS_STACK,
-            }}
-          >
-            Reschedule
-          </button>
-        </div>
+        </>
       )}
     </div>
   );

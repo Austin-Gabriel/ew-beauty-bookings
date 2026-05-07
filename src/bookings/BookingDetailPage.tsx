@@ -4,6 +4,7 @@
  * Single source of truth: reads from BookingsProvider, formats dates
  * via formatBookingDate. No local copies of state.
  */
+import { useState } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import {
   ChevronLeft,
@@ -18,6 +19,7 @@ import { useBookings, type BookingStatus } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile } from "@/data/customer-store";
 import { formatBookingDate } from "@/lib/format-booking-date";
+import { CancelSheet } from "@/bookings/CancelSheet";
 
 const ORANGE = "var(--bagel)";
 
@@ -45,16 +47,34 @@ function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: s
 }
 
 /* ------------------------------------------------------------------ */
+/*  Edit rules                                                          */
+/* ------------------------------------------------------------------ */
+
+/** Can the customer edit notes for this booking? Only while it's upcoming and not yet in-progress. */
+function canEditNotes(status: BookingStatus): boolean {
+  return ["pending_pro_approval", "confirmed", "getting-ready", "enroute"].includes(status);
+}
+
+/** Can the customer cancel this booking? Any active status before in-progress. */
+function canCancel(status: BookingStatus): boolean {
+  return ["pending_pro_approval", "confirmed", "getting-ready", "enroute", "arrived"].includes(status);
+}
+
+/* ------------------------------------------------------------------ */
 /*  Component                                                           */
 /* ------------------------------------------------------------------ */
 
 export function BookingDetailPage({ bookingId }: { bookingId: string }) {
   const navigate = useNavigate();
   const router = useRouter();
-  const { getBooking } = useBookings();
+  const { getBooking, setBookings, bookings } = useBookings();
   const { profile } = useCustomerProfile();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
+
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [notesValue, setNotesValue] = useState("");
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   if (!booking || !pro) {
     return (
@@ -91,6 +111,18 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
 
   // PIN visible only after pro accepted (confirmed or later, not pending)
   const showPin = booking.pin && !["searching", "pending_pro_approval"].includes(status) && isActive;
+
+  const handleSaveNotes = () => {
+    setBookings(
+      bookings.map((b) => b.id === bookingId ? { ...b, notes: notesValue.trim() || undefined } : b)
+    );
+    setEditingNotes(false);
+  };
+
+  const handleStartEditNotes = () => {
+    setNotesValue(booking.notes ?? "");
+    setEditingNotes(true);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
@@ -187,13 +219,64 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
           />
           <Hairline />
 
-          {/* Notes */}
-          <DetailRow
-            icon={<FileText size={18} />}
-            label="Notes"
-            value={booking.notes || undefined}
-            placeholder={`Add notes for ${proFirst}`}
-          />
+          {/* Notes — editable */}
+          {editingNotes ? (
+            <div className="px-4 py-3.5">
+              <div className="flex items-center gap-3">
+                <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}><FileText size={18} /></span>
+                <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Notes
+                </p>
+              </div>
+              <textarea
+                value={notesValue}
+                onChange={(e) => setNotesValue(e.target.value)}
+                placeholder={`Add notes for ${proFirst}`}
+                rows={3}
+                autoFocus
+                className="mt-2 w-full resize-none rounded-xl border-none px-3 py-2.5 outline-none"
+                style={{
+                  backgroundColor: "var(--surface-elevated)",
+                  color: "var(--foreground)",
+                  fontSize: 14,
+                  fontFamily: SANS_STACK,
+                  lineHeight: 1.5,
+                }}
+              />
+              <div className="mt-2 flex gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setEditingNotes(false)}
+                  style={{ fontSize: 13, fontWeight: 600, color: "var(--muted-foreground)", background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveNotes}
+                  style={{ fontSize: 13, fontWeight: 600, color: ORANGE, background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={canEditNotes(status) ? handleStartEditNotes : undefined}
+              disabled={!canEditNotes(status)}
+              className="w-full text-left"
+              style={{ background: "none", border: "none", cursor: canEditNotes(status) ? "pointer" : "default" }}
+            >
+              <DetailRow
+                icon={<FileText size={18} />}
+                label="Notes"
+                value={booking.notes || undefined}
+                placeholder={canEditNotes(status) ? `Add notes for ${proFirst}` : "—"}
+                action={canEditNotes(status) ? "Edit" : undefined}
+              />
+            </button>
+          )}
         </div>
 
         {/* PIN card */}
@@ -253,6 +336,18 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
             </span>
           </div>
         </div>
+
+        {/* Cancel link — visible for any cancellable status */}
+        {canCancel(status) && (
+          <button
+            type="button"
+            onClick={() => setCancelOpen(true)}
+            className="mt-4 w-full text-center"
+            style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
+          >
+            Cancel booking
+          </button>
+        )}
       </div>
 
       {/* Sticky bottom action row */}
@@ -332,6 +427,13 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
           </div>
         </div>
       )}
+
+      {/* Cancel sheet */}
+      <CancelSheet
+        bookingId={bookingId}
+        open={cancelOpen}
+        onClose={() => setCancelOpen(false)}
+      />
     </div>
   );
 }
@@ -344,12 +446,14 @@ function DetailRow({
   value,
   placeholder,
   tabular,
+  action,
 }: {
   icon: React.ReactNode;
   label: string;
   value?: string;
   placeholder?: string;
   tabular?: boolean;
+  action?: string;
 }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3.5">
@@ -373,6 +477,11 @@ function DetailRow({
           {value || placeholder || "—"}
         </p>
       </div>
+      {action && (
+        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--bagel)", flexShrink: 0 }}>
+          {action}
+        </span>
+      )}
     </div>
   );
 }
