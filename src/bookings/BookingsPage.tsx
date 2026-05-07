@@ -114,6 +114,7 @@ export function BookingsPage() {
               subtleSurface={subtleSurface}
               cardShadow={cardShadow}
               onTap={(b) => goBooking(b)}
+              onCancel={(b) => setCancelTarget(b.id)}
             />
           </div>
         )
