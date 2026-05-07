@@ -596,13 +596,13 @@ function UpcomingCard({
         </div>
       )}
 
-      {/* Pending: Cancel request only. Confirmed+: Message + Reschedule */}
+      {/* Pending: Cancel request only. Confirmed+: Message + Reschedule + Cancel */}
       {isPending ? (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            cancelBooking(booking.id);
+            onCancel();
           }}
           className="mt-3 w-full text-center"
           style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
@@ -610,47 +610,60 @@ function UpcomingCard({
           Cancel request
         </button>
       ) : (
-        <div className="mt-3 flex gap-2">
+        <>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+              }}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
+              style={{
+                backgroundColor: "transparent",
+                border: `1px solid ${subtleBorder}`,
+                color: "var(--card-foreground)",
+                fontSize: 12.5,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              Message
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
+              }}
+              className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
+              style={{
+                backgroundColor: "transparent",
+                border: `1px solid ${subtleBorder}`,
+                color: "var(--card-foreground)",
+                fontSize: 12.5,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Reschedule
+            </button>
+          </div>
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              navigate({ to: "/booking/message/$bookingId", params: { bookingId: booking.id } });
+              onCancel();
             }}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2"
-            style={{
-              backgroundColor: "transparent",
-              border: `1px solid ${subtleBorder}`,
-              color: "var(--card-foreground)",
-              fontSize: 12.5,
-              fontWeight: 600,
-              fontFamily: SANS_STACK,
-            }}
+            className="mt-2 w-full text-center"
+            style={{ color: "#DC2626", fontSize: 12, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            Message
+            Cancel booking
           </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId: booking.id } });
-            }}
-            className="inline-flex flex-1 items-center justify-center rounded-xl py-2"
-            style={{
-              backgroundColor: "transparent",
-              border: `1px solid ${subtleBorder}`,
-              color: "var(--card-foreground)",
-              fontSize: 12.5,
-              fontWeight: 600,
-              fontFamily: SANS_STACK,
-            }}
-          >
-            Reschedule
-          </button>
-        </div>
+        </>
       )}
     </div>
   );
