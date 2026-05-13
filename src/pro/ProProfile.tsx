@@ -24,12 +24,40 @@ export function ProProfile({ proId }: { proId: string }) {
   const navigate = useNavigate();
   const router = useRouter();
   const favorites = useFavorites();
+  const { intent } = useBookIntent();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
   const muted = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
+
+  const goBook = (serviceName: string) => {
+    if (!pro) return;
+    if (intent === "later") {
+      navigate({
+        to: "/booking/schedule/$proId",
+        params: { proId: pro.id },
+        search: { service: serviceName },
+      });
+    } else {
+      navigate({
+        to: "/booking/confirm/$proId",
+        params: { proId: pro.id },
+        search: { service: serviceName, scheduledWhen: 0 },
+      });
+    }
+  };
+
+  const handleBookButton = () => {
+    if (!pro) return;
+    if (pro.services.length === 1) {
+      goBook(pro.services[0].name);
+      return;
+    }
+    setPickerOpen(true);
+  };
 
   if (!pro) {
     return (
