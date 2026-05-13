@@ -18,7 +18,7 @@ import {
 import { useDevState } from "@/dev-state/devState";
 import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
-import { openSupportMail } from "./support-constants";
+import { ContactSupportSheet } from "./ContactSupportSheet";
 
 function tippingLabel(pref: { type: string; value?: number }): string {
   if (pref.type === "ask") return "Ask each time";
