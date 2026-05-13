@@ -394,6 +394,10 @@ export function ProfilePage() {
           onConfirm={handleSignOut}
         />
       )}
+
+      {showSupportSheet && (
+        <ContactSupportSheet onDismiss={() => setShowSupportSheet(false)} />
+      )}
     </div>
   );
 }
