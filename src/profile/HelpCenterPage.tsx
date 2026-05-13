@@ -30,12 +30,13 @@ export function HelpCenterPage() {
         <p className="text-center text-[14px] leading-relaxed text-muted-foreground">
           We're working on it. In the meantime, reach out to support and we'll help you out.
         </p>
-        <a
-          href={supportMailtoHref()}
+        <button
+          type="button"
+          onClick={openSupportMail}
           className="mt-1 text-[15px] font-semibold text-bagel transition-opacity active:opacity-60"
         >
           Contact support
-        </a>
+        </button>
       </div>
     </div>
   );
