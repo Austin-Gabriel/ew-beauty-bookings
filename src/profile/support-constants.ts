@@ -1,20 +1,12 @@
 /**
  * Single source of truth for the Ewà customer support email.
- * Used by both the Contact support mailto row and the Help center stub.
+ *
+ * IMPORTANT: There is NO `openSupportMail()` helper and NO `mailto:` href
+ * exported from this module. The mailto: URL is constructed inline inside
+ * `ContactSupportSheet` only at the moment the user explicitly taps
+ * "Open in mail app". This is deliberate — we previously had spurious
+ * mail-app launches and the safest fix is to keep the mailto: surface area
+ * out of the main UI entirely.
  */
 export const SUPPORT_EMAIL = "support@ewatheapp.com";
 export const SUPPORT_MAILTO_SUBJECT = "Ewà support — [your account]";
-
-export function supportMailtoHref(): string {
-  return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(SUPPORT_MAILTO_SUBJECT)}`;
-}
-
-/**
- * Open the user's mail app to contact support.
- * MUST only be called from a deliberate user click/tap handler — never from
- * useEffect, focus, hover, mount, or route-change side effects.
- */
-export function openSupportMail(): void {
-  if (typeof window === "undefined") return;
-  window.location.href = supportMailtoHref();
-}

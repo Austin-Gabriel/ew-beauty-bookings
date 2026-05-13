@@ -18,7 +18,7 @@ import {
 import { useDevState } from "@/dev-state/devState";
 import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
-import { openSupportMail } from "./support-constants";
+import { ContactSupportSheet } from "./ContactSupportSheet";
 
 function tippingLabel(pref: { type: string; value?: number }): string {
   if (pref.type === "ask") return "Ask each time";
@@ -191,6 +191,7 @@ export function ProfilePage() {
   const { profile, updateIdentity } = useCustomerProfile();
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [showSignOutSheet, setShowSignOutSheet] = useState(false);
+  const [showSupportSheet, setShowSupportSheet] = useState(false);
 
   const { identity, savedAddresses, paymentMethods, tippingPreference, themePreference } = profile;
   const hasPhoto = !!identity.avatarPhotoUrl;
@@ -352,8 +353,8 @@ export function ProfilePage() {
         <SettingsRow
           icon={MessageCircle}
           label="Contact support"
-          onClick={openSupportMail}
-          trailingIcon="external"
+          onClick={() => setShowSupportSheet(true)}
+          trailingIcon="chevron"
         />
         <SettingsRow
           icon={FileText}
@@ -392,6 +393,10 @@ export function ProfilePage() {
           onCancel={() => setShowSignOutSheet(false)}
           onConfirm={handleSignOut}
         />
+      )}
+
+      {showSupportSheet && (
+        <ContactSupportSheet onDismiss={() => setShowSupportSheet(false)} />
       )}
     </div>
   );
