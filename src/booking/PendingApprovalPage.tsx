@@ -3,7 +3,7 @@
  * a pro who has auto-accept OFF.
  */
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { Clock } from "lucide-react";
+import { Clock, Check, X, AlarmClockOff } from "lucide-react";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useBookings } from "@/data/bookings-store";
 import { SANS_STACK } from "@/auth/auth-shell";
