@@ -94,6 +94,8 @@ export function SchedulePage({ proId }: { proId: string }) {
   const router = useRouter();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const search = (useRouter().state.location.search as { service?: string }) ?? {};
+  const service = search.service ?? "";
 
   const schedule = PRO_SCHEDULES[proId] ?? {
     hours: { 0: null, 1: { start: 9, end: 18 }, 2: { start: 9, end: 18 }, 3: { start: 9, end: 18 }, 4: { start: 9, end: 18 }, 5: { start: 9, end: 18 }, 6: null },
@@ -132,7 +134,7 @@ export function SchedulePage({ proId }: { proId: string }) {
     navigate({
       to: "/booking/confirm/$proId",
       params: { proId },
-      search: { scheduledWhen: when },
+      search: { scheduledWhen: when, service },
     });
   };
 
