@@ -1518,7 +1518,7 @@ function FiltersSheet({
                   fontFamily: SANS_STACK,
                   fontSize: 12.5,
                   fontWeight: 600,
-                  color: "var(--muted-foreground)",
+                  color: "var(--on-card-muted)",
                 }}
               >
                 Reset
@@ -1581,7 +1581,7 @@ function FilterGroup({ label, children }: { label: string; children: React.React
           fontWeight: 700,
           letterSpacing: "0.08em",
           textTransform: "uppercase",
-          color: "var(--muted-foreground)",
+          color: "var(--on-card-muted)",
         }}
       >
         {label}
@@ -1606,9 +1606,9 @@ function FilterChip({
       onClick={onClick}
       className="rounded-full border px-3.5 py-2 transition-colors"
       style={{
-        backgroundColor: active ? ORANGE : "transparent",
-        borderColor: active ? ORANGE : "var(--border)",
-        color: active ? "#1A0E08" : "var(--foreground)",
+        backgroundColor: active ? ORANGE : "var(--card)",
+        borderColor: active ? ORANGE : "rgba(6,28,39,0.18)",
+        color: active ? "#1A0E08" : "var(--card-foreground)",
         fontFamily: SANS_STACK,
         fontSize: 13,
         fontWeight: active ? 600 : 500,
