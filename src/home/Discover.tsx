@@ -8,11 +8,6 @@ import { EwaMark } from "@/components/ewa-logo";
 import { MOCK_PROS, PROFESSIONAL_TYPES, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { useDevState } from "@/dev-state/devState";
-import {
-  NEW_CUSTOMER,
-  RETURNING_CUSTOMER,
-  POWER_CUSTOMER,
-} from "@/data/mock-customer-profile";
 import { CustomerAvatar } from "@/profile/CustomerAvatar";
 import {
   Sheet,
