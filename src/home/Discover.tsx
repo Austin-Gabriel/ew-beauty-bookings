@@ -57,7 +57,7 @@ export function DiscoverPage() {
   const favorites = useFavorites();
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const [mode, setMode] = useState<"now" | "later">("later");
+  const { intent: mode, setIntent: setMode } = useBookIntent();
   const isNow = mode === "now";
   const accent = isNow ? BAGEL_ACCENT : ORANGE;
   const [activeChip, setActiveChip] = useState<ChipId>("All");
