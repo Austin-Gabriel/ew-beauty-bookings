@@ -16,6 +16,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean; ts: number }[]>([]);
 
   const muted = "var(--muted-foreground)";
+  const onCardMuted = "var(--on-card-muted)";
   const subtleBorder = "var(--border)";
 
   if (!booking || !pro) {
@@ -51,7 +52,7 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ backgroundColor: "var(--card)", borderBottom: `1px solid ${subtleBorder}` }}
       >
-        <button onClick={() => navigate({ to: "/bookings" })} className="shrink-0 p-1" style={{ color: text }}>
+        <button onClick={() => navigate({ to: "/bookings" })} className="shrink-0 p-1" style={{ color: "var(--card-foreground)" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -63,8 +64,8 @@ export function MessagePage({ bookingId }: { bookingId: string }) {
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
-          <p style={{ fontSize: 11, color: muted }}>{booking.service.name}</p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>{pro.name}</p>
+          <p style={{ fontSize: 11, color: onCardMuted }}>{booking.service.name}</p>
         </div>
       </header>
 

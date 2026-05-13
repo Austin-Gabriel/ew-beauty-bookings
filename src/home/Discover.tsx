@@ -8,11 +8,7 @@ import { EwaMark } from "@/components/ewa-logo";
 import { MOCK_PROS, PROFESSIONAL_TYPES, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { useDevState } from "@/dev-state/devState";
-import {
-  NEW_CUSTOMER,
-  RETURNING_CUSTOMER,
-  POWER_CUSTOMER,
-} from "@/data/mock-customer-profile";
+import { CustomerAvatar } from "@/profile/CustomerAvatar";
 import {
   Sheet,
   SheetContent,
@@ -102,19 +98,10 @@ export function DiscoverPage() {
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailFilter>("any");
   const [readNotifIds, setReadNotifIds] = useState<Set<string>>(new Set());
 
-  const customer =
-    state.customerState === "power"
-      ? POWER_CUSTOMER
-      : state.customerState === "returning"
-        ? RETURNING_CUSTOMER
-        : NEW_CUSTOMER;
+  // Note: customer identity (name, photo) is read by <CustomerAvatar /> from
+  // the shared customer profile store — single source of truth, same as the
+  // Profile screen. Do NOT reintroduce a local mock-customer copy here.
 
-  const initials = customer.name
-    .split(" ")
-    .map((s) => s[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const activeFilterCount =
     (priceFilter !== "any" ? 1 : 0) +
@@ -224,22 +211,8 @@ export function DiscoverPage() {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
             </IconButton>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/profile" })}
-              aria-label="Profile"
-              className="grid h-8 w-8 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
-              style={{
-                backgroundColor: "var(--cream-elevated)",
-                color: "var(--midnight)",
-                fontSize: 11,
-                fontWeight: 600,
-                fontFamily: SANS_STACK,
-                border: "0.5px solid rgba(6,28,39,0.08)",
-              }}
-            >
-              {initials}
-            </button>
+            <CustomerAvatar size={32} fontSize={11} onClick={() => navigate({ to: "/profile" })} ariaLabel="Profile" />
+
           </div>
         </div>
 
@@ -1219,7 +1192,7 @@ function SheetShell({
   return (
     <div
       className="flex h-full flex-col"
-      style={{ fontFamily: SANS_STACK, color: "var(--foreground)" }}
+      style={{ fontFamily: SANS_STACK, color: "var(--card-foreground)" }}
     >
       <div className="flex items-start justify-between gap-3 px-1 pb-3">
         <SheetHeader className="flex-1 space-y-1 p-0 text-left">
@@ -1545,7 +1518,7 @@ function FiltersSheet({
                   fontFamily: SANS_STACK,
                   fontSize: 12.5,
                   fontWeight: 600,
-                  color: "var(--muted-foreground)",
+                  color: "var(--on-card-muted)",
                 }}
               >
                 Reset
@@ -1608,7 +1581,7 @@ function FilterGroup({ label, children }: { label: string; children: React.React
           fontWeight: 700,
           letterSpacing: "0.08em",
           textTransform: "uppercase",
-          color: "var(--muted-foreground)",
+          color: "var(--on-card-muted)",
         }}
       >
         {label}
@@ -1633,9 +1606,9 @@ function FilterChip({
       onClick={onClick}
       className="rounded-full border px-3.5 py-2 transition-colors"
       style={{
-        backgroundColor: active ? ORANGE : "transparent",
-        borderColor: active ? ORANGE : "var(--border)",
-        color: active ? "#1A0E08" : "var(--foreground)",
+        backgroundColor: active ? ORANGE : "var(--card)",
+        borderColor: active ? ORANGE : "rgba(6,28,39,0.18)",
+        color: active ? "#1A0E08" : "var(--card-foreground)",
         fontFamily: SANS_STACK,
         fontSize: 13,
         fontWeight: active ? 600 : 500,
