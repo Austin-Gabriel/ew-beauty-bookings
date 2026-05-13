@@ -483,6 +483,19 @@ export function ProProfile({ proId }: { proId: string }) {
           </div>
         </div>
       </div>
+
+      <ServicePickerSheet
+        open={pickerOpen}
+        pro={pro}
+        intent={intent}
+        onClose={() => setPickerOpen(false)}
+        onPick={(name) => {
+          setPickerOpen(false);
+          goBook(name);
+        }}
+        cardShadow={cardShadow}
+        subtleBorder={subtleBorder}
+      />
     </AppShell>
   );
 }
