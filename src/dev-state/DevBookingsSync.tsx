@@ -105,7 +105,7 @@ export function DevBookingsSync() {
     if (state.activeBooking === "none") {
       // Hide ONLY the mock hero. User active bookings are preserved.
       if (!activeUser && activeMock) {
-        setBookings((bs) => bs.filter((b) => b.id !== ACTIVE_HERO_ID));
+        setBookings(bookingsRef.current.filter((b) => b.id !== ACTIVE_HERO_ID));
       }
       return;
     }
@@ -114,7 +114,7 @@ export function DevBookingsSync() {
       // Mark complete + navigate to Service Complete for whichever booking
       // we're driving. Status update only — booking is preserved.
       if (target) {
-        setBookings((bs) =>
+        setBookings(
           bs.map((b) => (b.id === target.id ? { ...b, status: "completed" as BookingStatus } : b)),
         );
         navigate({ to: "/booking/complete/$bookingId", params: { bookingId: target.id } });
@@ -135,7 +135,7 @@ export function DevBookingsSync() {
     }
 
     // Status-only patch — never replaces other fields.
-    setBookings((bs) =>
+    setBookings(
       bs.map((b) => (b.id === target.id ? patchStatus(b, state.activeBooking as BookingStatus) : b)),
     );
   }, [state.activeBooking, setBookings, navigate]);
