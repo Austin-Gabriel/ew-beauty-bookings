@@ -103,19 +103,10 @@ export function DiscoverPage() {
   const [availabilityFilter, setAvailabilityFilter] = useState<AvailFilter>("any");
   const [readNotifIds, setReadNotifIds] = useState<Set<string>>(new Set());
 
-  const customer =
-    state.customerState === "power"
-      ? POWER_CUSTOMER
-      : state.customerState === "returning"
-        ? RETURNING_CUSTOMER
-        : NEW_CUSTOMER;
+  // Note: customer identity (name, photo) is read by <CustomerAvatar /> from
+  // the shared customer profile store — single source of truth, same as the
+  // Profile screen. Do NOT reintroduce a local mock-customer copy here.
 
-  const initials = customer.name
-    .split(" ")
-    .map((s) => s[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   const activeFilterCount =
     (priceFilter !== "any" ? 1 : 0) +
