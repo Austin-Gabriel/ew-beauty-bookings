@@ -18,7 +18,7 @@ import {
 import { useDevState } from "@/dev-state/devState";
 import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
-import { supportMailtoHref } from "./support-constants";
+import { openSupportMail } from "./support-constants";
 
 function tippingLabel(pref: { type: string; value?: number }): string {
   if (pref.type === "ask") return "Ask each time";
@@ -50,7 +50,7 @@ function SettingsRow({
   value,
   pill,
   to,
-  href,
+  onClick,
   trailingIcon,
   last = false,
 }: {
@@ -59,7 +59,7 @@ function SettingsRow({
   value?: string;
   pill?: { label: string; variant: "bagel" };
   to?: string;
-  href?: string;
+  onClick?: () => void;
   trailingIcon?: "chevron" | "external";
   last?: boolean;
 }) {
@@ -94,10 +94,10 @@ function SettingsRow({
 
   return (
     <>
-      {href ? (
-        <a href={href} className={className}>
+      {onClick ? (
+        <button type="button" onClick={onClick} className={`${className} w-full text-left`}>
           {inner}
-        </a>
+        </button>
       ) : to ? (
         <Link to={to} className={className}>
           {inner}
@@ -346,7 +346,7 @@ export function ProfilePage() {
         <SettingsRow
           icon={MessageCircle}
           label="Contact support"
-          href={supportMailtoHref()}
+          onClick={openSupportMail}
           trailingIcon="external"
         />
         <SettingsRow
