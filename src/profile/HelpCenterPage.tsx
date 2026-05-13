@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, HelpCircle } from "lucide-react";
-import { supportMailtoHref } from "./support-constants";
+import { openSupportMail } from "./support-constants";
 
 export function HelpCenterPage() {
   const navigate = useNavigate();
