@@ -863,7 +863,7 @@ function PastCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onTap();
+              navigate({ to: "/pro/$proId", params: { proId: pro.id } });
             }}
             className="inline-flex flex-1 items-center justify-center rounded-xl py-2 transition-transform active:scale-95"
             style={{
