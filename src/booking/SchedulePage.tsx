@@ -2,11 +2,13 @@
  * SchedulePage — date/time picker for "Schedule for later" flow.
  * /booking/schedule/:proId
  */
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, CalendarDays } from "lucide-react";
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { SANS_STACK } from "@/auth/auth-shell";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
@@ -93,7 +95,6 @@ export function SchedulePage({ proId }: { proId: string }) {
   const pro = MOCK_PROS.find((p) => p.id === proId);
   const router = useRouter();
   const navigate = useNavigate();
-  const scrollRef = useRef<HTMLDivElement>(null);
   const search = (router.state.location.search as { service?: string }) ?? {};
   const service = search.service ?? "";
 
@@ -103,11 +104,19 @@ export function SchedulePage({ proId }: { proId: string }) {
     bookedSlots: [],
   };
 
-  const dates = useMemo(() => generateDates(60), []);
-  const [selectedDateIdx, setSelectedDateIdx] = useState<number | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+  const maxDate = useMemo(() => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + 60);
+    return d;
+  }, [today]);
 
-  const selectedDate = selectedDateIdx !== null ? dates[selectedDateIdx] : null;
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const slots = useMemo(() => {
     if (!selectedDate) return [];
@@ -124,9 +133,9 @@ export function SchedulePage({ proId }: { proId: string }) {
   // Clear selected time when date changes
   useEffect(() => {
     setSelectedTime(null);
-  }, [selectedDateIdx]);
+  }, [selectedDate]);
 
-  const canContinue = selectedDate !== null && selectedTime !== null;
+  const canContinue = !!selectedDate && !!selectedTime;
 
   const handleContinue = () => {
     if (!selectedDate || !selectedTime || !pro) return;
@@ -165,57 +174,42 @@ export function SchedulePage({ proId }: { proId: string }) {
           <ChevronLeft size={20} />
         </button>
         <span className="pointer-events-none absolute inset-x-0 text-center text-[17px] font-semibold text-foreground">
-          Pick a time
+          Pick a date & time
         </span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-32">
-        {/* Date pill row */}
+        {/* Calendar */}
         <div
-          ref={scrollRef}
-          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-4 pt-2"
-          style={{ scrollbarWidth: "none" }}
+          className="mt-2 rounded-2xl p-2"
+          style={{
+            backgroundColor: "var(--card)",
+            border: "1px solid var(--hairline)",
+            color: "var(--card-foreground)",
+          }}
         >
-          {dates.map((d, i) => {
-            const blocked = isBlockedDate(d);
-            const selected = i === selectedDateIdx;
-            return (
-              <button
-                key={i}
-                type="button"
-                disabled={blocked}
-                onClick={() => setSelectedDateIdx(i)}
-                className="flex shrink-0 flex-col items-center rounded-2xl px-3 py-2.5 transition-colors"
-                style={{
-                  minWidth: 56,
-                  backgroundColor: selected
-                    ? "var(--bagel)"
-                    : "var(--card)",
-                  color: selected
-                    ? "var(--bagel-foreground)"
-                    : blocked
-                      ? "var(--on-card-muted)"
-                      : "var(--card-foreground)",
-                  opacity: blocked ? 0.35 : 1,
-                  border: selected ? "none" : "1px solid var(--hairline)",
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 500 }}>
-                  {DAY_NAMES[d.getDay()]}
-                </span>
-                <span style={{ fontSize: 18, fontWeight: 700, marginTop: 2 }}>
-                  {d.getDate()}
-                </span>
-              </button>
-            );
-          })}
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            disabled={(date) => {
+              const d = new Date(date);
+              d.setHours(0, 0, 0, 0);
+              if (d <= today) return true;
+              if (d > maxDate) return true;
+              return isBlockedDate(date);
+            }}
+            fromDate={today}
+            toDate={maxDate}
+            className={cn("p-2 pointer-events-auto w-full")}
+          />
         </div>
 
         {/* Time slots */}
-        {selectedDate && (
+        {selectedDate ? (
           <>
             <p
-              className="mb-3 mt-2"
+              className="mb-3 mt-5"
               style={{
                 fontSize: 11.5,
                 fontWeight: 700,
@@ -228,8 +222,7 @@ export function SchedulePage({ proId }: { proId: string }) {
             </p>
 
             {slots.length === 0 ? (
-              /* Empty state */
-              <div className="flex flex-col items-center py-12 text-center">
+              <div className="flex flex-col items-center py-10 text-center">
                 <CalendarDays
                   size={32}
                   style={{ color: "var(--muted-foreground)", opacity: 0.5 }}
@@ -281,27 +274,13 @@ export function SchedulePage({ proId }: { proId: string }) {
               </div>
             )}
           </>
-        )}
-
-        {!selectedDate && (
-          <div className="flex flex-col items-center py-12 text-center">
-            <CalendarDays
-              size={32}
-              style={{ color: "var(--muted-foreground)", opacity: 0.5 }}
-            />
-            <p
-              className="mt-3"
-              style={{ fontSize: 16, fontWeight: 600, color: "var(--foreground)" }}
-            >
-              Select a date above
-            </p>
-            <p
-              className="mt-1.5"
-              style={{ fontSize: 14, color: "var(--muted-foreground)" }}
-            >
-              Pick a day to see available times.
-            </p>
-          </div>
+        ) : (
+          <p
+            className="mt-5 text-center"
+            style={{ fontSize: 13.5, color: "var(--muted-foreground)" }}
+          >
+            Pick a day to see available times.
+          </p>
         )}
       </div>
 
@@ -319,3 +298,4 @@ export function SchedulePage({ proId }: { proId: string }) {
     </div>
   );
 }
+
