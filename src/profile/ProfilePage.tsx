@@ -353,8 +353,8 @@ export function ProfilePage() {
         <SettingsRow
           icon={MessageCircle}
           label="Contact support"
-          onClick={openSupportMail}
-          trailingIcon="external"
+          onClick={() => setShowSupportSheet(true)}
+          trailingIcon="chevron"
         />
         <SettingsRow
           icon={FileText}
