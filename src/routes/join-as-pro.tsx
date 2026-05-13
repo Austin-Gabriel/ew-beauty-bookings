@@ -31,9 +31,13 @@ function JoinAsProPage() {
       </h1>
       <p style={{ marginTop: 8, fontSize: 14, color: muted, lineHeight: 1.5, maxWidth: 300 }}>
         We're building Ewà Biz — a dedicated app for beauty professionals. Interested? Reach out at{" "}
-        <a href="mailto:pros@ewa.app" style={{ color: "var(--bagel)", fontWeight: 600 }}>
+        <button
+          type="button"
+          onClick={() => { if (typeof window !== "undefined") window.location.href = "mailto:pros@ewa.app"; }}
+          style={{ color: "var(--bagel)", fontWeight: 600, background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}
+        >
           pros@ewa.app
-        </a>
+        </button>
       </p>
       <Link
         to="/welcome"
