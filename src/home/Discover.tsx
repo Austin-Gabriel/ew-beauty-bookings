@@ -13,6 +13,7 @@ import {
   RETURNING_CUSTOMER,
   POWER_CUSTOMER,
 } from "@/data/mock-customer-profile";
+import { CustomerAvatar } from "@/profile/CustomerAvatar";
 import {
   Sheet,
   SheetContent,
