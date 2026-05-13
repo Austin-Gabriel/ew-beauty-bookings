@@ -70,10 +70,11 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
     const dateLabel = formatBookingDate(newWhen);
     if (requiresApproval) {
       toast.success(`Reschedule request sent to ${pro.name.split(" ")[0]} for ${dateLabel}`);
+      navigate({ to: "/booking/pending/$bookingId", params: { bookingId } });
     } else {
       toast.success(`Booking rescheduled to ${dateLabel}`);
+      navigate({ to: "/bookings" });
     }
-    navigate({ to: "/bookings" });
   };
 
   return (
