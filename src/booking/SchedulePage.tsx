@@ -94,7 +94,7 @@ export function SchedulePage({ proId }: { proId: string }) {
   const router = useRouter();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const search = (useRouter().state.location.search as { service?: string }) ?? {};
+  const search = (router.state.location.search as { service?: string }) ?? {};
   const service = search.service ?? "";
 
   const schedule = PRO_SCHEDULES[proId] ?? {
