@@ -18,7 +18,7 @@ import {
 import { useDevState } from "@/dev-state/devState";
 import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
-import { supportMailtoHref } from "./support-constants";
+import { openSupportMail } from "./support-constants";
 
 function tippingLabel(pref: { type: string; value?: number }): string {
   if (pref.type === "ask") return "Ask each time";
@@ -346,7 +346,7 @@ export function ProfilePage() {
         <SettingsRow
           icon={MessageCircle}
           label="Contact support"
-          href={supportMailtoHref()}
+          onClick={openSupportMail}
           trailingIcon="external"
         />
         <SettingsRow
