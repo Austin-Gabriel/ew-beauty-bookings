@@ -1192,7 +1192,7 @@ function SheetShell({
   return (
     <div
       className="flex h-full flex-col"
-      style={{ fontFamily: SANS_STACK, color: "var(--foreground)" }}
+      style={{ fontFamily: SANS_STACK, color: "var(--card-foreground)" }}
     >
       <div className="flex items-start justify-between gap-3 px-1 pb-3">
         <SheetHeader className="flex-1 space-y-1 p-0 text-left">
