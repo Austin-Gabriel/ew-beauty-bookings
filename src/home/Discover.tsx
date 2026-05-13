@@ -9,6 +9,7 @@ import { MOCK_PROS, PROFESSIONAL_TYPES, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { useDevState } from "@/dev-state/devState";
 import { CustomerAvatar } from "@/profile/CustomerAvatar";
+import { useBookIntent } from "@/booking/book-intent";
 import {
   Sheet,
   SheetContent,
