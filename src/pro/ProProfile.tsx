@@ -7,6 +7,7 @@ import { useFavorites } from "@/favorites/store";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { TAB_BAR_HEIGHT_PX } from "@/home/TabBar";
+import { useBookIntent, type BookIntent } from "@/booking/book-intent";
 
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
@@ -23,12 +24,40 @@ export function ProProfile({ proId }: { proId: string }) {
   const navigate = useNavigate();
   const router = useRouter();
   const favorites = useFavorites();
+  const { intent } = useBookIntent();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
   const muted = "var(--muted-foreground)";
   const cardShadow = isDark ? "none" : "0 1px 3px rgba(11,18,32,0.06), 0 1px 2px rgba(11,18,32,0.04)";
   const surfaceBg = isDark ? "transparent" : "#FFFFFF";
+
+  const goBook = (serviceName: string) => {
+    if (!pro) return;
+    if (intent === "later") {
+      navigate({
+        to: "/booking/schedule/$proId",
+        params: { proId: pro.id },
+        search: { service: serviceName },
+      });
+    } else {
+      navigate({
+        to: "/booking/confirm/$proId",
+        params: { proId: pro.id },
+        search: { service: serviceName, scheduledWhen: 0 },
+      });
+    }
+  };
+
+  const handleBookButton = () => {
+    if (!pro) return;
+    if (pro.services.length === 1) {
+      goBook(pro.services[0].name);
+      return;
+    }
+    setPickerOpen(true);
+  };
 
   if (!pro) {
     return (
@@ -273,13 +302,13 @@ export function ProProfile({ proId }: { proId: string }) {
         }}
       >
         {/* Services */}
-        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })} />
+        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => setPickerOpen(true)} />
         <ul className="flex flex-col gap-2">
           {pro.services.slice(0, 3).map((s, i) => (
             <li key={i}>
               <button
                 type="button"
-                onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id }, search: { service: s.name } })}
+                onClick={() => goBook(s.name)}
                 className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors"
                 style={{
                   backgroundColor: "var(--card)",
@@ -435,7 +464,7 @@ export function ProProfile({ proId }: { proId: string }) {
             </div>
             <button
               type="button"
-              onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
+              onClick={handleBookButton}
               className="inline-flex items-center gap-1.5 rounded-xl shadow-lg transition-transform active:scale-95"
               style={{
                 padding: "12px 22px",
@@ -454,6 +483,19 @@ export function ProProfile({ proId }: { proId: string }) {
           </div>
         </div>
       </div>
+
+      <ServicePickerSheet
+        open={pickerOpen}
+        pro={pro}
+        intent={intent}
+        onClose={() => setPickerOpen(false)}
+        onPick={(name) => {
+          setPickerOpen(false);
+          goBook(name);
+        }}
+        cardShadow={cardShadow}
+        subtleBorder={subtleBorder}
+      />
     </AppShell>
   );
 }
@@ -653,3 +695,125 @@ const __INK_300 = INK_300;
 void __INK_300;
 const __INK_400 = INK_400;
 void __INK_400;
+
+/* ───────── Service picker sheet ───────── */
+
+function ServicePickerSheet({
+  open,
+  pro,
+  intent,
+  onClose,
+  onPick,
+  cardShadow,
+  subtleBorder,
+}: {
+  open: boolean;
+  pro: Pro;
+  intent: BookIntent;
+  onClose: () => void;
+  onPick: (serviceName: string) => void;
+  cardShadow: string;
+  subtleBorder: string;
+}) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center"
+      style={{ fontFamily: SANS_STACK }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Pick a service"
+    >
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0"
+        style={{ backgroundColor: "rgba(6,28,39,0.55)" }}
+      />
+      <div
+        className="relative w-full max-w-[480px] animate-in slide-in-from-bottom"
+        style={{
+          backgroundColor: "var(--card)",
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          maxHeight: "82vh",
+          display: "flex",
+          flexDirection: "column",
+          color: "var(--card-foreground)",
+        }}
+      >
+        {/* drag handle */}
+        <div className="flex justify-center pt-2.5">
+          <span
+            aria-hidden
+            style={{
+              width: 36,
+              height: 4,
+              borderRadius: 9999,
+              backgroundColor: "var(--border)",
+            }}
+          />
+        </div>
+        {/* header */}
+        <div className="relative flex items-center justify-center px-4 py-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute left-4"
+            style={{ fontSize: 14, fontWeight: 600, color: "var(--on-card-muted)" }}
+          >
+            Cancel
+          </button>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em", margin: 0 }}>
+            Pick a service
+          </h2>
+        </div>
+        <p
+          className="px-5 pb-2"
+          style={{ fontSize: 12, color: "var(--on-card-muted)", textAlign: "center" }}
+        >
+          {intent === "later" ? "You'll pick a time next." : "Booking now."}
+        </p>
+        <ul className="flex flex-col gap-2 overflow-y-auto px-4 pt-2">
+          {pro.services.map((s, i) => (
+            <li key={i}>
+              <button
+                type="button"
+                onClick={() => onPick(s.name)}
+                className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors active:scale-[0.99]"
+                style={{
+                  backgroundColor: "var(--surface-elevated)",
+                  border: `1px solid ${subtleBorder}`,
+                  boxShadow: cardShadow,
+                }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p style={{ fontSize: 14.5, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
+                    {s.name}
+                  </p>
+                  <span className="mt-1 inline-flex items-center gap-1" style={{ fontSize: 11.5, color: "var(--on-card-muted)" }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {durationFor(s.name)}
+                  </span>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p style={{ fontSize: 9.5, color: "var(--on-card-muted)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    From
+                  </p>
+                  <p className="tabular" style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
+                    ${s.priceFrom}
+                  </p>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
