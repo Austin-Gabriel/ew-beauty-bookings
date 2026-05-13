@@ -102,11 +102,13 @@ function RootComponent() {
     <DevStateProvider>
       <CustomerProfileProvider>
         <BookingsProvider>
-          <DevCustomerSync />
-          <DevBookingsSync />
-          <Outlet />
-          <DevStateToggle />
-          <Toaster />
+          <BookIntentProvider>
+            <DevCustomerSync />
+            <DevBookingsSync />
+            <Outlet />
+            <DevStateToggle />
+            <Toaster />
+          </BookIntentProvider>
         </BookingsProvider>
       </CustomerProfileProvider>
     </DevStateProvider>
