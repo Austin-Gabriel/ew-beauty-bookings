@@ -43,11 +43,54 @@ export function PendingApprovalPage({ bookingId }: { bookingId: string }) {
   const proFirst = pro.name.split(" ")[0];
   const initials = initialsOf(pro.name);
 
+  // Variant copy + visuals driven by booking.status (set by reschedule flow,
+  // booking confirm flow, or the dev-state Schedule toggle).
+  const variant = (() => {
+    switch (booking.status) {
+      case "confirmed":
+        return {
+          icon: <Check size={14} />,
+          badgeBg: "rgba(255,130,63,0.18)",
+          badgeColor: "var(--bagel)",
+          title: `${proFirst} accepted`,
+          body: `You're booked. ${proFirst} will see you on ${formatBookingDate(booking.when)}.`,
+          ctaLabel: "View in bookings",
+        };
+      case "declined":
+        return {
+          icon: <X size={14} />,
+          badgeBg: "var(--muted)",
+          badgeColor: "var(--muted-foreground)",
+          title: `${proFirst} can't make it`,
+          body: `${proFirst} declined this request. Try another time or browse other pros.`,
+          ctaLabel: "Back to bookings",
+        };
+      case "cancelled":
+        return {
+          icon: <AlarmClockOff size={14} />,
+          badgeBg: "var(--muted)",
+          badgeColor: "var(--muted-foreground)",
+          title: `Request expired`,
+          body: `${proFirst} didn't respond in 24 hours. The request was cancelled — try another time.`,
+          ctaLabel: "Back to bookings",
+        };
+      default:
+        return {
+          icon: <Clock size={14} />,
+          badgeBg: "var(--muted)",
+          badgeColor: "var(--muted-foreground)",
+          title: `Waiting on ${proFirst}`,
+          body: `${proFirst} has up to 24 hours to confirm. We'll let you know as soon as they accept.`,
+          ctaLabel: "View in bookings",
+        };
+    }
+  })();
+
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
       {/* Content */}
       <div className="flex flex-1 flex-col items-center px-6 pt-16">
-        {/* Pro avatar + clock overlay */}
+        {/* Pro avatar + status overlay */}
         <div className="relative">
           <div
             className="grid h-20 w-20 place-items-center rounded-full"
@@ -65,12 +108,12 @@ export function PendingApprovalPage({ bookingId }: { bookingId: string }) {
           <div
             className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-full"
             style={{
-              backgroundColor: "var(--muted)",
-              color: "var(--muted-foreground)",
+              backgroundColor: variant.badgeBg,
+              color: variant.badgeColor,
               border: "2px solid var(--card)",
             }}
           >
-            <Clock size={14} />
+            {variant.icon}
           </div>
         </div>
 
@@ -78,13 +121,13 @@ export function PendingApprovalPage({ bookingId }: { bookingId: string }) {
           className="mt-6 text-center"
           style={{ fontSize: 22, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}
         >
-          Waiting on {proFirst}
+          {variant.title}
         </h1>
         <p
           className="mt-2 text-center"
           style={{ fontSize: 15, color: "var(--muted-foreground)", maxWidth: 280, lineHeight: 1.5 }}
         >
-          {proFirst} has up to 24 hours to confirm. We'll let you know as soon as they accept.
+          {variant.body}
         </p>
 
         {/* Booking summary card */}
@@ -136,7 +179,7 @@ export function PendingApprovalPage({ bookingId }: { bookingId: string }) {
             border: "1px solid var(--hairline)",
           }}
         >
-          View in bookings
+          {variant.ctaLabel}
         </button>
       </div>
     </div>
