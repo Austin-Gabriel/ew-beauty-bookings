@@ -7,6 +7,7 @@ import { useFavorites } from "@/favorites/store";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { TAB_BAR_HEIGHT_PX } from "@/home/TabBar";
+import { useBookIntent, type BookIntent } from "@/booking/book-intent";
 
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
