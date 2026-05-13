@@ -115,7 +115,9 @@ export function DevBookingsSync() {
       // we're driving. Status update only — booking is preserved.
       if (target) {
         setBookings(
-          bs.map((b) => (b.id === target.id ? { ...b, status: "completed" as BookingStatus } : b)),
+          bookingsRef.current.map((b) =>
+            b.id === target.id ? { ...b, status: "completed" as BookingStatus } : b,
+          ),
         );
         navigate({ to: "/booking/complete/$bookingId", params: { bookingId: target.id } });
       }
@@ -129,14 +131,16 @@ export function DevBookingsSync() {
       const seed = SEED_BOOKINGS.find((b) => b.id === ACTIVE_HERO_ID);
       if (seed) {
         const seeded = patchStatus(seed, state.activeBooking as BookingStatus);
-        setBookings((bs) => [seeded, ...bs]);
+        setBookings([seeded, ...bookingsRef.current]);
       }
       return;
     }
 
     // Status-only patch — never replaces other fields.
     setBookings(
-      bs.map((b) => (b.id === target.id ? patchStatus(b, state.activeBooking as BookingStatus) : b)),
+      bookingsRef.current.map((b) =>
+        b.id === target.id ? patchStatus(b, state.activeBooking as BookingStatus) : b,
+      ),
     );
   }, [state.activeBooking, setBookings, navigate]);
 
