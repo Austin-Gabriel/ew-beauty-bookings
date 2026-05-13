@@ -224,22 +224,8 @@ export function DiscoverPage() {
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
             </IconButton>
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/profile" })}
-              aria-label="Profile"
-              className="grid h-8 w-8 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
-              style={{
-                backgroundColor: "var(--cream-elevated)",
-                color: "var(--midnight)",
-                fontSize: 11,
-                fontWeight: 600,
-                fontFamily: SANS_STACK,
-                border: "0.5px solid rgba(6,28,39,0.08)",
-              }}
-            >
-              {initials}
-            </button>
+            <CustomerAvatar size={32} fontSize={11} onClick={() => navigate({ to: "/profile" })} ariaLabel="Profile" />
+
           </div>
         </div>
 
