@@ -67,6 +67,13 @@ export function DevStateToggle() {
 
   useEffect(() => {
     setPos(readInitialPos());
+    const onResize = () => setPos((p) => clampPos(p));
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
   }, []);
 
   useEffect(() => {
