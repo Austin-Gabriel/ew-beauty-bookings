@@ -144,5 +144,73 @@ export function DevBookingsSync() {
     );
   }, [state.activeBooking, setBookings, navigate]);
 
+  /* ---------- scheduleState: drives scheduled / pending-approval flow ---------- */
+  const prevSchedule = useRef<string | null>(null);
+  useEffect(() => {
+    if (prevSchedule.current === state.scheduleState) return;
+    prevSchedule.current = state.scheduleState;
+    if (state.scheduleState === "none") return;
+
+    const all = bookingsRef.current;
+    // Prefer most recent USER-created scheduled booking; fall back to mock seeds.
+    const SCHEDULED_STATUSES: BookingStatus[] = [
+      "pending_pro_approval",
+      "confirmed",
+      "declined",
+      "cancelled",
+    ];
+    const userScheduled = all
+      .filter(
+        (b) =>
+          isUserBooking(b) &&
+          (b.bookingType === "scheduled" || SCHEDULED_STATUSES.includes(b.status)),
+      )
+      .sort((a, b) => b.createdAt - a.createdAt)[0];
+    const mockScheduled =
+      all.find((b) => b.id === "bk-renee-tue") ?? all.find((b) => b.id === "bk-jordan-sat");
+    const target = userScheduled ?? mockScheduled;
+    if (!target) return;
+
+    let nextStatus: BookingStatus | null = null;
+    let goPending = false;
+    switch (state.scheduleState) {
+      case "slot-picked":
+        nextStatus = "pending_pro_approval";
+        break;
+      case "slot-expired":
+        nextStatus = "cancelled";
+        goPending = true;
+        break;
+      case "pending-pro":
+        nextStatus = "pending_pro_approval";
+        goPending = true;
+        break;
+      case "auto-accepted":
+        nextStatus = "confirmed";
+        goPending = true;
+        break;
+      case "pro-declined":
+        nextStatus = "declined";
+        goPending = true;
+        break;
+      case "24h-timeout":
+        nextStatus = "cancelled";
+        goPending = true;
+        break;
+    }
+
+    if (nextStatus) {
+      const status = nextStatus;
+      setBookings(
+        bookingsRef.current.map((b) =>
+          b.id === target.id ? { ...b, status } : b,
+        ),
+      );
+    }
+    if (goPending) {
+      navigate({ to: "/booking/pending/$bookingId", params: { bookingId: target.id } });
+    }
+  }, [state.scheduleState, setBookings, navigate]);
+
   return null;
 }
