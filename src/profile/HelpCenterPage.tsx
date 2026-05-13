@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, HelpCircle } from "lucide-react";
-import { openSupportMail } from "./support-constants";
+import { ContactSupportSheet } from "./ContactSupportSheet";
 
 export function HelpCenterPage() {
   const navigate = useNavigate();
+  const [showSupport, setShowSupport] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
