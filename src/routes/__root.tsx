@@ -6,6 +6,7 @@ import { DevStateToggle } from "../dev-state/DevStateToggle";
 import { Toaster } from "../components/ui/sonner";
 import { CustomerProfileProvider } from "../data/customer-store";
 import { BookingsProvider } from "../data/bookings-store";
+import { BookIntentProvider } from "../booking/book-intent";
 import { DevCustomerSync } from "../dev-state/DevCustomerSync";
 import { DevBookingsSync } from "../dev-state/DevBookingsSync";
 
