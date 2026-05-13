@@ -2,11 +2,13 @@
  * SchedulePage — date/time picker for "Schedule for later" flow.
  * /booking/schedule/:proId
  */
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, CalendarDays } from "lucide-react";
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { SANS_STACK } from "@/auth/auth-shell";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
