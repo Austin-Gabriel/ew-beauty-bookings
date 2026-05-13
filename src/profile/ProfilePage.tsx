@@ -191,6 +191,7 @@ export function ProfilePage() {
   const { profile, updateIdentity } = useCustomerProfile();
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [showSignOutSheet, setShowSignOutSheet] = useState(false);
+  const [showSupportSheet, setShowSupportSheet] = useState(false);
 
   const { identity, savedAddresses, paymentMethods, tippingPreference, themePreference } = profile;
   const hasPhoto = !!identity.avatarPhotoUrl;
