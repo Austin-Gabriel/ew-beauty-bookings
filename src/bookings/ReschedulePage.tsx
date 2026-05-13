@@ -58,12 +58,21 @@ export function ReschedulePage({ bookingId }: { bookingId: string }) {
     newDate.setHours(hours, mins, 0, 0);
     const newWhen = newDate.getTime();
 
+    const requiresApproval = !pro.autoAccept;
+    const nextStatus = requiresApproval ? "pending_pro_approval" : booking.status;
+
     setBookings(
-      bookings.map((b) => b.id === bookingId ? { ...b, when: newWhen } : b)
+      bookings.map((b) =>
+        b.id === bookingId ? { ...b, when: newWhen, status: nextStatus } : b,
+      ),
     );
 
     const dateLabel = formatBookingDate(newWhen);
-    toast.success(`Booking rescheduled to ${dateLabel}`);
+    if (requiresApproval) {
+      toast.success(`Reschedule request sent to ${pro.name.split(" ")[0]} for ${dateLabel}`);
+    } else {
+      toast.success(`Booking rescheduled to ${dateLabel}`);
+    }
     navigate({ to: "/bookings" });
   };
 
