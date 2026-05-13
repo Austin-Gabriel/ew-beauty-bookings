@@ -33,10 +33,16 @@ function themeModeLabel(mode: string): string {
 }
 
 function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
+  // Locked rule: ALWAYS two letters. If only one name, pad with the second
+  // character of that same name. Single-letter monograms are forbidden.
+  const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "??";
   const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
+  if (parts.length === 1) {
+    const second = parts[0]?.[1] ?? first;
+    return (first + second).toUpperCase();
+  }
+  const last = parts[parts.length - 1]?.[0] ?? "";
   return (first + last).toUpperCase();
 }
 
