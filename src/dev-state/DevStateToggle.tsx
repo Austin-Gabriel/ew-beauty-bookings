@@ -25,15 +25,24 @@ const EDGE_PAD = 12;
 
 type Pos = { x: number; y: number };
 
+function clampPos(p: Pos): Pos {
+  if (typeof window === "undefined") return p;
+  const maxX = Math.max(EDGE_PAD, window.innerWidth - BUTTON_SIZE - EDGE_PAD);
+  const maxY = Math.max(EDGE_PAD, window.innerHeight - BUTTON_SIZE - EDGE_PAD);
+  return {
+    x: Math.max(EDGE_PAD, Math.min(maxX, p.x)),
+    y: Math.max(EDGE_PAD, Math.min(maxY, p.y)),
+  };
+}
+
 function readInitialPos(): Pos {
   if (typeof window === "undefined") return { x: 16, y: 16 };
   try {
     const raw = localStorage.getItem(POS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return clampPos(JSON.parse(raw));
   } catch {}
   // Default: top-right, well clear of the bottom tab bar.
-  const x = window.innerWidth - 70;
-  return { x, y: 80 };
+  return clampPos({ x: window.innerWidth - 70, y: 80 });
 }
 
 /**
@@ -58,6 +67,13 @@ export function DevStateToggle() {
 
   useEffect(() => {
     setPos(readInitialPos());
+    const onResize = () => setPos((p) => clampPos(p));
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
   }, []);
 
   useEffect(() => {
