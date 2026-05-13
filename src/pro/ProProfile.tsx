@@ -464,7 +464,7 @@ export function ProProfile({ proId }: { proId: string }) {
             </div>
             <button
               type="button"
-              onClick={() => navigate({ to: "/booking/confirm/$proId", params: { proId: pro.id } })}
+              onClick={handleBookButton}
               className="inline-flex items-center gap-1.5 rounded-xl shadow-lg transition-transform active:scale-95"
               style={{
                 padding: "12px 22px",
