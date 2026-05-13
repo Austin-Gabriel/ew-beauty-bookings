@@ -4,11 +4,9 @@
  */
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Scissors, CalendarDays } from "lucide-react";
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { SANS_STACK } from "@/auth/auth-shell";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                             */
@@ -18,16 +16,35 @@ function toDateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function generateDates(count: number): Date[] {
-  const dates: Date[] = [];
-  const start = new Date();
-  start.setDate(start.getDate() + 1); // exclude today
-  for (let i = 0; i < count; i++) {
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+function addMonths(d: Date, n: number): Date {
+  return new Date(d.getFullYear(), d.getMonth() + n, 1);
+}
+
+function buildMonthGrid(monthAnchor: Date): Date[] {
+  // Always 6 weeks (42 cells), Sunday-start.
+  const first = startOfMonth(monthAnchor);
+  const offset = first.getDay(); // 0 = Sun
+  const start = new Date(first);
+  start.setDate(first.getDate() - offset);
+  const cells: Date[] = [];
+  for (let i = 0; i < 42; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
-    dates.push(d);
+    cells.push(d);
   }
-  return dates;
+  return cells;
 }
 
 function generateSlots(
@@ -36,7 +53,7 @@ function generateSlots(
 ): { time: string; available: boolean }[] {
   const dow = date.getDay();
   const hours = schedule.hours[dow];
-  if (!hours) return []; // day off
+  if (!hours) return [];
 
   const dateKey = toDateKey(date);
   const isBlocked = schedule.blockedDates.includes(dateKey);
@@ -52,7 +69,6 @@ function generateSlots(
       const slotKey = `${dateKey} ${hh}:${mm}`;
       const isBooked = schedule.bookedSlots.includes(slotKey);
 
-      // Lead time: filter out slots within 1 hour from now
       const slotDate = new Date(date);
       slotDate.setHours(h, m, 0, 0);
       const tooSoon = slotDate.getTime() - now.getTime() < 60 * 60 * 1000;
@@ -85,7 +101,13 @@ function slotToTimestamp(date: Date, timeLabel: string): number {
   return d.getTime();
 }
 
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DOW_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+const MONTH_LABELS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+const SHORT_DOW = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const SHORT_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -96,7 +118,7 @@ export function SchedulePage({ proId }: { proId: string }) {
   const router = useRouter();
   const navigate = useNavigate();
   const search = (router.state.location.search as { service?: string }) ?? {};
-  const service = search.service ?? "";
+  const serviceName = search.service ?? "";
 
   const schedule = PRO_SCHEDULES[proId] ?? {
     hours: { 0: null, 1: { start: 9, end: 18 }, 2: { start: 9, end: 18 }, 3: { start: 9, end: 18 }, 4: { start: 9, end: 18 }, 5: { start: 9, end: 18 }, 6: null },
@@ -109,33 +131,47 @@ export function SchedulePage({ proId }: { proId: string }) {
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-  const maxDate = useMemo(() => {
+  const minMonth = useMemo(() => startOfMonth(today), [today]);
+  const maxMonth = useMemo(() => {
     const d = new Date(today);
     d.setDate(d.getDate() + 60);
-    return d;
+    return startOfMonth(d);
   }, [today]);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [monthAnchor, setMonthAnchor] = useState<Date>(() => startOfMonth(today));
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  const slots = useMemo(() => {
-    if (!selectedDate) return [];
-    return generateSlots(selectedDate, schedule);
-  }, [selectedDate, schedule]);
+  const cells = useMemo(() => buildMonthGrid(monthAnchor), [monthAnchor]);
+  const slots = useMemo(
+    () => (selectedDate ? generateSlots(selectedDate, schedule) : []),
+    [selectedDate, schedule],
+  );
 
-  const isBlockedDate = (date: Date) => {
-    const key = toDateKey(date);
-    const dow = date.getDay();
+  const isDateDisabled = (d: Date) => {
+    const day = new Date(d);
+    day.setHours(0, 0, 0, 0);
+    if (day <= today) return true;
+    const last = new Date(today);
+    last.setDate(last.getDate() + 60);
+    if (day > last) return true;
+    const dow = d.getDay();
     const hours = schedule.hours[dow];
-    return !hours || schedule.blockedDates.includes(key);
+    if (!hours) return true;
+    if (schedule.blockedDates.includes(toDateKey(d))) return true;
+    return false;
   };
 
-  // Clear selected time when date changes
   useEffect(() => {
     setSelectedTime(null);
   }, [selectedDate]);
 
+  const canPrev = monthAnchor > minMonth;
+  const canNext = monthAnchor < maxMonth;
   const canContinue = !!selectedDate && !!selectedTime;
+
+  // Service info (price)
+  const serviceInfo = pro?.services.find((s) => s.name === serviceName);
 
   const handleContinue = () => {
     if (!selectedDate || !selectedTime || !pro) return;
@@ -143,7 +179,7 @@ export function SchedulePage({ proId }: { proId: string }) {
     navigate({
       to: "/booking/confirm/$proId",
       params: { proId },
-      search: { scheduledWhen: when, service },
+      search: { scheduledWhen: when, service: serviceName },
     });
   };
 
@@ -163,15 +199,19 @@ export function SchedulePage({ proId }: { proId: string }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
+    <div
+      className="flex min-h-screen flex-col bg-background"
+      style={{ fontFamily: SANS_STACK }}
+    >
       {/* Top bar */}
       <div className="relative flex h-12 shrink-0 items-center px-4">
         <button
           type="button"
           onClick={() => router.history.back()}
           className="grid h-9 w-9 place-items-center rounded-full text-foreground"
+          aria-label="Back"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={22} />
         </button>
         <span className="pointer-events-none absolute inset-x-0 text-center text-[17px] font-semibold text-foreground">
           Pick a date & time
@@ -179,37 +219,119 @@ export function SchedulePage({ proId }: { proId: string }) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-32">
-        {/* Calendar */}
-        <div
-          className="mt-2 rounded-2xl p-2"
-          style={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--hairline)",
-            color: "var(--card-foreground)",
-          }}
-        >
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            disabled={(date) => {
-              const d = new Date(date);
-              d.setHours(0, 0, 0, 0);
-              if (d <= today) return true;
-              if (d > maxDate) return true;
-              return isBlockedDate(date);
+        {/* Service summary chip */}
+        {serviceName && (
+          <div
+            className="mt-2 flex items-center gap-3 rounded-2xl px-4 py-3"
+            style={{
+              backgroundColor: "var(--card)",
+              border: "1px solid var(--hairline)",
+              color: "var(--card-foreground)",
             }}
-            fromDate={today}
-            toDate={maxDate}
-            className={cn("p-2 pointer-events-auto w-full")}
-          />
+          >
+            <Scissors size={16} style={{ color: "var(--on-card-muted)" }} />
+            <p className="flex-1 truncate text-[14px] font-medium">
+              {serviceName}
+            </p>
+            {serviceInfo && (
+              <p className="tabular text-[14px] font-semibold">
+                ${serviceInfo.priceFrom}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Calendar header */}
+        <div className="mt-5 flex items-center justify-between">
+          <p className="text-[18px] font-bold text-foreground">
+            {MONTH_LABELS[monthAnchor.getMonth()]} {monthAnchor.getFullYear()}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={!canPrev}
+              onClick={() => canPrev && setMonthAnchor((m) => addMonths(m, -1))}
+              className="grid h-9 w-9 place-items-center rounded-full transition-opacity disabled:opacity-30"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--hairline)",
+                color: "var(--card-foreground)",
+              }}
+              aria-label="Previous month"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              disabled={!canNext}
+              onClick={() => canNext && setMonthAnchor((m) => addMonths(m, 1))}
+              className="grid h-9 w-9 place-items-center rounded-full transition-opacity disabled:opacity-30"
+              style={{
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--hairline)",
+                color: "var(--card-foreground)",
+              }}
+              aria-label="Next month"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Time slots */}
+        {/* Day-of-week header */}
+        <div className="mt-4 grid grid-cols-7">
+          {DOW_LABELS.map((d, i) => (
+            <div
+              key={i}
+              className="text-center text-[12px] font-medium"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* Date grid */}
+        <div className="mt-2 grid grid-cols-7 gap-y-1">
+          {cells.map((d, i) => {
+            const inMonth = d.getMonth() === monthAnchor.getMonth();
+            const disabled = isDateDisabled(d);
+            const selected = selectedDate ? isSameDay(d, selectedDate) : false;
+
+            return (
+              <div key={i} className="flex h-11 items-center justify-center">
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => setSelectedDate(new Date(d))}
+                  className="grid h-10 w-10 place-items-center rounded-full transition-colors"
+                  style={{
+                    backgroundColor: selected ? "var(--bagel)" : "transparent",
+                    color: selected
+                      ? "var(--bagel-foreground)"
+                      : !inMonth
+                        ? "var(--muted-foreground)"
+                        : disabled
+                          ? "var(--muted-foreground)"
+                          : "var(--foreground)",
+                    opacity: !inMonth ? 0.45 : disabled ? 0.55 : 1,
+                    fontSize: 15,
+                    fontWeight: selected ? 700 : 500,
+                    textDecoration: disabled && inMonth ? "line-through" : "none",
+                  }}
+                >
+                  {d.getDate()}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Times */}
         {selectedDate ? (
           <>
             <p
-              className="mb-3 mt-5"
+              className="mb-3 mt-6"
               style={{
                 fontSize: 11.5,
                 fontWeight: 700,
@@ -218,7 +340,8 @@ export function SchedulePage({ proId }: { proId: string }) {
                 letterSpacing: "0.08em",
               }}
             >
-              Available times
+              Available times · {SHORT_DOW[selectedDate.getDay()]}{" "}
+              {SHORT_MONTH[selectedDate.getMonth()]} {selectedDate.getDate()}
             </p>
 
             {slots.length === 0 ? (
@@ -250,19 +373,17 @@ export function SchedulePage({ proId }: { proId: string }) {
                       type="button"
                       disabled={!s.available}
                       onClick={() => setSelectedTime(s.time)}
-                      className="rounded-xl py-2.5 text-center transition-colors"
+                      className="rounded-xl py-3 text-center transition-colors"
                       style={{
-                        fontSize: 13.5,
-                        fontWeight: 600,
-                        backgroundColor: isSelected
-                          ? "var(--bagel)"
-                          : "var(--card)",
+                        fontSize: 14,
+                        fontWeight: 700,
+                        backgroundColor: isSelected ? "var(--bagel)" : "var(--card)",
                         color: isSelected
                           ? "var(--bagel-foreground)"
                           : !s.available
                             ? "var(--on-card-muted)"
                             : "var(--card-foreground)",
-                        opacity: !s.available ? 0.4 : 1,
+                        opacity: !s.available ? 0.45 : 1,
                         textDecoration: !s.available ? "line-through" : "none",
                         border: isSelected ? "none" : "1px solid var(--hairline)",
                       }}
@@ -276,7 +397,7 @@ export function SchedulePage({ proId }: { proId: string }) {
           </>
         ) : (
           <p
-            className="mt-5 text-center"
+            className="mt-6 text-center"
             style={{ fontSize: 13.5, color: "var(--muted-foreground)" }}
           >
             Pick a day to see available times.
@@ -298,4 +419,3 @@ export function SchedulePage({ proId }: { proId: string }) {
     </div>
   );
 }
-
