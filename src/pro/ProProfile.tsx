@@ -349,21 +349,26 @@ export function ProProfile({ proId }: { proId: string }) {
 
         {/* Portfolio */}
         <div className="mt-7">
-          <SectionHeader title="Portfolio" action={`See all ${pro.portfolio.length * 8}`} text={text} muted={muted} onAction={() => toast("Full portfolio coming soon")} />
+          <SectionHeader
+            title="Portfolio"
+            action={`See all ${fullPortfolio.length}`}
+            text={text}
+            muted={muted}
+            onAction={() => navigate({ to: "/pro/$proId/portfolio", params: { proId: pro.id } })}
+          />
         </div>
         <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: "none" }}>
-          {[...pro.portfolio, ...pro.portfolio].slice(0, 5).map((src, i) => (
-            <div
+          {fullPortfolio.slice(0, 5).map((src, i) => (
+            <button
               key={i}
-              role="button"
-              tabIndex={0}
-              onClick={() => toast("Lightbox coming soon")}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toast("Lightbox coming soon")}
-              className="shrink-0 cursor-pointer overflow-hidden rounded-2xl"
-              style={{ width: 130, aspectRatio: "4 / 5", boxShadow: cardShadow }}
+              type="button"
+              onClick={() => setLightboxIndex(i)}
+              className="shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-transform active:scale-[0.98]"
+              style={{ width: 130, aspectRatio: "4 / 5", boxShadow: cardShadow, padding: 0, border: "none" }}
+              aria-label={`Open photo ${i + 1}`}
             >
               <img src={src} alt="" className="h-full w-full object-cover" />
-            </div>
+            </button>
           ))}
         </div>
 
