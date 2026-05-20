@@ -231,42 +231,6 @@ export function NotificationsPage() {
     else if (a.route === "pro" && a.proId) navigate({ to: "/pro/$proId", params: { proId: a.proId } });
   };
 
-  // -------- More ways to save (carousel) --------
-  const ways = [
-    {
-      id: "refer",
-      eyebrow: "Refer a friend",
-      title: "Give $20,\nget $20.",
-      cta: "Invite friends",
-      gradient: "linear-gradient(135deg, #8B3A1A 0%, #FF823F 120%)",
-      onClick: () => {
-        if (typeof navigator !== "undefined" && "share" in navigator) {
-          (navigator as Navigator & { share: (data: ShareData) => Promise<void> })
-            .share({ title: "Ewà", text: "Join me on Ewà — $20 off your first booking.", url: "https://ewatheapp.lovable.app" })
-            .catch(() => toast("Invite link copied"));
-        } else {
-          toast("Invite link copied");
-        }
-      },
-    },
-    {
-      id: "city-deals",
-      eyebrow: "Brooklyn picks",
-      title: "Top stylists,\nhandpicked.",
-      cta: "Explore",
-      gradient: "linear-gradient(135deg, #2C1810 0%, #6B3A1A 120%)",
-      onClick: () => navigate({ to: "/discover" }),
-    },
-    {
-      id: "first-book",
-      eyebrow: "First booking",
-      title: "Get $15\non us.",
-      cta: "Book now",
-      gradient: "linear-gradient(135deg, #061C27 0%, #2A4A5E 120%)",
-      onClick: () => navigate({ to: "/discover" }),
-    },
-  ];
-
   return (
     <AppShell>
       {/* Header — back arrow + centered title (Uber pattern) */}
@@ -291,16 +255,14 @@ export function NotificationsPage() {
             margin: 0,
           }}
         >
-          Notifications & Offers
+          Notifications
         </h1>
       </header>
 
       <div className="px-5 pt-4" style={{ fontFamily: SANS_STACK, color: text }}>
-
-
         {/* Recent activity ---------------------------------------------- */}
         {activities.length > 0 && (
-          <section className="-mx-5 mt-7">
+          <section className="-mx-5 mt-4">
             <div className="px-5">
               <SectionHeader title="Recent activity" subtitle="Updates from your bookings and pros" />
             </div>
@@ -338,29 +300,6 @@ export function NotificationsPage() {
           </section>
         )}
 
-        {/* Available offers ------------------------------------------- */}
-        <section className="mt-7">
-          <SectionHeader title="Available offers" subtitle="Tap claim to save these to your account" />
-          <ul className="mt-3 flex flex-col gap-3">
-            {offers.map((o) => (
-              <OfferCard key={o.id} offer={o} claimed={claimed.has(o.id)} onClaim={() => onClaim(o.id, o.title)} muted={muted} />
-            ))}
-          </ul>
-        </section>
-
-        {/* More ways to save (horizontal scroll) ---------------------- */}
-        <section className="mt-8">
-          <h2 className="px-0.5" style={{ fontFamily: FRAUNCES, fontSize: 24, fontWeight: 400, letterSpacing: "-0.01em", color: text, margin: 0 }}>
-            More ways to save
-          </h2>
-          <div className="-mx-5 mt-4 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-            <div className="flex gap-3 px-5 pb-2">
-              {ways.map((w) => (
-                <WayCard key={w.id} way={w} />
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Empty state for "new" customers with no notifs */}
         {activities.length === 0 && (
