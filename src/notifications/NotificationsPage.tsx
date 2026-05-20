@@ -73,18 +73,7 @@ export function NotificationsPage() {
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
 
-  // -------- Promo code input --------
-  const [promo, setPromo] = useState("");
-  const onApplyPromo = () => {
-    const code = promo.trim().toUpperCase();
-    if (!code) return;
-    if (code === "EWA10" || code === "WELCOME") {
-      toast(`${code} applied — 10% off your next booking`);
-    } else {
-      toast("That code isn't valid");
-    }
-    setPromo("");
-  };
+  // Promo code input removed pre-MVP — offer cards below cover all promotions.
 
   // -------- Offers --------
   const baseOffers: Offer[] = useMemo(
