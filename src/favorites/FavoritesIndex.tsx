@@ -15,7 +15,7 @@ const INK_500 = "#6B7684";
 const INK_400 = "#8D97A3";
 const STAR = "#F5A623";
 
-type Tab = "collections" | "stylists" | "inspiration";
+type Tab = "collections" | "stylists";
 
 export function FavoritesIndex() {
   const { isDark, text } = useAuthTheme();
