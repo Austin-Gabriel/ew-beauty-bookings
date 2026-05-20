@@ -39,7 +39,6 @@ import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
-import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
@@ -201,11 +200,6 @@ const BookingsBookingIdRoute = BookingsBookingIdRouteImport.update({
   path: '/$bookingId',
   getParentRoute: () => BookingsRoute,
 } as any)
-const FavoritesSharedShareIdRoute = FavoritesSharedShareIdRouteImport.update({
-  id: '/shared/$shareId',
-  path: '/shared/$shareId',
-  getParentRoute: () => FavoritesRoute,
-} as any)
 const BookingSearchingBookingIdRoute =
   BookingSearchingBookingIdRouteImport.update({
     id: '/booking/searching/$bookingId',
@@ -301,7 +295,6 @@ export interface FileRoutesByFullPath {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -341,7 +334,6 @@ export interface FileRoutesByTo {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -385,7 +377,6 @@ export interface FileRoutesById {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -430,7 +421,6 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -470,7 +460,6 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
   id:
     | '__root__'
     | '/'
@@ -513,7 +502,6 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -757,13 +745,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsBookingIdRouteImport
       parentRoute: typeof BookingsRoute
     }
-    '/favorites/shared/$shareId': {
-      id: '/favorites/shared/$shareId'
-      path: '/shared/$shareId'
-      fullPath: '/favorites/shared/$shareId'
-      preLoaderRoute: typeof FavoritesSharedShareIdRouteImport
-      parentRoute: typeof FavoritesRoute
-    }
     '/booking/searching/$bookingId': {
       id: '/booking/searching/$bookingId'
       path: '/booking/searching/$bookingId'
@@ -854,13 +835,11 @@ const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
 interface FavoritesRouteChildren {
   FavoritesCollectionIdRoute: typeof FavoritesCollectionIdRoute
   FavoritesIndexRoute: typeof FavoritesIndexRoute
-  FavoritesSharedShareIdRoute: typeof FavoritesSharedShareIdRoute
 }
 
 const FavoritesRouteChildren: FavoritesRouteChildren = {
   FavoritesCollectionIdRoute: FavoritesCollectionIdRoute,
   FavoritesIndexRoute: FavoritesIndexRoute,
-  FavoritesSharedShareIdRoute: FavoritesSharedShareIdRoute,
 }
 
 const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
