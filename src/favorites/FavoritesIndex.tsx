@@ -165,14 +165,13 @@ function Tabs({
 }: {
   value: Tab;
   onChange: (t: Tab) => void;
-  totals: { collections: number; stylists: number; inspiration: number };
+  totals: { collections: number; stylists: number };
   text: string;
   muted: string;
 }) {
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "collections", label: "Collections", count: totals.collections },
     { id: "stylists", label: "Stylists", count: totals.stylists },
-    { id: "inspiration", label: "Inspiration", count: totals.inspiration },
   ];
   return (
     <div className="flex" style={{ gap: 2 }}>
