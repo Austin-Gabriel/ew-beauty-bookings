@@ -101,7 +101,7 @@ export function FavoritesIndex() {
           onNew={() => setNewOpen(true)}
           onBrowse={goBrowse}
         />
-      ) : tab === "stylists" ? (
+      ) : (
         <StylistsTab
           pros={savedPros}
           subtleBorder={subtleBorder}
@@ -110,21 +110,6 @@ export function FavoritesIndex() {
           muted={muted}
           text={text}
           onTap={(pro) => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
-          onBrowse={goBrowse}
-        />
-      ) : (
-        <InspirationTab
-          looks={looks}
-          subtleSurface={subtleSurface}
-          subtleBorder={subtleBorder}
-          cardShadow={cardShadow}
-          muted={muted}
-          text={text}
-          onTap={(item) => {
-            const proId = item.meta?.proId;
-            if (proId) navigate({ to: "/pro/$proId", params: { proId } });
-            else toast("Lightbox coming soon");
-          }}
           onBrowse={goBrowse}
         />
       )}
