@@ -84,6 +84,7 @@ export function ProProfile({ proId }: { proId: string }) {
   const stats = mockStats(pro);
   const ratingBreakdown = mockBreakdown();
   const reviews = mockReviews(pro);
+  const fullPortfolio = buildFullPortfolio(pro.portfolio);
   const locationLabel = formatProLocation(pro, getLocationContext());
   const initials = initialsOf(pro.name);
 
