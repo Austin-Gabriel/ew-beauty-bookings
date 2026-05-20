@@ -40,6 +40,7 @@ import { Route as PoliciesCancellationRouteImport } from './routes/policies.canc
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
 import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
+import { Route as ProProIdPortfolioRouteImport } from './routes/pro.$proId.portfolio'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
@@ -206,6 +207,11 @@ const ProProIdIndexRoute = ProProIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProProIdRoute,
 } as any)
+const ProProIdPortfolioRoute = ProProIdPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => ProProIdRoute,
+} as any)
 const BookingSearchingBookingIdRoute =
   BookingSearchingBookingIdRouteImport.update({
     id: '/booking/searching/$bookingId',
@@ -301,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -340,6 +347,7 @@ export interface FileRoutesByTo {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId': typeof ProProIdIndexRoute
 }
 export interface FileRoutesById {
@@ -384,6 +392,7 @@ export interface FileRoutesById {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -429,6 +438,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId/portfolio'
     | '/pro/$proId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId/portfolio'
     | '/pro/$proId'
   id:
     | '__root__'
@@ -511,6 +522,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId/portfolio'
     | '/pro/$proId/'
   fileRoutesById: FileRoutesById
 }
@@ -762,6 +774,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProProIdIndexRouteImport
       parentRoute: typeof ProProIdRoute
     }
+    '/pro/$proId/portfolio': {
+      id: '/pro/$proId/portfolio'
+      path: '/portfolio'
+      fullPath: '/pro/$proId/portfolio'
+      preLoaderRoute: typeof ProProIdPortfolioRouteImport
+      parentRoute: typeof ProProIdRoute
+    }
     '/booking/searching/$bookingId': {
       id: '/booking/searching/$bookingId'
       path: '/booking/searching/$bookingId'
@@ -893,10 +912,12 @@ const ProfileRouteWithChildren =
   ProfileRoute._addFileChildren(ProfileRouteChildren)
 
 interface ProProIdRouteChildren {
+  ProProIdPortfolioRoute: typeof ProProIdPortfolioRoute
   ProProIdIndexRoute: typeof ProProIdIndexRoute
 }
 
 const ProProIdRouteChildren: ProProIdRouteChildren = {
+  ProProIdPortfolioRoute: ProProIdPortfolioRoute,
   ProProIdIndexRoute: ProProIdIndexRoute,
 }
 
@@ -935,3 +956,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
