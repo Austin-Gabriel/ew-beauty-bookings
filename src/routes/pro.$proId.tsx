@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ProProfile } from "@/pro/ProProfile";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { MOCK_PROS } from "@/data/mock-pros";
 
 export const Route = createFileRoute("/pro/$proId")({
@@ -13,8 +12,5 @@ export const Route = createFileRoute("/pro/$proId")({
       ],
     };
   },
-  component: function Page() {
-    const { proId } = Route.useParams();
-    return <ProProfile proId={proId} />;
-  },
+  component: () => <Outlet />,
 });

@@ -39,7 +39,9 @@ import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
-import { Route as FavoritesSharedShareIdRouteImport } from './routes/favorites.shared.$shareId'
+import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
+import { Route as ProProIdReviewsRouteImport } from './routes/pro.$proId.reviews'
+import { Route as ProProIdPortfolioRouteImport } from './routes/pro.$proId.portfolio'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
@@ -201,10 +203,20 @@ const BookingsBookingIdRoute = BookingsBookingIdRouteImport.update({
   path: '/$bookingId',
   getParentRoute: () => BookingsRoute,
 } as any)
-const FavoritesSharedShareIdRoute = FavoritesSharedShareIdRouteImport.update({
-  id: '/shared/$shareId',
-  path: '/shared/$shareId',
-  getParentRoute: () => FavoritesRoute,
+const ProProIdIndexRoute = ProProIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProProIdRoute,
+} as any)
+const ProProIdReviewsRoute = ProProIdReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => ProProIdRoute,
+} as any)
+const ProProIdPortfolioRoute = ProProIdPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => ProProIdRoute,
 } as any)
 const BookingSearchingBookingIdRoute =
   BookingSearchingBookingIdRouteImport.update({
@@ -277,7 +289,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
+  '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -301,7 +313,9 @@ export interface FileRoutesByFullPath {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
+  '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -317,7 +331,6 @@ export interface FileRoutesByTo {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -341,7 +354,9 @@ export interface FileRoutesByTo {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
+  '/pro/$proId': typeof ProProIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -361,7 +376,7 @@ export interface FileRoutesById {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
+  '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -385,7 +400,9 @@ export interface FileRoutesById {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
-  '/favorites/shared/$shareId': typeof FavoritesSharedShareIdRoute
+  '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
+  '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -430,7 +447,9 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
+    | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
+    | '/pro/$proId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -446,7 +465,6 @@ export interface FileRouteTypes {
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/policies/cancellation'
-    | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
     | '/profile/help'
@@ -470,7 +488,9 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
+    | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
+    | '/pro/$proId'
   id:
     | '__root__'
     | '/'
@@ -513,7 +533,9 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
-    | '/favorites/shared/$shareId'
+    | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
+    | '/pro/$proId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -531,7 +553,7 @@ export interface RootRouteChildren {
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
   PoliciesCancellationRoute: typeof PoliciesCancellationRoute
-  ProProIdRoute: typeof ProProIdRoute
+  ProProIdRoute: typeof ProProIdRouteWithChildren
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
   BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
@@ -757,12 +779,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsBookingIdRouteImport
       parentRoute: typeof BookingsRoute
     }
-    '/favorites/shared/$shareId': {
-      id: '/favorites/shared/$shareId'
-      path: '/shared/$shareId'
-      fullPath: '/favorites/shared/$shareId'
-      preLoaderRoute: typeof FavoritesSharedShareIdRouteImport
-      parentRoute: typeof FavoritesRoute
+    '/pro/$proId/': {
+      id: '/pro/$proId/'
+      path: '/'
+      fullPath: '/pro/$proId/'
+      preLoaderRoute: typeof ProProIdIndexRouteImport
+      parentRoute: typeof ProProIdRoute
+    }
+    '/pro/$proId/reviews': {
+      id: '/pro/$proId/reviews'
+      path: '/reviews'
+      fullPath: '/pro/$proId/reviews'
+      preLoaderRoute: typeof ProProIdReviewsRouteImport
+      parentRoute: typeof ProProIdRoute
+    }
+    '/pro/$proId/portfolio': {
+      id: '/pro/$proId/portfolio'
+      path: '/portfolio'
+      fullPath: '/pro/$proId/portfolio'
+      preLoaderRoute: typeof ProProIdPortfolioRouteImport
+      parentRoute: typeof ProProIdRoute
     }
     '/booking/searching/$bookingId': {
       id: '/booking/searching/$bookingId'
@@ -854,13 +890,11 @@ const BookingsRouteWithChildren = BookingsRoute._addFileChildren(
 interface FavoritesRouteChildren {
   FavoritesCollectionIdRoute: typeof FavoritesCollectionIdRoute
   FavoritesIndexRoute: typeof FavoritesIndexRoute
-  FavoritesSharedShareIdRoute: typeof FavoritesSharedShareIdRoute
 }
 
 const FavoritesRouteChildren: FavoritesRouteChildren = {
   FavoritesCollectionIdRoute: FavoritesCollectionIdRoute,
   FavoritesIndexRoute: FavoritesIndexRoute,
-  FavoritesSharedShareIdRoute: FavoritesSharedShareIdRoute,
 }
 
 const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
@@ -896,6 +930,22 @@ const ProfileRouteChildren: ProfileRouteChildren = {
 const ProfileRouteWithChildren =
   ProfileRoute._addFileChildren(ProfileRouteChildren)
 
+interface ProProIdRouteChildren {
+  ProProIdPortfolioRoute: typeof ProProIdPortfolioRoute
+  ProProIdReviewsRoute: typeof ProProIdReviewsRoute
+  ProProIdIndexRoute: typeof ProProIdIndexRoute
+}
+
+const ProProIdRouteChildren: ProProIdRouteChildren = {
+  ProProIdPortfolioRoute: ProProIdPortfolioRoute,
+  ProProIdReviewsRoute: ProProIdReviewsRoute,
+  ProProIdIndexRoute: ProProIdIndexRoute,
+}
+
+const ProProIdRouteWithChildren = ProProIdRoute._addFileChildren(
+  ProProIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
@@ -911,7 +961,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
   PoliciesCancellationRoute: PoliciesCancellationRoute,
-  ProProIdRoute: ProProIdRoute,
+  ProProIdRoute: ProProIdRouteWithChildren,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
   BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
@@ -927,12 +977,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

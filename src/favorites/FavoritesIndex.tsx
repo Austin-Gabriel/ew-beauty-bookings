@@ -15,7 +15,7 @@ const INK_500 = "#6B7684";
 const INK_400 = "#8D97A3";
 const STAR = "#F5A623";
 
-type Tab = "collections" | "stylists" | "inspiration";
+type Tab = "collections" | "stylists";
 
 export function FavoritesIndex() {
   const { isDark, text } = useAuthTheme();
@@ -46,12 +46,9 @@ export function FavoritesIndex() {
     return out;
   }, [allItems]);
 
-  const looks = useMemo(() => allItems.filter((it) => it.type === "look"), [allItems]);
-
   const totals = {
     collections: collections.length,
     stylists: savedPros.length,
-    inspiration: looks.length,
   };
 
   const goBrowse = () => navigate({ to: "/discover" });
@@ -104,7 +101,7 @@ export function FavoritesIndex() {
           onNew={() => setNewOpen(true)}
           onBrowse={goBrowse}
         />
-      ) : tab === "stylists" ? (
+      ) : (
         <StylistsTab
           pros={savedPros}
           subtleBorder={subtleBorder}
@@ -113,21 +110,6 @@ export function FavoritesIndex() {
           muted={muted}
           text={text}
           onTap={(pro) => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
-          onBrowse={goBrowse}
-        />
-      ) : (
-        <InspirationTab
-          looks={looks}
-          subtleSurface={subtleSurface}
-          subtleBorder={subtleBorder}
-          cardShadow={cardShadow}
-          muted={muted}
-          text={text}
-          onTap={(item) => {
-            const proId = item.meta?.proId;
-            if (proId) navigate({ to: "/pro/$proId", params: { proId } });
-            else toast("Lightbox coming soon");
-          }}
           onBrowse={goBrowse}
         />
       )}
@@ -183,14 +165,13 @@ function Tabs({
 }: {
   value: Tab;
   onChange: (t: Tab) => void;
-  totals: { collections: number; stylists: number; inspiration: number };
+  totals: { collections: number; stylists: number };
   text: string;
   muted: string;
 }) {
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "collections", label: "Collections", count: totals.collections },
     { id: "stylists", label: "Stylists", count: totals.stylists },
-    { id: "inspiration", label: "Inspiration", count: totals.inspiration },
   ];
   return (
     <div className="flex" style={{ gap: 2 }}>
@@ -584,122 +565,6 @@ function SavedStylistCard({
   );
 }
 
-/* ───────── Inspiration tab ───────── */
-
-function InspirationTab({
-  looks,
-  subtleSurface,
-  subtleBorder,
-  cardShadow,
-  muted,
-  text,
-  onTap,
-  onBrowse,
-}: {
-  looks: FavItem[];
-  subtleSurface: string;
-  subtleBorder: string;
-  cardShadow: string;
-  muted: string;
-  text: string;
-  onTap: (item: FavItem) => void;
-  onBrowse: () => void;
-}) {
-  const [chip, setChip] = useState<string>("All");
-
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    for (const it of looks) {
-      const c = it.meta?.subtitle;
-      if (c) set.add(c);
-    }
-    return ["All", ...Array.from(set)];
-  }, [looks]);
-
-  const list = useMemo(() => {
-    if (chip === "All") return looks;
-    return looks.filter((it) => it.meta?.subtitle === chip);
-  }, [looks, chip]);
-
-  // Mixed aspect ratios for masonry feel — alternate tall/short across the list
-  const aspectFor = (i: number): string => {
-    const cycle = ["3 / 4", "1 / 1", "2 / 3", "1 / 1"];
-    return cycle[i % cycle.length]!;
-  };
-
-  if (looks.length === 0) {
-    return <FavoriteEmptyState variant="inspiration" onCta={onBrowse} />;
-  }
-
-  return (
-    <div style={{ fontFamily: SANS_STACK }}>
-      <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-3 pt-4" style={{ scrollbarWidth: "none" }}>
-        {categories.map((c) => (
-          <Chip key={c} active={chip === c} onClick={() => setChip(c)} subtleSurface={subtleSurface} text={text}>
-            {c}
-          </Chip>
-        ))}
-      </div>
-
-      <p className="px-5 pb-3" style={{ fontSize: 12, color: muted }}>
-        {list.length} {list.length === 1 ? "style saved" : "styles saved"} · share with your stylist when booking
-      </p>
-
-      {list.length === 0 ? (
-        <div className="px-5 pb-6">
-          <FilterEmpty text={text} muted={muted} subtleBorder={subtleBorder} message="No looks match this filter." onClear={() => setChip("All")} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-2 px-5 pb-6">
-          {list.map((it, i) => (
-            <InspirationTile key={it.id} item={it} aspect={aspectFor(i)} cardShadow={cardShadow} onTap={() => onTap(it)} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function InspirationTile({
-  item,
-  aspect,
-  cardShadow,
-  onTap,
-}: {
-  item: FavItem;
-  aspect: string;
-  cardShadow: string;
-  onTap: () => void;
-}) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onTap}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onTap()}
-      className="relative cursor-pointer overflow-hidden rounded-2xl"
-      style={{ aspectRatio: aspect, boxShadow: cardShadow, fontFamily: SANS_STACK }}
-    >
-      <img src={item.thumbnailUrl} alt={item.meta?.name ?? ""} className="absolute inset-0 h-full w-full object-cover" />
-      <button
-        type="button"
-        aria-label="Saved"
-        onClick={(e) => e.stopPropagation()}
-        className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full"
-        style={{
-          backgroundColor: "rgba(255,255,255,0.95)",
-          color: ORANGE,
-          boxShadow: "0 1px 3px rgba(11,18,32,0.10)",
-          backdropFilter: "blur(6px)",
-        }}
-      >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      </button>
-    </div>
-  );
-}
 
 /* ───────── Filter-driven empty (small inline message, distinct from the
    true-empty-state hero illustration handled by FavoriteEmptyState) ───────── */

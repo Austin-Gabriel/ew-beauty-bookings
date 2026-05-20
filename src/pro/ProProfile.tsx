@@ -8,6 +8,8 @@ import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 import { TAB_BAR_HEIGHT_PX } from "@/home/TabBar";
 import { useBookIntent, type BookIntent } from "@/booking/book-intent";
+import { PortfolioLightbox } from "./PortfolioLightbox";
+import { buildFullPortfolio } from "./portfolio-data";
 
 const ORANGE = "#FF823F";
 const BAGEL_ACCENT = "var(--bagel)";
@@ -26,6 +28,7 @@ export function ProProfile({ proId }: { proId: string }) {
   const favorites = useFavorites();
   const { intent } = useBookIntent();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
@@ -81,6 +84,7 @@ export function ProProfile({ proId }: { proId: string }) {
   const stats = mockStats(pro);
   const ratingBreakdown = mockBreakdown();
   const reviews = mockReviews(pro);
+  const fullPortfolio = buildFullPortfolio(pro.portfolio);
   const locationLabel = formatProLocation(pro, getLocationContext());
   const initials = initialsOf(pro.name);
 
@@ -345,27 +349,38 @@ export function ProProfile({ proId }: { proId: string }) {
 
         {/* Portfolio */}
         <div className="mt-7">
-          <SectionHeader title="Portfolio" action={`See all ${pro.portfolio.length * 8}`} text={text} muted={muted} onAction={() => toast("Full portfolio coming soon")} />
+          <SectionHeader
+            title="Portfolio"
+            action={`See all ${fullPortfolio.length}`}
+            text={text}
+            muted={muted}
+            onAction={() => navigate({ to: "/pro/$proId/portfolio", params: { proId: pro.id } })}
+          />
         </div>
         <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: "none" }}>
-          {[...pro.portfolio, ...pro.portfolio].slice(0, 5).map((src, i) => (
-            <div
+          {fullPortfolio.slice(0, 5).map((src, i) => (
+            <button
               key={i}
-              role="button"
-              tabIndex={0}
-              onClick={() => toast("Lightbox coming soon")}
-              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toast("Lightbox coming soon")}
-              className="shrink-0 cursor-pointer overflow-hidden rounded-2xl"
-              style={{ width: 130, aspectRatio: "4 / 5", boxShadow: cardShadow }}
+              type="button"
+              onClick={() => setLightboxIndex(i)}
+              className="shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-transform active:scale-[0.98]"
+              style={{ width: 130, aspectRatio: "4 / 5", boxShadow: cardShadow, padding: 0, border: "none" }}
+              aria-label={`Open photo ${i + 1}`}
             >
               <img src={src} alt="" className="h-full w-full object-cover" />
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Reviews */}
         <div className="mt-7">
-          <SectionHeader title="Reviews" action={`See all ${pro.reviewCount}`} text={text} muted={muted} onAction={() => toast("Full reviews coming soon")} />
+          <SectionHeader
+            title="Reviews"
+            action={`See all ${pro.reviewCount}`}
+            text={text}
+            muted={muted}
+            onAction={() => navigate({ to: "/pro/$proId/reviews", params: { proId: pro.id } })}
+          />
         </div>
 
         <div
@@ -495,6 +510,13 @@ export function ProProfile({ proId }: { proId: string }) {
         }}
         cardShadow={cardShadow}
         subtleBorder={subtleBorder}
+      />
+
+      <PortfolioLightbox
+        photos={fullPortfolio}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
       />
     </AppShell>
   );
