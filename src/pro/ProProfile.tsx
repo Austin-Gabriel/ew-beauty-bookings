@@ -28,6 +28,7 @@ export function ProProfile({ proId }: { proId: string }) {
   const favorites = useFavorites();
   const { intent } = useBookIntent();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
