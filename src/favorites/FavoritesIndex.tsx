@@ -69,12 +69,6 @@ export function FavoritesIndex() {
             Saved
           </h1>
           <div className="flex items-center gap-2">
-            <IconBtn ariaLabel="Search saved" onClick={() => toast("Search coming soon")} bg={subtleSurface} color={text}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-            </IconBtn>
             <IconBtn ariaLabel="New collection" onClick={() => setNewOpen(true)} bg={ORANGE} color="#1A0E08">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
