@@ -306,14 +306,20 @@ export function ProProfile({ proId }: { proId: string }) {
         }}
       >
         {/* Services */}
-        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => setPickerOpen(true)} />
+        <SectionHeader
+          title="Services"
+          action={pro.services.length > 3 ? "See all" : undefined}
+          text={text}
+          muted={muted}
+          onAction={() => setPickerOpen(true)}
+        />
         <ul className="flex flex-col gap-2">
           {pro.services.slice(0, 3).map((s, i) => (
             <li key={i}>
               <button
                 type="button"
                 onClick={() => goBook(s.name)}
-                className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors"
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-left transition-colors"
                 style={{
                   backgroundColor: "var(--card)",
                   border: `1px solid ${subtleBorder}`,
@@ -322,13 +328,13 @@ export function ProProfile({ proId }: { proId: string }) {
                 }}
               >
                 <div className="min-w-0 flex-1">
-                  <p style={{ fontSize: 14.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
+                  <p style={{ fontSize: 15.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
                     {s.name}
                   </p>
-                  <p style={{ fontSize: 11.5, color: INK_500, marginTop: 2, lineHeight: 1.4 }}>
+                  <p style={{ fontSize: 12.5, color: INK_500, marginTop: 3, lineHeight: 1.4 }}>
                     {serviceDescFor(s.name)}
                   </p>
-                  <span className="mt-1.5 inline-flex items-center gap-1" style={{ fontSize: 11, color: INK_500 }}>
+                  <span className="mt-2 inline-flex items-center gap-1" style={{ fontSize: 12, color: INK_500 }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
@@ -340,7 +346,7 @@ export function ProProfile({ proId }: { proId: string }) {
                   <p style={{ fontSize: 9.5, color: INK_500, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     From
                   </p>
-                  <p style={{ fontSize: 16, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>${s.priceFrom}</p>
+                  <p className="tabular" style={{ fontSize: 16, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>${s.priceFrom}</p>
                 </div>
               </button>
             </li>
@@ -351,7 +357,7 @@ export function ProProfile({ proId }: { proId: string }) {
         <div className="mt-7">
           <SectionHeader
             title="Portfolio"
-            action={`See all ${fullPortfolio.length}`}
+            action={fullPortfolio.length > 4 ? "See all" : undefined}
             text={text}
             muted={muted}
             onAction={() => navigate({ to: "/pro/$proId/portfolio", params: { proId: pro.id } })}
