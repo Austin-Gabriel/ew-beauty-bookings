@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AppShell } from "@/home/AppShell";
@@ -10,7 +10,6 @@ const ORANGE = "#FF823F";
 const DANGER = "#DC2626";
 const INFO = "#3B82F6";
 const INK_900 = "#0B1220";
-const FRAUNCES = '"Fraunces", "Times New Roman", serif';
 
 // Status tone palette — brand system uses bagel orange for positive states.
 type StatusTone = "success" | "danger" | "accent" | "info" | "neutral";
