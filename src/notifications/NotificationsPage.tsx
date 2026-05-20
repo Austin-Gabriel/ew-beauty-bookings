@@ -51,16 +51,6 @@ type Activity = {
   proId?: string;
 };
 
-type Offer = {
-  id: string;
-  title: string;
-  subline: string;
-  badge: string;
-  badgeStyle: "percent" | "dollar" | "heart" | "bolt" | "initials";
-  initials?: string;
-  expiresIn?: string; // urgency text
-};
-
 
 export function NotificationsPage() {
   const { state } = useDevState();
@@ -72,55 +62,6 @@ export function NotificationsPage() {
   const subtleSurface = "var(--surface-elevated)";
   const subtleBorder = "var(--border)";
 
-  // Promo code input removed pre-MVP — offer cards below cover all promotions.
-
-  // -------- Offers --------
-  const baseOffers: Offer[] = useMemo(
-    () => [
-      {
-        id: "off-amara",
-        title: "$20 off your first booking with Amara",
-        subline: "Save $20 · Silk press, braids · Expires May 14",
-        badge: "AO",
-        badgeStyle: "initials",
-        initials: "AO",
-      },
-      {
-        id: "off-silk",
-        title: "15% off any silk press",
-        subline: "Save up to $30 · Expires May 6",
-        badge: "15%",
-        badgeStyle: "percent",
-      },
-      {
-        id: "off-loyal",
-        title: "$30 off your 5th booking",
-        subline: "3 of 5 completed · No expiry",
-        badge: "♥",
-        badgeStyle: "heart",
-      },
-      {
-        id: "off-weekend",
-        title: "25% off this weekend only",
-        subline: "Save up to $40 · Any service",
-        badge: "⚡",
-        badgeStyle: "bolt",
-        expiresIn: "Expires in 36 hours",
-      },
-    ],
-    [],
-  );
-
-  const offers = state.customerState === "new" ? baseOffers.slice(0, 2) : baseOffers;
-  const [claimed, setClaimed] = useState<Set<string>>(new Set());
-  const onClaim = (id: string, title: string) => {
-    setClaimed((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-    toast(`Claimed — ${title}`);
-  };
 
   // -------- Recent activity --------
   const activities: Activity[] = useMemo(() => {
