@@ -1,28 +1,23 @@
 /**
- * Favorites store — collections + items, persisted to localStorage.
+ * Favorites store — collections + items (pros only), persisted to localStorage.
  *
  * Data model
  * ----------
- * Collection: { id, name, createdAt, shareId }
+ * Collection: { id, name, createdAt }
  *   - "saved" is the default collection (id: "saved", name: "Saved")
  *   - cannot be deleted; new items default here
- * Item: { id, collectionId, type: 'pro' | 'look', refId, thumbnailUrl, addedAt, meta? }
+ * Item: { id, collectionId, type: 'pro', refId, thumbnailUrl, addedAt, meta? }
  *
  * Hooks
  * -----
  * useCollections()  → list collections + create / rename / delete
- * useFavorites()    → keep heart parity with the previous API:
- *                     isFavorite(proId), toggle(proId, pro?), count
+ * useFavorites()    → isFavorite(proId), toggle(proId, pro?), count
  * useCollectionItems(collectionId) → items inside a collection
- *
- * The legacy useFavorites in /src/home is now a thin re-export so existing
- * call sites keep working.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const COLL_KEY = "ewa.favorites.collections.v1";
 const ITEMS_KEY = "ewa.favorites.items.v1";
-const SHARE_KEY = "ewa.favorites.share.v1";
 
 export const DEFAULT_COLLECTION_ID = "saved";
 
@@ -30,12 +25,12 @@ export type FavCollection = {
   id: string;
   name: string;
   createdAt: number;
-  shareId: string;
   /** True for the system "Saved" collection — cannot be renamed/deleted. */
   system?: boolean;
 };
 
-export type FavItemType = "pro" | "look";
+/** Pro is the only saved-item type. Stand-alone "looks" were removed pre-MVP. */
+export type FavItemType = "pro";
 
 export type FavItem = {
   id: string;
@@ -47,7 +42,6 @@ export type FavItem = {
   meta?: {
     name?: string;
     subtitle?: string;
-    proId?: string; // for look items, link back to pro
   };
 };
 
@@ -82,7 +76,6 @@ function ensureDefaultCollection(list: FavCollection[]): FavCollection[] {
       id: DEFAULT_COLLECTION_ID,
       name: "Saved",
       createdAt: Date.now(),
-      shareId: makeId("share"),
       system: true,
     },
     ...list,
@@ -94,7 +87,8 @@ function readCollections(): FavCollection[] {
   return ensureDefaultCollection(safeRead<FavCollection[]>(COLL_KEY, []));
 }
 function readItems(): FavItem[] {
-  return safeRead<FavItem[]>(ITEMS_KEY, []);
+  // Strip any legacy look items left over from old localStorage.
+  return safeRead<FavItem[]>(ITEMS_KEY, []).filter((it) => it.type === "pro");
 }
 
 // ----- subscription hook (collections + items together) -----
@@ -133,7 +127,6 @@ export function useCollections() {
       id: makeId("col"),
       name: trimmed,
       createdAt: Date.now(),
-      shareId: makeId("share"),
     };
     safeWrite(COLL_KEY, [...all, next]);
     return next;
@@ -185,33 +178,27 @@ export function useCollectionItems(collectionId: string) {
   );
 }
 
-/** All saved items across every collection (newest first). Used by the Saved
- *  tab to surface Stylists + Inspiration aggregated views. */
+/** All saved items across every collection (newest first). */
 export function useAllItems() {
   const { items } = useFavStore();
   return useMemo(() => [...items].sort((a, b) => b.addedAt - a.addedAt), [items]);
 }
 
 /**
- * Pro-level favoriting (back-compat with /src/home/useFavorites).
- * A pro is "favorited" if there's at least one pro item with refId == proId
- * in any collection.
+ * Pro-level favoriting. A pro is "favorited" if there's at least one pro
+ * item with refId == proId in any collection.
  */
 export function useFavorites() {
   const { items } = useFavStore();
 
   const proIds = useMemo(() => {
     const s = new Set<string>();
-    for (const it of items) if (it.type === "pro") s.add(it.refId);
+    for (const it of items) s.add(it.refId);
     return s;
   }, [items]);
 
   const isFavorite = useCallback((proId: string) => proIds.has(proId), [proIds]);
 
-  /**
-   * Toggle. When favoriting, optionally accept pro metadata so we can render
-   * a thumbnail later. Without it, fall back to a placeholder.
-   */
   const toggle = useCallback(
     (
       proId: string,
@@ -219,10 +206,10 @@ export function useFavorites() {
       collectionId: string = DEFAULT_COLLECTION_ID,
     ): boolean => {
       const all = readItems();
-      const existing = all.filter((it) => it.type === "pro" && it.refId === proId);
+      const existing = all.filter((it) => it.refId === proId);
       if (existing.length > 0) {
         // Unfavorite — remove from ALL collections
-        const next = all.filter((it) => !(it.type === "pro" && it.refId === proId));
+        const next = all.filter((it) => !(it.refId === proId));
         safeWrite(ITEMS_KEY, next);
         return false;
       }
@@ -254,36 +241,6 @@ export function removeItem(itemId: string) {
   safeWrite(ITEMS_KEY, all);
 }
 
-export function addLook(params: {
-  refId: string;
-  thumbnailUrl: string;
-  collectionId?: string;
-  meta?: FavItem["meta"];
-}) {
-  const all = readItems();
-  const item: FavItem = {
-    id: makeId("it"),
-    collectionId: params.collectionId ?? DEFAULT_COLLECTION_ID,
-    type: "look",
-    refId: params.refId,
-    thumbnailUrl: params.thumbnailUrl,
-    addedAt: Date.now(),
-    meta: params.meta,
-  };
-  safeWrite(ITEMS_KEY, [...all, item]);
-  return item;
-}
-
-// ----- Share-link lookup (read-only public view) -----
-export function getCollectionByShareId(shareId: string): FavCollection | null {
-  const all = readCollections();
-  return all.find((c) => c.shareId === shareId) ?? null;
-}
-
-export function getItemsForCollection(collectionId: string): FavItem[] {
-  return readItems().filter((it) => it.collectionId === collectionId).sort((a, b) => b.addedAt - a.addedAt);
-}
-
 // ----- Dev-state seeding -----
 export type FavoritesSeed = "empty" | "few" | "many";
 
@@ -296,12 +253,12 @@ export function seedFavorites(seed: FavoritesSeed, pros: { id: string; name: str
   const cols: FavCollection[] =
     seed === "few"
       ? ensureDefaultCollection([
-          { id: "col_birthday", name: "Birthday glam", createdAt: Date.now(), shareId: "share_birthday" },
+          { id: "col_birthday", name: "Birthday glam", createdAt: Date.now() },
         ])
       : ensureDefaultCollection([
-          { id: "col_birthday", name: "Birthday glam", createdAt: Date.now(), shareId: "share_birthday" },
-          { id: "col_regulars", name: "My regulars", createdAt: Date.now() - 1000, shareId: "share_regulars" },
-          { id: "col_wedding", name: "Wedding inspo", createdAt: Date.now() - 2000, shareId: "share_wedding" },
+          { id: "col_birthday", name: "Birthday glam", createdAt: Date.now() },
+          { id: "col_regulars", name: "My regulars", createdAt: Date.now() - 1000 },
+          { id: "col_wedding", name: "Wedding inspo", createdAt: Date.now() - 2000 },
         ]);
 
   const take = seed === "few" ? 3 : 8;
@@ -318,22 +275,7 @@ export function seedFavorites(seed: FavoritesSeed, pros: { id: string; name: str
       addedAt: Date.now() - i * 1000,
       meta: { name: p.name, subtitle: p.category },
     });
-    // also seed a couple of looks in "many"
-    if (seed === "many" && p.portfolio[1]) {
-      items.push({
-        id: makeId("it"),
-        collectionId: target.id,
-        type: "look",
-        refId: `${p.id}-look-1`,
-        thumbnailUrl: p.portfolio[1],
-        addedAt: Date.now() - i * 1000 - 500,
-        meta: { name: `${p.category} look`, proId: p.id },
-      });
-    }
   });
   safeWrite(COLL_KEY, cols);
   safeWrite(ITEMS_KEY, items);
 }
-
-// Suppress unused export lint
-export const __SHARE_KEY = SHARE_KEY;
