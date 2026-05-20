@@ -374,7 +374,13 @@ export function ProProfile({ proId }: { proId: string }) {
 
         {/* Reviews */}
         <div className="mt-7">
-          <SectionHeader title="Reviews" action={`See all ${pro.reviewCount}`} text={text} muted={muted} onAction={() => toast("Full reviews coming soon")} />
+          <SectionHeader
+            title="Reviews"
+            action={`See all ${pro.reviewCount}`}
+            text={text}
+            muted={muted}
+            onAction={() => navigate({ to: "/pro/$proId/reviews", params: { proId: pro.id } })}
+          />
         </div>
 
         <div
