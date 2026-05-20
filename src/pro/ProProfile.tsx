@@ -511,6 +511,13 @@ export function ProProfile({ proId }: { proId: string }) {
         cardShadow={cardShadow}
         subtleBorder={subtleBorder}
       />
+
+      <PortfolioLightbox
+        photos={fullPortfolio}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
+      />
     </AppShell>
   );
 }
