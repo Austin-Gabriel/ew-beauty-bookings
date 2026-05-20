@@ -94,23 +94,6 @@ export function NotificationsPage() {
         route: "bookings",
       },
       {
-        id: "a2",
-        ts: now - 34 * min,
-        unread: true,
-        avatar: { kind: "promo-percent", pct: "15%" },
-        body: [
-          { text: jordan.name, bold: true },
-          { text: " is offering " },
-          { text: "15% off knotless braids", accent: true },
-          { text: " this week. You saved her last month — grab a slot." },
-        ],
-        label: { text: "Saved stylist", tone: "accent" },
-        ctas: [
-          { label: "Book now", primary: true, onTap: goPro(jordan.id) },
-          { label: "View deal", onTap: () => toast("Deal details coming soon") },
-        ],
-      },
-      {
         id: "a3",
         ts: now - 1 * hr,
         unread: true,
