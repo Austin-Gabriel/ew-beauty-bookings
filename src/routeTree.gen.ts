@@ -39,6 +39,7 @@ import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
+import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
@@ -200,6 +201,11 @@ const BookingsBookingIdRoute = BookingsBookingIdRouteImport.update({
   path: '/$bookingId',
   getParentRoute: () => BookingsRoute,
 } as any)
+const ProProIdIndexRoute = ProProIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProProIdRoute,
+} as any)
 const BookingSearchingBookingIdRoute =
   BookingSearchingBookingIdRouteImport.update({
     id: '/booking/searching/$bookingId',
@@ -271,7 +277,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
+  '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -310,7 +317,6 @@ export interface FileRoutesByTo {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -334,6 +340,7 @@ export interface FileRoutesByTo {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId': typeof ProProIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -353,7 +360,7 @@ export interface FileRoutesById {
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
-  '/pro/$proId': typeof ProProIdRoute
+  '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/help': typeof ProfileHelpRoute
@@ -377,6 +384,7 @@ export interface FileRoutesById {
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
+  '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -421,6 +429,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -436,7 +445,6 @@ export interface FileRouteTypes {
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/policies/cancellation'
-    | '/pro/$proId'
     | '/profile/addresses'
     | '/profile/edit'
     | '/profile/help'
@@ -460,6 +468,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId'
   id:
     | '__root__'
     | '/'
@@ -502,6 +511,7 @@ export interface FileRouteTypes {
     | '/booking/reschedule/$bookingId'
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
+    | '/pro/$proId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -519,7 +529,7 @@ export interface RootRouteChildren {
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
   PoliciesCancellationRoute: typeof PoliciesCancellationRoute
-  ProProIdRoute: typeof ProProIdRoute
+  ProProIdRoute: typeof ProProIdRouteWithChildren
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
   BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
@@ -745,6 +755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsBookingIdRouteImport
       parentRoute: typeof BookingsRoute
     }
+    '/pro/$proId/': {
+      id: '/pro/$proId/'
+      path: '/'
+      fullPath: '/pro/$proId/'
+      preLoaderRoute: typeof ProProIdIndexRouteImport
+      parentRoute: typeof ProProIdRoute
+    }
     '/booking/searching/$bookingId': {
       id: '/booking/searching/$bookingId'
       path: '/booking/searching/$bookingId'
@@ -875,6 +892,18 @@ const ProfileRouteChildren: ProfileRouteChildren = {
 const ProfileRouteWithChildren =
   ProfileRoute._addFileChildren(ProfileRouteChildren)
 
+interface ProProIdRouteChildren {
+  ProProIdIndexRoute: typeof ProProIdIndexRoute
+}
+
+const ProProIdRouteChildren: ProProIdRouteChildren = {
+  ProProIdIndexRoute: ProProIdIndexRoute,
+}
+
+const ProProIdRouteWithChildren = ProProIdRoute._addFileChildren(
+  ProProIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
@@ -890,7 +919,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,
   PoliciesCancellationRoute: PoliciesCancellationRoute,
-  ProProIdRoute: ProProIdRoute,
+  ProProIdRoute: ProProIdRouteWithChildren,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
   BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
