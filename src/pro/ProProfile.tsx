@@ -382,7 +382,7 @@ export function ProProfile({ proId }: { proId: string }) {
         <div className="mt-7">
           <SectionHeader
             title="Reviews"
-            action={`See all ${pro.reviewCount}`}
+            action={pro.reviewCount > 3 ? "See all" : undefined}
             text={text}
             muted={muted}
             onAction={() => navigate({ to: "/pro/$proId/reviews", params: { proId: pro.id } })}
