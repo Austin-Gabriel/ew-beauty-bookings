@@ -40,6 +40,7 @@ import { Route as PoliciesCancellationRouteImport } from './routes/policies.canc
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
 import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
+import { Route as ProProIdReviewsRouteImport } from './routes/pro.$proId.reviews'
 import { Route as ProProIdPortfolioRouteImport } from './routes/pro.$proId.portfolio'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
 import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
@@ -207,6 +208,11 @@ const ProProIdIndexRoute = ProProIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProProIdRoute,
 } as any)
+const ProProIdReviewsRoute = ProProIdReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => ProProIdRoute,
+} as any)
 const ProProIdPortfolioRoute = ProProIdPortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
@@ -308,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
   '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
   '/pro/$proId': typeof ProProIdIndexRoute
 }
 export interface FileRoutesById {
@@ -393,6 +401,7 @@ export interface FileRoutesById {
   '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
+  '/pro/$proId/reviews': typeof ProProIdReviewsRoute
   '/pro/$proId/': typeof ProProIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
     | '/pro/$proId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -479,6 +489,7 @@ export interface FileRouteTypes {
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
     | '/pro/$proId'
   id:
     | '__root__'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
+    | '/pro/$proId/reviews'
     | '/pro/$proId/'
   fileRoutesById: FileRoutesById
 }
@@ -774,6 +786,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProProIdIndexRouteImport
       parentRoute: typeof ProProIdRoute
     }
+    '/pro/$proId/reviews': {
+      id: '/pro/$proId/reviews'
+      path: '/reviews'
+      fullPath: '/pro/$proId/reviews'
+      preLoaderRoute: typeof ProProIdReviewsRouteImport
+      parentRoute: typeof ProProIdRoute
+    }
     '/pro/$proId/portfolio': {
       id: '/pro/$proId/portfolio'
       path: '/portfolio'
@@ -913,11 +932,13 @@ const ProfileRouteWithChildren =
 
 interface ProProIdRouteChildren {
   ProProIdPortfolioRoute: typeof ProProIdPortfolioRoute
+  ProProIdReviewsRoute: typeof ProProIdReviewsRoute
   ProProIdIndexRoute: typeof ProProIdIndexRoute
 }
 
 const ProProIdRouteChildren: ProProIdRouteChildren = {
   ProProIdPortfolioRoute: ProProIdPortfolioRoute,
+  ProProIdReviewsRoute: ProProIdReviewsRoute,
   ProProIdIndexRoute: ProProIdIndexRoute,
 }
 
@@ -956,3 +977,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
