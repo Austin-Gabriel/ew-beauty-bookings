@@ -46,12 +46,9 @@ export function FavoritesIndex() {
     return out;
   }, [allItems]);
 
-  const looks = useMemo(() => allItems.filter((it) => it.type === "look"), [allItems]);
-
   const totals = {
     collections: collections.length,
     stylists: savedPros.length,
-    inspiration: looks.length,
   };
 
   const goBrowse = () => navigate({ to: "/discover" });
