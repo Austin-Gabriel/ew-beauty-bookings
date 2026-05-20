@@ -356,40 +356,7 @@ export function NotificationsPage() {
       </header>
 
       <div className="px-5 pt-4" style={{ fontFamily: SANS_STACK, color: text }}>
-        {/* Promo code input ------------------------------------------- */}
-        <div
-          className="flex items-center gap-2 rounded-2xl px-3.5 py-3"
-          style={{ backgroundColor: subtleSurface, border: `1px solid ${subtleBorder}` }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: muted, flexShrink: 0 }}>
-            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-            <line x1="7" y1="7" x2="7.01" y2="7" />
-          </svg>
-          <input
-            value={promo}
-            onChange={(e) => setPromo(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") onApplyPromo();
-            }}
-            placeholder="Enter promo code"
-            className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 14, color: text }}
-          />
-          <button
-            type="button"
-            onClick={onApplyPromo}
-            className="shrink-0 rounded-full px-3 py-1 transition-opacity"
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: ORANGE,
-              opacity: promo.trim() ? 1 : 0.5,
-            }}
-            disabled={!promo.trim()}
-          >
-            Apply
-          </button>
-        </div>
+
 
         {/* Recent activity ---------------------------------------------- */}
         {activities.length > 0 && (
