@@ -62,13 +62,13 @@ export function PortfolioPage({ proId }: { proId: string }) {
           paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + ${TAB_BAR_HEIGHT_PX + 24}px)`,
         }}
       >
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3" style={{ gap: 6 }}>
           {photos.map((src, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setOpenIndex(i)}
-              className="overflow-hidden rounded-xl transition-transform active:scale-[0.98]"
+              className="overflow-hidden rounded-lg transition-transform active:scale-[0.98]"
               style={{ aspectRatio: "1 / 1", border: `1px solid ${subtleBorder}` }}
               aria-label={`Open photo ${i + 1}`}
             >

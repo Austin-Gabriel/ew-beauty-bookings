@@ -306,14 +306,20 @@ export function ProProfile({ proId }: { proId: string }) {
         }}
       >
         {/* Services */}
-        <SectionHeader title="Services" action={`See all ${pro.services.length}`} text={text} muted={muted} onAction={() => setPickerOpen(true)} />
+        <SectionHeader
+          title="Services"
+          action={pro.services.length > 3 ? "See all" : undefined}
+          text={text}
+          muted={muted}
+          onAction={() => setPickerOpen(true)}
+        />
         <ul className="flex flex-col gap-2">
           {pro.services.slice(0, 3).map((s, i) => (
             <li key={i}>
               <button
                 type="button"
                 onClick={() => goBook(s.name)}
-                className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors"
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-left transition-colors"
                 style={{
                   backgroundColor: "var(--card)",
                   border: `1px solid ${subtleBorder}`,
@@ -322,13 +328,13 @@ export function ProProfile({ proId }: { proId: string }) {
                 }}
               >
                 <div className="min-w-0 flex-1">
-                  <p style={{ fontSize: 14.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
+                  <p style={{ fontSize: 15.5, fontWeight: 600, color: INK_900, letterSpacing: "-0.01em" }}>
                     {s.name}
                   </p>
-                  <p style={{ fontSize: 11.5, color: INK_500, marginTop: 2, lineHeight: 1.4 }}>
+                  <p style={{ fontSize: 12.5, color: INK_500, marginTop: 3, lineHeight: 1.4 }}>
                     {serviceDescFor(s.name)}
                   </p>
-                  <span className="mt-1.5 inline-flex items-center gap-1" style={{ fontSize: 11, color: INK_500 }}>
+                  <span className="mt-2 inline-flex items-center gap-1" style={{ fontSize: 12, color: INK_500 }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
@@ -340,7 +346,7 @@ export function ProProfile({ proId }: { proId: string }) {
                   <p style={{ fontSize: 9.5, color: INK_500, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     From
                   </p>
-                  <p style={{ fontSize: 16, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>${s.priceFrom}</p>
+                  <p className="tabular" style={{ fontSize: 16, fontWeight: 700, color: INK_900, letterSpacing: "-0.015em" }}>${s.priceFrom}</p>
                 </div>
               </button>
             </li>
@@ -351,7 +357,7 @@ export function ProProfile({ proId }: { proId: string }) {
         <div className="mt-7">
           <SectionHeader
             title="Portfolio"
-            action={`See all ${fullPortfolio.length}`}
+            action={fullPortfolio.length > 4 ? "See all" : undefined}
             text={text}
             muted={muted}
             onAction={() => navigate({ to: "/pro/$proId/portfolio", params: { proId: pro.id } })}
@@ -376,7 +382,7 @@ export function ProProfile({ proId }: { proId: string }) {
         <div className="mt-7">
           <SectionHeader
             title="Reviews"
-            action={`See all ${pro.reviewCount}`}
+            action={pro.reviewCount > 3 ? "See all" : undefined}
             text={text}
             muted={muted}
             onAction={() => navigate({ to: "/pro/$proId/reviews", params: { proId: pro.id } })}
@@ -738,6 +744,10 @@ function ServicePickerSheet({
   subtleBorder: string;
 }) {
   if (!open) return null;
+  // suppress unused-var noise for props kept for future styling tweaks
+  void cardShadow;
+  void intent;
+  const firstName = pro.name.split(" ")[0] ?? pro.name;
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center"
@@ -759,7 +769,7 @@ function ServicePickerSheet({
           backgroundColor: "var(--card)",
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
           maxHeight: "82vh",
           display: "flex",
           flexDirection: "column",
@@ -793,47 +803,51 @@ function ServicePickerSheet({
           </h2>
         </div>
         <p
-          className="px-5 pb-2"
-          style={{ fontSize: 12, color: "var(--on-card-muted)", textAlign: "center" }}
+          className="px-5 pb-3 text-center"
+          style={{ fontSize: 13, color: "var(--on-card-muted)" }}
         >
-          {intent === "later" ? "You'll pick a time next." : "Booking now."}
+          {firstName}'s full menu
         </p>
-        <ul className="flex flex-col gap-2 overflow-y-auto px-4 pt-2">
-          {pro.services.map((s, i) => (
-            <li key={i}>
-              <button
-                type="button"
-                onClick={() => onPick(s.name)}
-                className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3.5 text-left transition-colors active:scale-[0.99]"
-                style={{
-                  backgroundColor: "var(--surface-elevated)",
-                  border: `1px solid ${subtleBorder}`,
-                  boxShadow: cardShadow,
-                }}
-              >
-                <div className="min-w-0 flex-1">
-                  <p style={{ fontSize: 14.5, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
-                    {s.name}
-                  </p>
-                  <span className="mt-1 inline-flex items-center gap-1" style={{ fontSize: 11.5, color: "var(--on-card-muted)" }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    {durationFor(s.name)}
-                  </span>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p style={{ fontSize: 9.5, color: "var(--on-card-muted)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    From
-                  </p>
-                  <p className="tabular" style={{ fontSize: 16, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
-                    ${s.priceFrom}
-                  </p>
-                </div>
-              </button>
-            </li>
-          ))}
+        <ul className="flex-1 overflow-y-auto">
+          {pro.services.map((s, i) => {
+            const isLast = i === pro.services.length - 1;
+            return (
+              <li key={i}>
+                <button
+                  type="button"
+                  onClick={() => onPick(s.name)}
+                  className="flex w-full items-start gap-3 px-5 py-4 text-left transition-colors active:bg-muted/20"
+                  style={{ backgroundColor: "transparent" }}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p style={{ fontSize: 16, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
+                      {s.name}
+                    </p>
+                    <p className="mt-1" style={{ fontSize: 13, color: "var(--on-card-muted)" }}>
+                      {durationFor(s.name)}
+                    </p>
+                    <p
+                      className="mt-1 line-clamp-2"
+                      style={{ fontSize: 13, color: "var(--on-card-muted)", lineHeight: 1.4 }}
+                    >
+                      {serviceDescFor(s.name)}
+                    </p>
+                  </div>
+                  <div className="shrink-0 pt-0.5 text-right">
+                    <p className="tabular" style={{ fontSize: 15, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
+                      From ${s.priceFrom}
+                    </p>
+                  </div>
+                </button>
+                {!isLast && (
+                  <div
+                    aria-hidden
+                    style={{ marginLeft: 20, borderTop: `1px solid ${subtleBorder}` }}
+                  />
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
