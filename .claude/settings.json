@@ -76,7 +76,8 @@
       "Bash(/usr/bin/wc -l src/auth/SignInFlow.tsx src/pages/Welcome.tsx)",
       "Bash(/usr/bin/grep -v \"zod-adapter\")",
       "Bash(/usr/bin/grep -iE \"error|cannot find\" /tmp/vite.log)",
-      "Read(//usr/bin/**)"
+      "Read(//usr/bin/**)",
+      "Bash(/usr/bin/head -25)"
     ]
   }
 }

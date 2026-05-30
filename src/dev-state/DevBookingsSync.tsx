@@ -59,32 +59,36 @@ export function DevBookingsSync() {
     if (prevSeed.current === state.bookingsSeed) return;
     prevSeed.current = state.bookingsSeed;
 
-    const userBookings = bookingsRef.current.filter(isUserBooking);
+    // Functional update — read the LATEST bookings rather than a render-phase
+    // snapshot so we don't clobber an interleaved update from another effect.
+    setBookings((prev) => {
+      const userBookings = prev.filter(isUserBooking);
 
-    let mockPool: Booking[] = [];
-    if (state.bookingsSeed === "few") {
-      mockPool = SEED_BOOKINGS.filter((b) =>
-        ["bk-jordan-sat", "bk-past-amara-apr"].includes(b.id),
-      );
-    } else if (state.bookingsSeed === "many") {
-      mockPool = [...SEED_BOOKINGS];
-    }
-    // "empty" → mockPool stays []
+      let mockPool: Booking[] = [];
+      if (state.bookingsSeed === "few") {
+        mockPool = SEED_BOOKINGS.filter((b) =>
+          ["bk-jordan-sat", "bk-past-amara-apr"].includes(b.id),
+        );
+      } else if (state.bookingsSeed === "many") {
+        mockPool = [...SEED_BOOKINGS];
+      }
+      // "empty" → mockPool stays []
 
-    // If active stage was set, apply it to the freshly-seeded mock hero so
-    // re-toggling bookingsSeed doesn't reset the lifecycle stage.
-    if (state.activeBooking !== "none") {
-      mockPool = mockPool.map((b) =>
-        b.id === ACTIVE_HERO_ID
-          ? patchStatus(b, state.activeBooking as BookingStatus)
-          : b,
-      );
-    } else {
-      // "None" hides only the mock hero — never user bookings.
-      mockPool = mockPool.filter((b) => b.id !== ACTIVE_HERO_ID);
-    }
+      // If active stage was set, apply it to the freshly-seeded mock hero so
+      // re-toggling bookingsSeed doesn't reset the lifecycle stage.
+      if (state.activeBooking !== "none") {
+        mockPool = mockPool.map((b) =>
+          b.id === ACTIVE_HERO_ID
+            ? patchStatus(b, state.activeBooking as BookingStatus)
+            : b,
+        );
+      } else {
+        // "None" hides only the mock hero — never user bookings.
+        mockPool = mockPool.filter((b) => b.id !== ACTIVE_HERO_ID);
+      }
 
-    setBookings([...userBookings, ...mockPool]);
+      return [...userBookings, ...mockPool];
+    });
   }, [state.bookingsSeed, state.activeBooking, setBookings]);
 
   /* ---------- activeBooking: update status of latest active booking ---------- */
@@ -92,56 +96,55 @@ export function DevBookingsSync() {
     if (prevActive.current === state.activeBooking) return;
     prevActive.current = state.activeBooking;
 
-    const all = bookingsRef.current;
+    // Functional updates throughout so this effect doesn't clobber the
+    // bookingsSeed effect when both fire on the same mount.
+    let navigateTo: { bookingId: string } | null = null;
 
-    // Prefer the most recent USER-created active booking. Falls back to the
-    // mock hero card. This is the booking the toggle controls.
-    const activeUser = all
-      .filter((b) => isUserBooking(b) && ACTIVE_STATUSES.includes(b.status))
-      .sort((a, b) => b.createdAt - a.createdAt)[0];
-    const activeMock = all.find((b) => b.id === ACTIVE_HERO_ID);
-    const target = activeUser ?? activeMock;
+    setBookings((prev) => {
+      const activeUser = prev
+        .filter((b) => isUserBooking(b) && ACTIVE_STATUSES.includes(b.status))
+        .sort((a, b) => b.createdAt - a.createdAt)[0];
+      const activeMock = prev.find((b) => b.id === ACTIVE_HERO_ID);
+      const target = activeUser ?? activeMock;
 
-    if (state.activeBooking === "none") {
-      // Hide ONLY the mock hero. User active bookings are preserved.
-      if (!activeUser && activeMock) {
-        setBookings(bookingsRef.current.filter((b) => b.id !== ACTIVE_HERO_ID));
+      if (state.activeBooking === "none") {
+        // Hide ONLY the mock hero. User active bookings are preserved.
+        if (!activeUser && activeMock) {
+          return prev.filter((b) => b.id !== ACTIVE_HERO_ID);
+        }
+        return prev;
       }
-      return;
-    }
 
-    if (state.activeBooking === "completed") {
-      // Mark complete + navigate to Service Complete for whichever booking
-      // we're driving. Status update only — booking is preserved.
-      if (target) {
-        setBookings(
-          bookingsRef.current.map((b) =>
+      if (state.activeBooking === "completed") {
+        if (target) {
+          navigateTo = { bookingId: target.id };
+          return prev.map((b) =>
             b.id === target.id ? { ...b, status: "completed" as BookingStatus } : b,
-          ),
-        );
-        navigate({ to: "/booking/complete/$bookingId", params: { bookingId: target.id } });
+          );
+        }
+        return prev;
       }
-      return;
-    }
 
-    if (!target) {
-      // No active booking exists at all → seed the mock hero so the toggle
-      // has something to control. Only happens when there's no user booking
-      // and the mock has been removed.
-      const seed = SEED_BOOKINGS.find((b) => b.id === ACTIVE_HERO_ID);
-      if (seed) {
-        const seeded = patchStatus(seed, state.activeBooking as BookingStatus);
-        setBookings([seeded, ...bookingsRef.current]);
+      if (!target) {
+        // No active booking at all → seed the mock hero so the toggle has
+        // something to control.
+        const seed = SEED_BOOKINGS.find((b) => b.id === ACTIVE_HERO_ID);
+        if (seed) {
+          const seeded = patchStatus(seed, state.activeBooking as BookingStatus);
+          return [seeded, ...prev];
+        }
+        return prev;
       }
-      return;
-    }
 
-    // Status-only patch — never replaces other fields.
-    setBookings(
-      bookingsRef.current.map((b) =>
+      // Status-only patch.
+      return prev.map((b) =>
         b.id === target.id ? patchStatus(b, state.activeBooking as BookingStatus) : b,
-      ),
-    );
+      );
+    });
+
+    if (navigateTo) {
+      navigate({ to: "/booking/complete/$bookingId", params: navigateTo });
+    }
   }, [state.activeBooking, setBookings, navigate]);
 
   /* ---------- scheduleState: drives scheduled / pending-approval flow ---------- */

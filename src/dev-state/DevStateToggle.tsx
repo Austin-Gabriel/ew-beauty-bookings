@@ -10,10 +10,6 @@ import {
   type BookingsSeed,
   type ActiveBookingStage,
   type ProfileState,
-  type TippingPreference,
-  type NotificationsProfile,
-  type AvatarState,
-  type EditProfileState,
   type BookingConfirmState,
   type SearchingStage,
   type ScheduleState,
@@ -177,262 +173,232 @@ export function DevStateToggle() {
               </div>
             </div>
 
-            <div className="space-y-5">
-              <Field
-                label="Theme override"
-                hint={state.themeMode === "system" ? `System (${resolvedTheme})` : undefined}
+            <p className="-mt-2 mb-4 rounded-lg bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+              Every control here changes what you see. Hint text under each
+              row says exactly which screen it affects. Use{" "}
+              <span className="font-mono">Reset</span> to return to defaults.
+            </p>
+
+            <div className="space-y-6">
+              {/* ====================== APP LIFECYCLE ====================== */}
+              <DevSection label="App" sub="Theme + who-you-are during preview">
+                <Field
+                  label="Theme"
+                  hint={state.themeMode === "system" ? `System → ${resolvedTheme}` : `Forced ${state.themeMode}`}
+                >
+                  <Segmented<ThemeMode>
+                    value={state.themeMode}
+                    options={[
+                      { value: "system", label: "System" },
+                      { value: "light", label: "Light" },
+                      { value: "dark", label: "Dark" },
+                    ]}
+                    onChange={(v) => set("themeMode", v)}
+                  />
+                </Field>
+
+                <Field
+                  label="Splash routing"
+                  hint={
+                    state.userState === "new"
+                      ? "Splash → Welcome (first-time)"
+                      : "Splash → Discover or Sign in"
+                  }
+                >
+                  <Segmented<UserState>
+                    value={state.userState}
+                    options={[
+                      { value: "new", label: "New user" },
+                      { value: "returning", label: "Returning" },
+                    ]}
+                    onChange={(v) => set("userState", v)}
+                  />
+                </Field>
+
+                <Field label="Auth state" hint={authStateHint(state.authState)}>
+                  <Stacked<AuthState>
+                    value={state.authState}
+                    options={[
+                      { value: "signed-out", label: "Signed out" },
+                      { value: "mid-signup", label: "Mid signup" },
+                      { value: "signed-in-no-session", label: "Signed in (needs unlock)" },
+                      { value: "signed-in", label: "Signed in (valid session)" },
+                      { value: "biometric-enrolled", label: "Biometric enrolled" },
+                    ]}
+                    onChange={(v) => set("authState", v)}
+                  />
+                </Field>
+
+                <Field
+                  label="Onboarding step"
+                  hint="Only matters when auth = mid-signup — lands signup at this step"
+                >
+                  <Stacked<OnboardingProgress>
+                    value={state.onboardingProgress}
+                    options={[
+                      { value: "none", label: "Nothing yet" },
+                      { value: "after-identifier", label: "After identifier (needs OTP)" },
+                      { value: "after-verification", label: "After verification (needs address)" },
+                      { value: "after-name", label: "After name (needs address)" },
+                      { value: "after-address", label: "After address (ready to review)" },
+                      { value: "complete", label: "Fully complete" },
+                    ]}
+                    onChange={(v) => set("onboardingProgress", v)}
+                  />
+                </Field>
+              </DevSection>
+
+              {/* ====================== CUSTOMER ====================== */}
+              <DevSection label="Customer" sub="Drives Discover greeting + Quick Rebook + Notifications copy">
+                <Field
+                  label="History"
+                  hint={
+                    state.customerState === "new"
+                      ? "No previous bookings, no Quick Rebook"
+                      : state.customerState === "returning"
+                        ? "Some favorites, 1+ past booking"
+                        : "Heavy user, many past bookings"
+                  }
+                >
+                  <Stacked<CustomerState>
+                    value={state.customerState}
+                    options={[
+                      { value: "new", label: "New (no history)" },
+                      { value: "returning", label: "Returning" },
+                      { value: "power", label: "Power user" },
+                    ]}
+                    onChange={(v) => set("customerState", v)}
+                  />
+                </Field>
+
+                <Field label="Profile completeness" hint="Drives /profile header pills + missing-info nudges">
+                  <Segmented<ProfileState>
+                    value={state.profileState}
+                    options={[
+                      { value: "new", label: "New" },
+                      { value: "partial", label: "Partial" },
+                      { value: "complete", label: "Complete" },
+                    ]}
+                    onChange={(v) => set("profileState", v)}
+                  />
+                </Field>
+              </DevSection>
+
+              {/* ====================== BOOKINGS ====================== */}
+              <DevSection
+                label="Bookings tab"
+                sub="Volume + lifecycle stage of the 'happening now' hero"
               >
-                <Segmented<ThemeMode>
-                  value={state.themeMode}
-                  options={[
-                    { value: "system", label: "System" },
-                    { value: "light", label: "Light" },
-                    { value: "dark", label: "Dark" },
-                  ]}
-                  onChange={(v) => set("themeMode", v)}
-                />
-              </Field>
+                <Field
+                  label="Volume"
+                  hint={
+                    state.bookingsSeed === "empty"
+                      ? "Empty state — no upcoming, no past"
+                      : state.bookingsSeed === "few"
+                        ? "1 upcoming + 1 past"
+                        : "Full mock set across upcoming + past"
+                  }
+                >
+                  <Segmented<BookingsSeed>
+                    value={state.bookingsSeed}
+                    options={[
+                      { value: "empty", label: "Empty" },
+                      { value: "few", label: "Few" },
+                      { value: "many", label: "Many" },
+                    ]}
+                    onChange={(v) => set("bookingsSeed", v)}
+                  />
+                </Field>
 
-              <Field
-                label="User state"
-                hint={
-                  state.userState === "new"
-                    ? "Splash → Welcome"
-                    : "Splash → Discover/Sign in"
-                }
+                <Field
+                  label="Active booking stage"
+                  hint={
+                    state.activeBooking === "none"
+                      ? "No 'happening now' hero card"
+                      : `Hero shows: ${state.activeBooking.replace("-", " ")}`
+                  }
+                >
+                  <Stacked<ActiveBookingStage>
+                    value={state.activeBooking}
+                    options={[
+                      { value: "none", label: "None — hero hidden" },
+                      { value: "getting-ready", label: "Getting ready (on-demand prep)" },
+                      { value: "enroute", label: "Enroute — on the way" },
+                      { value: "arrived", label: "Arrived — PIN handover" },
+                      { value: "in-progress", label: "In progress" },
+                      { value: "completed", label: "Completed (→ Service Complete)" },
+                    ]}
+                    onChange={(v) => set("activeBooking", v)}
+                  />
+                </Field>
+              </DevSection>
+
+              {/* ====================== FAVORITES ====================== */}
+              <DevSection label="Favorites tab" sub="Volume of saved stylists + collections">
+                <Field
+                  label="Seed"
+                  hint="Resets the Favorites tab whenever this changes"
+                >
+                  <Segmented<FavoritesSeed>
+                    value={state.favoritesSeed}
+                    options={[
+                      { value: "empty", label: "Empty" },
+                      { value: "few", label: "Few" },
+                      { value: "many", label: "Many" },
+                    ]}
+                    onChange={(v) => set("favoritesSeed", v)}
+                  />
+                </Field>
+              </DevSection>
+
+              {/* ====================== BOOKING FLOWS (advanced) ====================== */}
+              <DevSection
+                label="Booking flow variants"
+                sub="Niche — only fires when you're inside the matching screen"
               >
-                <Segmented<UserState>
-                  value={state.userState}
-                  options={[
-                    { value: "new", label: "New user" },
-                    { value: "returning", label: "Returning" },
-                  ]}
-                  onChange={(v) => set("userState", v)}
-                />
-              </Field>
+                <Field label="Confirm screen" hint="/booking/confirm/$proId">
+                  <Stacked<BookingConfirmState>
+                    value={state.bookingConfirmState}
+                    options={[
+                      { value: "default", label: "Default (all pre-filled)" },
+                      { value: "missing-payment", label: "Missing payment" },
+                      { value: "missing-address", label: "Missing address" },
+                      { value: "always-ask-tip", label: "Always-ask tip" },
+                      { value: "custom-tip", label: "Custom tip 22%" },
+                    ]}
+                    onChange={(v) => set("bookingConfirmState", v)}
+                  />
+                </Field>
 
-              <Field label="Auth state" hint={authStateHint(state.authState)}>
-                <Stacked<AuthState>
-                  value={state.authState}
-                  options={[
-                    { value: "signed-out", label: "Signed out" },
-                    { value: "mid-signup", label: "Mid signup" },
-                    { value: "signed-in-no-session", label: "Signed in, no session" },
-                    { value: "signed-in", label: "Signed in (valid session)" },
-                    { value: "biometric-enrolled", label: "Biometric enrolled" },
-                  ]}
-                  onChange={(v) => set("authState", v)}
-                />
-              </Field>
+                <Field label="Searching screen" hint="/booking/searching/$bookingId">
+                  <Stacked<SearchingStage>
+                    value={state.searchingStage}
+                    options={[
+                      { value: "searching", label: "Searching (pulsing)" },
+                      { value: "matched", label: "Matched (pro accepted)" },
+                      { value: "declined", label: "Declined (pro passed)" },
+                      { value: "timeout", label: "Timeout (no response)" },
+                    ]}
+                    onChange={(v) => set("searchingStage", v)}
+                  />
+                </Field>
 
-              <Field
-                label="Onboarding progress"
-                hint="Lands signup at the next missing step"
-              >
-                <Stacked<OnboardingProgress>
-                  value={state.onboardingProgress}
-                  options={[
-                    { value: "none", label: "Nothing yet" },
-                    { value: "after-identifier", label: "After identifier (needs OTP)" },
-                    { value: "after-verification", label: "After verification (needs address)" },
-                    { value: "after-name", label: "After name (needs address)" },
-                    { value: "after-address", label: "After address (ready to review)" },
-                    { value: "complete", label: "Fully complete" },
-                  ]}
-                  onChange={(v) => set("onboardingProgress", v)}
-                />
-              </Field>
-
-              <div
-                className="my-2 border-t"
-                style={{ borderColor: "rgba(127,127,127,0.2)" }}
-              />
-              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-                Discover
-              </p>
-
-              <Field label="Customer state" hint="Drives greeting + Quick Rebook">
-                <Stacked<CustomerState>
-                  value={state.customerState}
-                  options={[
-                    { value: "new", label: "New (no history)" },
-                    { value: "returning", label: "Returning (favs + 1 booking)" },
-                    { value: "power", label: "Power user (many bookings)" },
-                  ]}
-                  onChange={(v) => set("customerState", v)}
-                />
-              </Field>
-
-              <Field label="Favorites seed" hint="Resets the Favorites tab on change">
-                <Segmented<FavoritesSeed>
-                  value={state.favoritesSeed}
-                  options={[
-                    { value: "empty", label: "Empty" },
-                    { value: "few", label: "Few" },
-                    { value: "many", label: "Many" },
-                  ]}
-                  onChange={(v) => set("favoritesSeed", v)}
-                />
-              </Field>
-
-              <Field label="Bookings seed" hint="Volume of cards in the Bookings tab">
-                <Segmented<BookingsSeed>
-                  value={state.bookingsSeed}
-                  options={[
-                    { value: "empty", label: "Empty" },
-                    { value: "few", label: "Few" },
-                    { value: "many", label: "Many" },
-                  ]}
-                  onChange={(v) => set("bookingsSeed", v)}
-                />
-              </Field>
-
-              <Field label="Active booking" hint="Drives the 'happening now' hero card">
-                <Stacked<ActiveBookingStage>
-                  value={state.activeBooking}
-                  options={[
-                    { value: "none", label: "None — no active booking" },
-                    { value: "getting-ready", label: "Getting ready (on-demand prep)" },
-                    { value: "enroute", label: "Enroute — on the way" },
-                    { value: "arrived", label: "Arrived — PIN entry" },
-                    { value: "in-progress", label: "In progress" },
-                    { value: "completed", label: "Completed (→ Service Complete)" },
-                  ]}
-                  onChange={(v) => set("activeBooking", v)}
-                />
-              </Field>
-
-              <div
-                className="my-2 border-t"
-                style={{ borderColor: "rgba(127,127,127,0.2)" }}
-              />
-              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-                Profile
-              </p>
-
-              <Field label="Profile state" hint="Drives identity header + addresses + pill">
-                <Segmented<ProfileState>
-                  value={state.profileState}
-                  options={[
-                    { value: "new", label: "New" },
-                    { value: "partial", label: "Partial" },
-                    { value: "complete", label: "Complete" },
-                  ]}
-                  onChange={(v) => set("profileState", v)}
-                />
-              </Field>
-
-              <Field label="Theme preference" hint="Syncs with /profile/theme">
-                <Segmented<ThemeMode>
-                  value={state.themeMode}
-                  options={[
-                    { value: "system", label: "System" },
-                    { value: "light", label: "Light" },
-                    { value: "dark", label: "Dark" },
-                  ]}
-                  onChange={(v) => set("themeMode", v)}
-                />
-              </Field>
-
-              <Field label="Tipping preference" hint="Syncs with /profile/tipping">
-                <Stacked<TippingPreference>
-                  value={state.tippingPreference}
-                  options={[
-                    { value: "15", label: "15%" },
-                    { value: "18", label: "18%" },
-                    { value: "20", label: "20%" },
-                    { value: "25", label: "25%" },
-                    { value: "custom", label: "Custom 22%" },
-                    { value: "ask", label: "Always ask" },
-                  ]}
-                  onChange={(v) => set("tippingPreference", v)}
-                />
-              </Field>
-
-              <Field label="Notifications profile" hint="Resets toggle states on subscreen">
-                <Segmented<NotificationsProfile>
-                  value={state.notificationsProfile}
-                  options={[
-                    { value: "all-on", label: "All on" },
-                    { value: "booking-only", label: "Booking" },
-                    { value: "all-off", label: "All off" },
-                  ]}
-                  onChange={(v) => set("notificationsProfile", v)}
-                />
-              </Field>
-
-              <Field label="Avatar state" hint="Drives avatar on Profile + action sheet">
-                <Segmented<AvatarState>
-                  value={state.avatarState}
-                  options={[
-                    { value: "monogram", label: "Monogram" },
-                    { value: "photo", label: "Photo" },
-                  ]}
-                  onChange={(v) => set("avatarState", v)}
-                />
-              </Field>
-
-              <Field label="Edit profile state" hint="Drives form values + Save button">
-                <Segmented<EditProfileState>
-                  value={state.editProfileState}
-                  options={[
-                    { value: "default", label: "Default" },
-                    { value: "edited", label: "Edited" },
-                  ]}
-                  onChange={(v) => set("editProfileState", v)}
-                />
-              </Field>
-
-              <div
-                className="my-2 border-t"
-                style={{ borderColor: "rgba(127,127,127,0.2)" }}
-              />
-              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-                Booking
-              </p>
-
-              <Field label="Booking confirm state" hint="Drives /booking/confirm variations">
-                <Stacked<BookingConfirmState>
-                  value={state.bookingConfirmState}
-                  options={[
-                    { value: "default", label: "Default (all pre-filled)" },
-                    { value: "missing-payment", label: "Missing payment" },
-                    { value: "missing-address", label: "Missing address" },
-                    { value: "always-ask-tip", label: "Always-ask tip" },
-                    { value: "custom-tip", label: "Custom tip 22%" },
-                  ]}
-                  onChange={(v) => set("bookingConfirmState", v)}
-                />
-               </Field>
-
-              <Field label="Searching stage" hint="Drives /booking/searching variations">
-                <Stacked<SearchingStage>
-                  value={state.searchingStage}
-                  options={[
-                    { value: "searching", label: "Searching (pulsing)" },
-                    { value: "matched", label: "Matched (pro accepted)" },
-                    { value: "declined", label: "Declined (pro passed)" },
-                    { value: "timeout", label: "Timeout (no response)" },
-                  ]}
-                  onChange={(v) => set("searchingStage", v)}
-                />
-              </Field>
-
-              <Field label="Schedule state" hint="Drives scheduled booking flow">
-                <Stacked<ScheduleState>
-                  value={state.scheduleState}
-                  options={[
-                    { value: "none", label: "None" },
-                    { value: "slot-picked", label: "Slot picked" },
-                    { value: "slot-expired", label: "Slot expired" },
-                    { value: "pending-pro", label: "Pending pro" },
-                    { value: "auto-accepted", label: "Auto-accepted" },
-                    { value: "pro-declined", label: "Pro declined" },
-                    { value: "24h-timeout", label: "24h timeout" },
-                  ]}
-                  onChange={(v) => set("scheduleState", v)}
-                />
-              </Field>
+                <Field label="Scheduled flow" hint="/booking/schedule/$proId outcomes">
+                  <Stacked<ScheduleState>
+                    value={state.scheduleState}
+                    options={[
+                      { value: "none", label: "None" },
+                      { value: "slot-picked", label: "Slot picked" },
+                      { value: "slot-expired", label: "Slot expired" },
+                      { value: "pending-pro", label: "Pending pro" },
+                      { value: "auto-accepted", label: "Auto-accepted" },
+                      { value: "pro-declined", label: "Pro declined" },
+                      { value: "24h-timeout", label: "24h timeout" },
+                    ]}
+                    onChange={(v) => set("scheduleState", v)}
+                  />
+                </Field>
+              </DevSection>
             </div>
 
             <div className="mt-6 flex flex-col gap-2">
@@ -490,6 +456,28 @@ function Field({
       </div>
       {children}
     </div>
+  );
+}
+
+function DevSection({
+  label,
+  sub,
+  children,
+}: {
+  label: string;
+  sub: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-4 rounded-2xl border border-hairline bg-card/40 p-4">
+      <header>
+        <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>
+      </header>
+      {children}
+    </section>
   );
 }
 

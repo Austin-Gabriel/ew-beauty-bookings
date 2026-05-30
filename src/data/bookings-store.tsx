@@ -9,7 +9,9 @@ import {
   useState,
   useCallback,
   useMemo,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from "react";
 
 /* ------------------------------------------------------------------ */
@@ -210,13 +212,16 @@ type BookingsCtx = {
   updateBookingStatus: (id: string, status: BookingStatus) => void;
   cancelBooking: (id: string) => void;
   /** Replace all bookings (used by dev-state sync). */
-  setBookings: (bookings: Booking[]) => void;
+  setBookings: Dispatch<SetStateAction<Booking[]>>;
 };
 
 const BookingsContext = createContext<BookingsCtx | null>(null);
 
 export function BookingsProvider({ children }: { children: ReactNode }) {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  // Seed with the full mock pool so the Bookings tab has content immediately,
+  // even before DevBookingsSync's effects fire. DevBookingsSync will patch
+  // this based on bookingsSeed + activeBooking toggles.
+  const [bookings, setBookings] = useState<Booking[]>(() => [...SEED_BOOKINGS]);
 
   const activeBookings = useMemo(
     () => bookings.filter((b) => ACTIVE_STATUSES.includes(b.status)),
