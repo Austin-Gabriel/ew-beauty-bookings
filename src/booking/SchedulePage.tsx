@@ -198,6 +198,25 @@ export function SchedulePage({ proId }: { proId: string }) {
     );
   }
 
+  // Build a rolling 14-day window starting today; user can scroll horizontally
+  const dayStrip = useMemo(() => {
+    const out: Date[] = [];
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      out.push(d);
+    }
+    return out;
+  }, [today]);
+
+  // Default-select first available day if nothing selected
+  useEffect(() => {
+    if (selectedDate) return;
+    const firstAvailable = dayStrip.find((d) => !isDateDisabled(d));
+    if (firstAvailable) setSelectedDate(firstAvailable);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dayStrip]);
+
   return (
     <div
       className="flex min-h-screen flex-col bg-background"
@@ -214,7 +233,7 @@ export function SchedulePage({ proId }: { proId: string }) {
           <ChevronLeft size={22} />
         </button>
         <span className="pointer-events-none absolute inset-x-0 text-center text-[17px] font-semibold text-foreground">
-          Pick a date & time
+          Pick a time
         </span>
       </div>
 
@@ -230,118 +249,80 @@ export function SchedulePage({ proId }: { proId: string }) {
             }}
           >
             <Scissors size={16} style={{ color: "var(--on-card-muted)" }} />
-            <p className="flex-1 truncate text-[14px] font-medium">
-              {serviceName}
-            </p>
+            <p className="flex-1 truncate text-[14px] font-medium">{serviceName}</p>
             {serviceInfo && (
-              <p className="tabular text-[14px] font-semibold">
-                ${serviceInfo.priceFrom}
-              </p>
+              <p className="tabular text-[14px] font-semibold">${serviceInfo.priceFrom}</p>
             )}
           </div>
         )}
 
-        {/* Calendar header */}
-        <div className="mt-5 flex items-center justify-between">
-          <p className="text-[18px] font-bold text-foreground">
-            {MONTH_LABELS[monthAnchor.getMonth()]} {monthAnchor.getFullYear()}
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={!canPrev}
-              onClick={() => canPrev && setMonthAnchor((m) => addMonths(m, -1))}
-              className="grid h-9 w-9 place-items-center rounded-full transition-opacity disabled:opacity-30"
-              style={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--hairline)",
-                color: "var(--card-foreground)",
-              }}
-              aria-label="Previous month"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              disabled={!canNext}
-              onClick={() => canNext && setMonthAnchor((m) => addMonths(m, 1))}
-              className="grid h-9 w-9 place-items-center rounded-full transition-opacity disabled:opacity-30"
-              style={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--hairline)",
-                color: "var(--card-foreground)",
-              }}
-              aria-label="Next month"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
-
-        {/* Day-of-week header */}
-        <div className="mt-4 grid grid-cols-7">
-          {DOW_LABELS.map((d, i) => (
-            <div
-              key={i}
-              className="text-center text-[12px] font-medium"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              {d}
-            </div>
-          ))}
-        </div>
-
-        {/* Date grid */}
-        <div className="mt-2 grid grid-cols-7 gap-y-1">
-          {cells.map((d, i) => {
-            const inMonth = d.getMonth() === monthAnchor.getMonth();
+        {/* Horizontal day strip */}
+        <div
+          className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-1"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {dayStrip.map((d, i) => {
             const disabled = isDateDisabled(d);
             const selected = selectedDate ? isSameDay(d, selectedDate) : false;
-
             return (
-              <div key={i} className="flex h-11 items-center justify-center">
-                <button
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => setSelectedDate(new Date(d))}
-                  className="grid h-10 w-10 place-items-center rounded-full transition-colors"
+              <button
+                key={i}
+                type="button"
+                disabled={disabled}
+                onClick={() => setSelectedDate(new Date(d))}
+                className="flex shrink-0 flex-col items-center justify-center rounded-2xl transition-colors"
+                style={{
+                  width: 64,
+                  height: 80,
+                  backgroundColor: selected ? "var(--bagel)" : "var(--card)",
+                  border: selected ? "none" : "1px solid var(--hairline)",
+                  color: selected
+                    ? "var(--bagel-foreground)"
+                    : disabled
+                      ? "var(--muted-foreground)"
+                      : "var(--card-foreground)",
+                  opacity: disabled ? 0.45 : 1,
+                }}
+              >
+                <span
+                  className="tabular"
                   style={{
-                    backgroundColor: selected ? "var(--bagel)" : "transparent",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    textTransform: "capitalize",
+                    marginBottom: 4,
                     color: selected
                       ? "var(--bagel-foreground)"
-                      : !inMonth
-                        ? "var(--muted-foreground)"
-                        : disabled
-                          ? "var(--muted-foreground)"
-                          : "var(--foreground)",
-                    opacity: !inMonth ? 0.45 : disabled ? 0.55 : 1,
-                    fontSize: 15,
-                    fontWeight: selected ? 700 : 500,
-                    textDecoration: disabled && inMonth ? "line-through" : "none",
+                      : "var(--muted-foreground)",
                   }}
                 >
+                  {d.toLocaleDateString(undefined, { weekday: "short" })}
+                </span>
+                <span
+                  className="tabular"
+                  style={{ fontSize: 22, fontWeight: 700, lineHeight: 1 }}
+                >
                   {d.getDate()}
-                </button>
-              </div>
+                </span>
+              </button>
             );
           })}
         </div>
 
         {/* Times */}
-        {selectedDate ? (
+        {selectedDate && (
           <>
             <p
-              className="mb-3 mt-6"
+              className="mb-4 mt-7"
               style={{
                 fontSize: 11.5,
                 fontWeight: 700,
                 color: "var(--muted-foreground)",
                 textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                letterSpacing: "0.12em",
               }}
             >
-              Available times · {SHORT_DOW[selectedDate.getDay()]}{" "}
-              {SHORT_MONTH[selectedDate.getMonth()]} {selectedDate.getDate()}
+              Available times
             </p>
 
             {slots.length === 0 ? (
@@ -364,7 +345,7 @@ export function SchedulePage({ proId }: { proId: string }) {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-3">
                 {slots.map((s) => {
                   const isSelected = selectedTime === s.time;
                   return (
@@ -373,7 +354,7 @@ export function SchedulePage({ proId }: { proId: string }) {
                       type="button"
                       disabled={!s.available}
                       onClick={() => setSelectedTime(s.time)}
-                      className="rounded-xl py-3 text-center transition-colors"
+                      className="tabular rounded-full py-3 text-center transition-colors"
                       style={{
                         fontSize: 14,
                         fontWeight: 700,
@@ -383,7 +364,7 @@ export function SchedulePage({ proId }: { proId: string }) {
                           : !s.available
                             ? "var(--on-card-muted)"
                             : "var(--card-foreground)",
-                        opacity: !s.available ? 0.45 : 1,
+                        opacity: !s.available ? 0.4 : 1,
                         textDecoration: !s.available ? "line-through" : "none",
                         border: isSelected ? "none" : "1px solid var(--hairline)",
                       }}
@@ -395,13 +376,6 @@ export function SchedulePage({ proId }: { proId: string }) {
               </div>
             )}
           </>
-        ) : (
-          <p
-            className="mt-6 text-center"
-            style={{ fontSize: 13.5, color: "var(--muted-foreground)" }}
-          >
-            Pick a day to see available times.
-          </p>
         )}
       </div>
 
