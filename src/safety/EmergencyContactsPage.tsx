@@ -209,82 +209,97 @@ function ContactSheet({
       <div
         role="dialog"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[420px] rounded-t-3xl bg-card px-5 pt-2"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 18px)", fontFamily: SANS_STACK }}
+        className="relative flex w-full max-w-[420px] flex-col rounded-t-3xl bg-card"
+        style={{
+          maxHeight: "92vh",
+          fontFamily: SANS_STACK,
+        }}
       >
-        <div className="mx-auto mb-3 mt-2 h-1 w-10 rounded-full" style={{ backgroundColor: "rgba(127,127,127,0.2)" }} />
-        <div className="flex items-center justify-between">
-          <h3 style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
-            {initial ? "Edit contact" : "Add a contact"}
-          </h3>
+        <div className="shrink-0 px-5 pt-2">
+          <div className="mx-auto mb-3 mt-2 h-1 w-10 rounded-full" style={{ backgroundColor: "rgba(127,127,127,0.2)" }} />
+          <div className="flex items-center justify-between">
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>
+              {initial ? "Edit contact" : "Add a contact"}
+            </h3>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-8 w-8 place-items-center rounded-full"
+              style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 pt-4 pb-2">
+          <div className="flex flex-col gap-3">
+            <Field label="Name">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Mom"
+                className="w-full rounded-xl border-none px-3.5 py-3 outline-none"
+                style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)", fontSize: 14, fontFamily: SANS_STACK }}
+              />
+            </Field>
+            <Field label="Phone">
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="(917) 555-1234"
+                className="w-full rounded-xl border-none px-3.5 py-3 outline-none"
+                style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)", fontSize: 14, fontFamily: SANS_STACK }}
+              />
+            </Field>
+            <Field label="Relationship">
+              <div className="flex flex-wrap gap-1.5">
+                {RELATIONSHIPS.map((r) => {
+                  const active = relationship === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setRelationship(r)}
+                      className="rounded-full border px-3 py-1.5"
+                      style={{
+                        backgroundColor: active ? ORANGE : "var(--surface-elevated)",
+                        borderColor: active ? ORANGE : "transparent",
+                        color: active ? "#1A0E08" : "var(--card-foreground)",
+                        fontFamily: SANS_STACK,
+                        fontSize: 12.5,
+                        fontWeight: active ? 600 : 500,
+                      }}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
+          </div>
+        </div>
+
+        <div
+          className="shrink-0 border-t bg-card px-5 pt-3"
+          style={{
+            borderColor: "var(--border)",
+            paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 18px)",
+          }}
+        >
           <button
             type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full"
-            style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+            onClick={save}
+            disabled={!canSave}
+            className="flex w-full items-center justify-center gap-1.5 rounded-2xl py-3.5 transition-transform active:scale-[0.98] disabled:opacity-50"
+            style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 15, fontWeight: 600, fontFamily: SANS_STACK }}
           >
-            <X size={14} />
+            <Phone size={15} />
+            {initial ? "Save changes" : "Add contact"}
           </button>
         </div>
-
-        <div className="mt-4 flex flex-col gap-3">
-          <Field label="Name">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Mom"
-              className="w-full rounded-xl border-none px-3.5 py-3 outline-none"
-              style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)", fontSize: 14, fontFamily: SANS_STACK }}
-            />
-          </Field>
-          <Field label="Phone">
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="(917) 555-1234"
-              className="w-full rounded-xl border-none px-3.5 py-3 outline-none"
-              style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)", fontSize: 14, fontFamily: SANS_STACK }}
-            />
-          </Field>
-          <Field label="Relationship">
-            <div className="flex flex-wrap gap-1.5">
-              {RELATIONSHIPS.map((r) => {
-                const active = relationship === r;
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => setRelationship(r)}
-                    className="rounded-full border px-3 py-1.5"
-                    style={{
-                      backgroundColor: active ? ORANGE : "var(--surface-elevated)",
-                      borderColor: active ? ORANGE : "transparent",
-                      color: active ? "#1A0E08" : "var(--card-foreground)",
-                      fontFamily: SANS_STACK,
-                      fontSize: 12.5,
-                      fontWeight: active ? 600 : 500,
-                    }}
-                  >
-                    {r}
-                  </button>
-                );
-              })}
-            </div>
-          </Field>
-        </div>
-
-        <button
-          type="button"
-          onClick={save}
-          disabled={!canSave}
-          className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-2xl py-3.5 transition-transform active:scale-[0.98] disabled:opacity-50"
-          style={{ backgroundColor: ORANGE, color: "#1A0E08", fontSize: 15, fontWeight: 600, fontFamily: SANS_STACK }}
-        >
-          <Phone size={15} />
-          {initial ? "Save changes" : "Add contact"}
-        </button>
       </div>
     </div>
   );

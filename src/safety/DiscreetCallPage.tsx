@@ -18,9 +18,12 @@ import { SANS_STACK } from "@/auth/auth-shell";
 const SAFETY_GREEN = "#16A34A";
 const DANGER = "#DC2626";
 
+const initialContactId = "911";
+
 type Phase = "preview" | "ringing" | "in-call" | "ended";
 
 const DISGUISE_CONTACTS = [
+  { id: "911", label: "911 Emergency", number: "Emergency services", urgent: true },
   { id: "mom", label: "Mom", number: "Mobile" },
   { id: "kelechi", label: "Kelechi", number: "Mobile · Friend" },
   { id: "salon", label: "Salon Front Desk", number: "Work" },
@@ -37,7 +40,7 @@ export function DiscreetCallPage() {
   const router = useRouter();
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("preview");
-  const [contactId, setContactId] = useState<string>("mom");
+  const [contactId, setContactId] = useState<string>(initialContactId);
   const [muted, setMuted] = useState(false);
   const [speakerOn, setSpeakerOn] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -125,6 +128,8 @@ export function DiscreetCallPage() {
             >
               {DISGUISE_CONTACTS.map((c, i) => {
                 const active = c.id === contactId;
+                const urgent = "urgent" in c && c.urgent;
+                const accent = urgent ? DANGER : SAFETY_GREEN;
                 return (
                   <button
                     key={c.id}
@@ -133,30 +138,31 @@ export function DiscreetCallPage() {
                     className="flex w-full items-center gap-3 px-4 py-3 text-left"
                     style={{
                       borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.06)",
+                      backgroundColor: urgent ? "rgba(220,38,38,0.08)" : "transparent",
                     }}
                   >
                     <span
                       className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
                       style={{
-                        backgroundColor: active ? SAFETY_GREEN : "rgba(255,255,255,0.10)",
+                        backgroundColor: active ? accent : urgent ? "rgba(220,38,38,0.20)" : "rgba(255,255,255,0.10)",
                         color: "#fff",
                         fontSize: 13,
                         fontWeight: 700,
                       }}
                     >
-                      {c.label.slice(0, 1)}
+                      {urgent ? "!" : c.label.slice(0, 1)}
                     </span>
                     <span className="min-w-0 flex-1">
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{c.label}</p>
-                      <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.55)", marginTop: 1 }}>
+                      <p style={{ fontSize: 11.5, color: urgent ? "rgba(255,180,180,0.85)" : "rgba(255,255,255,0.55)", marginTop: 1 }}>
                         {c.number}
                       </p>
                     </span>
                     <span
                       className="grid h-5 w-5 shrink-0 place-items-center rounded-full"
                       style={{
-                        border: active ? "none" : "1.5px solid rgba(255,255,255,0.25)",
-                        backgroundColor: active ? SAFETY_GREEN : "transparent",
+                        border: active ? "none" : `1.5px solid ${urgent ? "rgba(220,38,38,0.45)" : "rgba(255,255,255,0.25)"}`,
+                        backgroundColor: active ? accent : "transparent",
                       }}
                     >
                       {active && (
@@ -186,16 +192,18 @@ export function DiscreetCallPage() {
             onClick={startCall}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 transition-transform active:scale-[0.98]"
             style={{
-              backgroundColor: SAFETY_GREEN,
+              backgroundColor: contactId === "911" ? DANGER : SAFETY_GREEN,
               color: "#fff",
               fontSize: 15,
               fontWeight: 700,
               fontFamily: SANS_STACK,
-              boxShadow: "0 8px 24px rgba(22,163,74,0.28)",
+              boxShadow: contactId === "911"
+                ? "0 8px 24px rgba(220,38,38,0.32)"
+                : "0 8px 24px rgba(22,163,74,0.28)",
             }}
           >
             <Phone size={15} />
-            Start discreet call
+            {contactId === "911" ? "Call 911 now" : "Start discreet call"}
           </button>
           <button
             type="button"

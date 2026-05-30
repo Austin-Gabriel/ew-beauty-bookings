@@ -47,7 +47,6 @@ import { SANS_STACK } from "@/auth/auth-shell";
 import { useBookings, type Booking, type BookingStatus } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile } from "@/data/customer-store";
-import { CancelSheet } from "@/bookings/CancelSheet";
 
 const ORANGE = "#FF823F";
 const SUCCESS = "#16A34A";
@@ -90,7 +89,6 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
 
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesValue, setNotesValue] = useState("");
-  const [cancelOpen, setCancelOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Reroute statuses that have their own dedicated page.
@@ -196,6 +194,7 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
           onEditCancel={() => setEditingNotes(false)}
           onEditSave={handleSaveNotes}
           onNotesChange={setNotesValue}
+          navigate={navigate}
         />
 
         {/* ─── Cost summary ─────────────────────────────────────────── */}
@@ -236,11 +235,9 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
         navigate={navigate}
         onCancel={() => {
           setMenuOpen(false);
-          setCancelOpen(true);
+          navigate({ to: "/booking/cancel/$bookingId", params: { bookingId } });
         }}
       />
-
-      <CancelSheet bookingId={bookingId} open={cancelOpen} onClose={() => setCancelOpen(false)} />
     </div>
   );
 }
@@ -312,7 +309,7 @@ function LiveHero({
   booking: Booking;
   initials: string;
   proFirst: string;
-  pro: { name: string; certified: boolean };
+  pro: { id: string; name: string; certified: boolean };
   bookingId: string;
   navigate: ReturnType<typeof useNavigate>;
 }) {
@@ -360,37 +357,43 @@ function LiveHero({
         </div>
 
         <div className="mt-5 flex items-center gap-3 border-t pt-4" style={{ borderColor: "rgba(255,255,255,0.10)" }}>
-          <div
-            className="grid h-12 w-12 shrink-0 place-items-center rounded-full"
-            style={{
-              background: "linear-gradient(135deg, #FFD9C7 0%, #FF9270 100%)",
-              color: "#7C2D12",
-              fontSize: 15,
-              fontWeight: 700,
-              border: "2px solid rgba(255,255,255,0.15)",
-            }}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
+            className="flex min-w-0 flex-1 items-center gap-3 text-left transition-opacity active:opacity-80"
           >
-            {initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="inline-flex items-center gap-1.5" style={{ fontSize: 15.5, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em" }}>
-              <span className="truncate">{pro.name}</span>
-              {pro.certified && (
-                <span
-                  aria-hidden
-                  className="inline-grid place-items-center rounded-full"
-                  style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
-                >
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </span>
-              )}
-            </p>
-            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.65)", marginTop: 2 }}>
-              {booking.service.name} · {booking.service.durationLabel}
-            </p>
-          </div>
+            <div
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full"
+              style={{
+                background: "linear-gradient(135deg, #FFD9C7 0%, #FF9270 100%)",
+                color: "#7C2D12",
+                fontSize: 15,
+                fontWeight: 700,
+                border: "2px solid rgba(255,255,255,0.15)",
+              }}
+            >
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="inline-flex items-center gap-1.5" style={{ fontSize: 15.5, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em" }}>
+                <span className="truncate">{pro.name}</span>
+                {pro.certified && (
+                  <span
+                    aria-hidden
+                    className="inline-grid place-items-center rounded-full"
+                    style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
+                  >
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                )}
+              </p>
+              <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.65)", marginTop: 2 }}>
+                {booking.service.name} · {booking.service.durationLabel}
+              </p>
+            </div>
+          </button>
           <button
             type="button"
             onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
@@ -428,7 +431,7 @@ function FutureHero({
 }: {
   booking: Booking;
   initials: string;
-  pro: { name: string; certified: boolean };
+  pro: { id: string; name: string; certified: boolean };
   bookingId: string;
   navigate: ReturnType<typeof useNavigate>;
 }) {
@@ -444,7 +447,11 @@ function FutureHero({
         Confirmed
       </span>
 
-      <div className="mt-4 flex items-center gap-3.5">
+      <button
+        type="button"
+        onClick={() => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
+        className="mt-4 flex w-full items-center gap-3.5 text-left transition-opacity active:opacity-80"
+      >
         <div
           className="grid h-14 w-14 shrink-0 place-items-center rounded-full"
           style={{
@@ -477,7 +484,8 @@ function FutureHero({
             {booking.service.name} · {booking.service.durationLabel}
           </p>
         </div>
-      </div>
+        <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />
+      </button>
 
       <div className="mt-4 flex gap-2">
         <button
@@ -582,27 +590,37 @@ function CompletedHero({ booking }: { booking: Booking }) {
     ? booking.startedAt + parseDurationMin(booking.service.durationLabel) * 60_000
     : booking.when;
   return (
-    <div className="border-b px-5 pb-5 pt-6 text-center" style={{ borderColor: "var(--border)" }}>
+    <div className="px-5 pt-8 text-center">
       <div
         className="mx-auto grid place-items-center rounded-full"
-        style={{ width: 64, height: 64, backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS }}
+        style={{ width: 78, height: 78, backgroundColor: "rgba(22,163,74,0.14)", color: SUCCESS }}
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <h2 className="mt-3.5" style={{ fontSize: 19, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}>
+      <h2 className="mt-5" style={{ fontSize: 26, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.025em" }}>
         All done
       </h2>
-      <p className="mt-1" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
+      <p className="mt-1.5" style={{ fontSize: 14, color: "var(--muted-foreground)" }}>
         Hope you loved your {booking.service.name.toLowerCase()}
       </p>
-      <span
-        className="mt-3.5 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
-        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+      <div
+        className="mt-5 border-t border-b py-3"
+        style={{ borderColor: "var(--border)" }}
       >
-        Completed {todayOrDay(completedAt)} at {shortTime(completedAt)}
-      </span>
+        <span
+          style={{
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: "var(--muted-foreground)",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+          }}
+        >
+          Completed {todayOrDay(completedAt)} at {shortTime(completedAt)}
+        </span>
+      </div>
     </div>
   );
 }
@@ -654,24 +672,24 @@ function ReviewPromptCard({ proFirst, onTap }: { proFirst: string; onTap: () => 
     <button
       type="button"
       onClick={onTap}
-      className="mx-5 mt-3.5 flex w-[calc(100%-2.5rem)] items-center gap-3 rounded-2xl border p-4 text-left transition-transform active:scale-[0.99]"
-      style={{ backgroundColor: "rgba(255,130,63,0.10)", borderColor: "rgba(255,130,63,0.22)" }}
+      className="mx-5 mt-5 flex w-[calc(100%-2.5rem)] items-center gap-3.5 rounded-2xl p-4 text-left transition-transform active:scale-[0.99]"
+      style={{ backgroundColor: "rgba(255,130,63,0.14)" }}
     >
       <div
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
-        style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl"
+        style={{ backgroundColor: "#1A0E08", color: ORANGE }}
       >
-        <Star size={16} fill="currentColor" />
+        <Star size={18} fill="currentColor" />
       </div>
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 13.5, fontWeight: 700, color: "var(--card-foreground)" }}>
+        <p style={{ fontSize: 15, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
           Rate your time with {proFirst}
         </p>
-        <p className="mt-0.5" style={{ fontSize: 11.5, color: "var(--card-foreground)", opacity: 0.75 }}>
+        <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--card-foreground)", opacity: 0.72 }}>
           Tell her how it went — and add a tip
         </p>
       </div>
-      <ChevronRight size={14} style={{ color: ORANGE }} />
+      <ChevronRight size={16} style={{ color: "var(--card-foreground)", opacity: 0.6 }} />
     </button>
   );
 }
@@ -693,9 +711,10 @@ function DetailsList({
   onEditCancel,
   onEditSave,
   onNotesChange,
+  navigate,
 }: {
   booking: Booking;
-  pro: { name: string };
+  pro: { id: string; name: string };
   proFirst: string;
   card: { brand: string; last4: string } | undefined;
   mode: Mode;
@@ -706,6 +725,7 @@ function DetailsList({
   onEditCancel: () => void;
   onEditSave: () => void;
   onNotesChange: (v: string) => void;
+  navigate: ReturnType<typeof useNavigate>;
 }) {
   const showEdit = mode === "future";
   const whenLabel =
@@ -739,9 +759,11 @@ function DetailsList({
                 {initialsOf(pro.name)}
               </div>
             }
-            label={mode === "in-progress" ? "Stylist" : "Stylist"}
+            label="Stylist"
             value={pro.name}
             valueSub={`${booking.service.name} · ${booking.service.durationLabel}`}
+            chevron
+            onRowClick={() => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
           />
         )}
 
@@ -777,17 +799,28 @@ function DetailsList({
         <DetailRow
           icon={<CreditCard size={16} />}
           label="Payment"
-          value={card ? `${brandLabel(card.brand)}` : "—"}
+          value={
+            card
+              ? mode === "completed"
+                ? `${brandLabel(card.brand)} · charged $${(booking.total ?? booking.service.price + 3).toFixed(0)}`
+                : brandLabel(card.brand)
+              : "—"
+          }
           valueSub={
             card
               ? mode === "completed"
-                ? `Charged $${(booking.total ?? booking.service.price + 3).toFixed(0)}`
+                ? "View receipt"
                 : mode === "in-progress"
                   ? "Will be charged when service completes"
                   : `Ending in ${card.last4}`
               : undefined
           }
           chevron={mode === "completed"}
+          onRowClick={
+            mode === "completed"
+              ? () => navigate({ to: "/booking/receipt/$bookingId", params: { bookingId: booking.id } })
+              : undefined
+          }
         />
 
         {/* Notes — only for live + future */}
@@ -847,6 +880,7 @@ function DetailRow({
   action,
   onAction,
   chevron,
+  onRowClick,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -856,9 +890,10 @@ function DetailRow({
   action?: string;
   onAction?: () => void;
   chevron?: boolean;
+  onRowClick?: () => void;
 }) {
-  return (
-    <li className="flex items-center gap-3.5 py-3.5">
+  const inner = (
+    <>
       <div
         className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
         style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
@@ -889,15 +924,34 @@ function DetailRow({
       {action && (
         <button
           type="button"
-          onClick={onAction}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAction?.();
+          }}
           style={{ fontSize: 12.5, fontWeight: 600, color: ORANGE, background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
         >
           {action}
         </button>
       )}
       {chevron && !action && <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />}
-    </li>
+    </>
   );
+
+  if (onRowClick) {
+    return (
+      <li>
+        <button
+          type="button"
+          onClick={onRowClick}
+          className="flex w-full items-center gap-3.5 py-3.5 text-left transition-opacity active:opacity-80"
+        >
+          {inner}
+        </button>
+      </li>
+    );
+  }
+
+  return <li className="flex items-center gap-3.5 py-3.5">{inner}</li>;
 }
 
 /* ------------------------------------------------------------------ */

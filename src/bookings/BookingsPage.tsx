@@ -16,7 +16,6 @@ import {
   formatBookingDateHeader,
   formatBookingTime,
 } from "@/lib/format-booking-date";
-import { CancelSheet } from "@/bookings/CancelSheet";
 
 const ORANGE = "var(--bagel)";
 const MUTED_PILL_BG = "rgba(11,18,32,0.06)";
@@ -31,7 +30,6 @@ export function BookingsPage() {
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("upcoming");
-  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
   const muted = "var(--muted-foreground)";
   const subtleSurface = "var(--surface-elevated)";
@@ -107,7 +105,7 @@ export function BookingsPage() {
                 onMessage={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId: active.id } })}
                 onCall={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId: active.id } })}
                 onTap={() => goBooking(active)}
-                onCancel={() => setCancelTarget(active.id)}
+                onCancel={() => navigate({ to: "/booking/cancel/$bookingId", params: { bookingId: active.id } })}
               />
             )}
             <UpcomingList
@@ -118,7 +116,7 @@ export function BookingsPage() {
               subtleSurface={subtleSurface}
               cardShadow={cardShadow}
               onTap={(b) => goBooking(b)}
-              onCancel={(b) => setCancelTarget(b.id)}
+              onCancel={(b) => navigate({ to: "/booking/cancel/$bookingId", params: { bookingId: b.id } })}
             />
           </div>
         )
@@ -143,13 +141,6 @@ export function BookingsPage() {
           />
         </div>
       )}
-
-      {/* Cancel confirmation sheet */}
-      <CancelSheet
-        bookingId={cancelTarget}
-        open={cancelTarget !== null}
-        onClose={() => setCancelTarget(null)}
-      />
     </AppShell>
   );
 }

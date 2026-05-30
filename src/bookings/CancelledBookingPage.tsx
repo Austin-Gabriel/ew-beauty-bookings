@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { ChevronLeft, XCircle, Check } from "lucide-react";
+import { ChevronLeft, Check } from "lucide-react";
 import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useBookings } from "@/data/bookings-store";
+import { useCustomerProfile } from "@/data/customer-store";
 import { MOCK_PROS, type Pro } from "@/data/mock-pros";
 import { formatProLocation, getLocationContext } from "@/lib/location";
 
@@ -18,8 +19,13 @@ export function CancelledBookingPage({ bookingId }: { bookingId: string }) {
   const router = useRouter();
   const { isDark, text } = useAuthTheme();
   const { getBooking } = useBookings();
+  const { profile } = useCustomerProfile();
   const booking = getBooking(bookingId);
   const pro = booking ? MOCK_PROS.find((p) => p.id === booking.proId) : undefined;
+  const card = booking?.paymentMethodId
+    ? profile.paymentMethods.find((c) => c.id === booking.paymentMethodId)
+    : profile.paymentMethods.find((c) => c.isDefault) ?? profile.paymentMethods[0];
+  const cardLabel = card ? `${brandTitle(card.brand)} ending ${card.last4}` : "your original payment method";
 
   const surfaceBg = isDark ? "transparent" : "var(--card)";
 
@@ -83,17 +89,25 @@ export function CancelledBookingPage({ bookingId }: { bookingId: string }) {
 
       <div className="px-5 pt-2 pb-32" style={{ fontFamily: SANS_STACK }}>
         {/* HERO */}
-        <div className="flex flex-col items-center pt-6 pb-5 text-center">
+        <div className="flex flex-col items-center pt-8 pb-6 text-center">
           <div
             className="grid place-items-center rounded-full"
-            style={{ width: 72, height: 72, background: "rgba(220,38,38,0.10)", color: DANGER }}
+            style={{ width: 84, height: 84, background: "rgba(220,38,38,0.12)" }}
           >
-            <XCircle size={32} />
+            <span
+              className="grid place-items-center rounded-full"
+              style={{ width: 54, height: 54, border: `2.5px solid ${DANGER}`, color: DANGER }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            </span>
           </div>
-          <h2 className="mt-4" style={{ fontSize: 22, fontWeight: 700, color: text, letterSpacing: "-0.025em" }}>
+          <h2 className="mt-5" style={{ fontSize: 26, fontWeight: 700, color: text, letterSpacing: "-0.025em" }}>
             {byPro ? `${proFirstName} cancelled` : "Booking cancelled"}
           </h2>
-          <p className="mt-1.5 max-w-[280px]" style={{ fontSize: 13.5, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
+          <p className="mt-2 max-w-[300px]" style={{ fontSize: 14, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
             {byPro
               ? "She had to cancel your appointment. Your full payment has been refunded."
               : "You cancelled this appointment. Your refund details are below."}
@@ -162,19 +176,19 @@ export function CancelledBookingPage({ bookingId }: { bookingId: string }) {
 
         {/* REFUND CONFIRMED */}
         <div
-          className="mb-6 flex items-center gap-3 rounded-2xl p-3.5"
-          style={{ backgroundColor: "rgba(22,163,74,0.10)" }}
+          className="mb-6 flex items-center gap-3 rounded-2xl p-4"
+          style={{ backgroundColor: "rgba(22,163,74,0.12)" }}
         >
           <div
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
             style={{ backgroundColor: SUCCESS, color: "#fff" }}
           >
-            <Check size={15} strokeWidth={3} />
+            <Check size={17} strokeWidth={3} />
           </div>
           <div>
-            <p style={{ fontSize: 13, fontWeight: 700, color: SUCCESS }}>${refundUsd} refunded</p>
-            <p style={{ fontSize: 11.5, color: "var(--card-foreground)", opacity: 0.7, marginTop: 1 }}>
-              Returned to your original payment method
+            <p style={{ fontSize: 14.5, fontWeight: 700, color: SUCCESS, letterSpacing: "-0.01em" }}>${refundUsd} refunded</p>
+            <p style={{ fontSize: 12.5, color: "var(--card-foreground)", opacity: 0.78, marginTop: 1 }}>
+              Returned to {cardLabel}
             </p>
           </div>
         </div>
@@ -294,6 +308,18 @@ function AlternativeRow({
       </button>
     </div>
   );
+}
+
+function brandTitle(brand: string) {
+  const map: Record<string, string> = {
+    visa: "Visa",
+    mastercard: "Mastercard",
+    amex: "Amex",
+    discover: "Discover",
+    apple_pay: "Apple Pay",
+    google_pay: "Google Pay",
+  };
+  return map[brand.toLowerCase()] ?? brand;
 }
 
 // Suppress unused-warning when toast isn't referenced this turn

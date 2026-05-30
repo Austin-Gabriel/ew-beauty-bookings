@@ -65,6 +65,7 @@ import { Route as BookingMessageBookingIdRouteImport } from './routes/booking.me
 import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
 import { Route as BookingCompleteBookingIdRouteImport } from './routes/booking.complete.$bookingId'
 import { Route as BookingCancelledBookingIdRouteImport } from './routes/booking.cancelled.$bookingId'
+import { Route as BookingCancelBookingIdRouteImport } from './routes/booking.cancel.$bookingId'
 import { Route as BookingCallBookingIdRouteImport } from './routes/booking.call.$bookingId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -351,6 +352,11 @@ const BookingCancelledBookingIdRoute =
     path: '/booking/cancelled/$bookingId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BookingCancelBookingIdRoute = BookingCancelBookingIdRouteImport.update({
+  id: '/booking/cancel/$bookingId',
+  path: '/booking/cancel/$bookingId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingCallBookingIdRoute = BookingCallBookingIdRouteImport.update({
   id: '/booking/call/$bookingId',
   path: '/booking/call/$bookingId',
@@ -402,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/safety/': typeof SafetyIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
@@ -455,6 +462,7 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyIndexRoute
   '/signin': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
@@ -515,6 +523,7 @@ export interface FileRoutesById {
   '/safety/': typeof SafetyIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
@@ -576,6 +585,7 @@ export interface FileRouteTypes {
     | '/safety/'
     | '/signin/'
     | '/booking/call/$bookingId'
+    | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
@@ -629,6 +639,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/signin'
     | '/booking/call/$bookingId'
+    | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
@@ -688,6 +699,7 @@ export interface FileRouteTypes {
     | '/safety/'
     | '/signin/'
     | '/booking/call/$bookingId'
+    | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
@@ -726,6 +738,7 @@ export interface RootRouteChildren {
   ProProIdRoute: typeof ProProIdRouteWithChildren
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
+  BookingCancelBookingIdRoute: typeof BookingCancelBookingIdRoute
   BookingCancelledBookingIdRoute: typeof BookingCancelledBookingIdRoute
   BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
   BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
@@ -1132,6 +1145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingCancelledBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/cancel/$bookingId': {
+      id: '/booking/cancel/$bookingId'
+      path: '/booking/cancel/$bookingId'
+      fullPath: '/booking/cancel/$bookingId'
+      preLoaderRoute: typeof BookingCancelBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/call/$bookingId': {
       id: '/booking/call/$bookingId'
       path: '/booking/call/$bookingId'
@@ -1280,6 +1300,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProProIdRoute: ProProIdRouteWithChildren,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
+  BookingCancelBookingIdRoute: BookingCancelBookingIdRoute,
   BookingCancelledBookingIdRoute: BookingCancelledBookingIdRoute,
   BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
   BookingConfirmProIdRoute: BookingConfirmProIdRoute,
