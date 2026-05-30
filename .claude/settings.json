@@ -51,7 +51,23 @@
       "Bash(/usr/bin/grep -nE \"Available now|· [0-9]\" src/home/Discover.tsx)",
       "Bash(/usr/bin/grep -nE \"travelRadiusMi\" src/home/SeeAll.tsx src/home/Discover.tsx)",
       "Bash(/usr/bin/grep -rn \"themeMode\\\\|onboardingProgress\\\\|favoritesSeed\\\\|notificationsState\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
-      "Bash(/usr/bin/grep -rn \"DiscoverDensity\\\\|LocationArea\\\\|AvailabilityMix\\\\|NotificationsState\" src/ --include=\"*.tsx\" --include=\"*.ts\")"
+      "Bash(/usr/bin/grep -rn \"DiscoverDensity\\\\|LocationArea\\\\|AvailabilityMix\\\\|NotificationsState\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(/usr/bin/grep -rn \"profile\" src/routes/)",
+      "Bash(/usr/bin/cat src/routes/profile.tsx)",
+      "Bash(/usr/bin/grep -nE \"name:|email:|phone:|rating:|bookings:|saved:|credits:|export\" src/data/customer-store.ts)",
+      "Bash(/usr/bin/grep -nE \"^export|name:|email:|rating:|stats:|credits:|interface \" src/data/customer-store.tsx)",
+      "Bash(/usr/bin/cat src/routes/profile.index.tsx)",
+      "Bash(/usr/bin/grep -nE \"^export|useBookings|useMemo\" src/data/bookings-store.tsx)",
+      "Bash(/usr/bin/grep -rn \"tippingPreference\\\\|themePreference\\\\|state\\\\.tippingPref\\\\|state\\\\.themePref\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(/usr/bin/head -15)",
+      "Bash(/usr/bin/tail -40 /tmp/vite.log)",
+      "Bash(git stash *)",
+      "Bash(/usr/bin/tail -8)",
+      "Bash(/usr/bin/grep -nE *)",
+      "Bash(git checkout *)",
+      "Bash(git restore *)",
+      "Bash(/usr/bin/tail -5)",
+      "Bash(git push *)"
     ]
   }
 }
