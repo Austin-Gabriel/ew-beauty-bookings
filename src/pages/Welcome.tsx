@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { AuthShell, useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { EwaLockup } from "@/components/ewa-logo";
 import { PrimaryButton, SecondaryButton } from "@/auth/auth-buttons";
@@ -131,17 +130,11 @@ function WelcomeBody() {
       <div className="relative z-[1] mt-10 flex flex-col items-stretch gap-2 px-5 ewa-rise" style={{ animationDelay: "640ms" }}>
         <SocialButton
           provider="apple"
-          onClick={() => {
-            toast("Apple sign-in handoff pending");
-            navigate({ to: "/signup" });
-          }}
+          onClick={() => navigate({ to: "/signin/apple" })}
         />
         <SocialButton
           provider="google"
-          onClick={() => {
-            toast("Google sign-in handoff pending");
-            navigate({ to: "/signup" });
-          }}
+          onClick={() => navigate({ to: "/signin/google" })}
         />
         <div
           className="my-1 flex items-center gap-3"

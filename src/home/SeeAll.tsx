@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { AppShell } from "./AppShell";
 import { useFavorites } from "./useFavorites";
@@ -117,7 +117,7 @@ export function SeeAllPage() {
 
           <button
             type="button"
-            onClick={() => toast("Search coming soon")}
+            onClick={() => navigate({ to: "/search" })}
             aria-label="Search"
             className="grid h-9 w-9 place-items-center rounded-full border transition-transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: subtleSurface, borderColor: subtleBorder, color: text }}
@@ -166,6 +166,8 @@ function FilterRow({
   subtleSurface: string;
   subtleBorder: string;
 }) {
+  const navigate = useNavigate();
+  void muted;
   return (
     <div className="-mx-5 flex items-center gap-2 overflow-x-auto px-5 pb-3" style={{ scrollbarWidth: "none" }}>
       {cat === "online" && (
@@ -212,7 +214,7 @@ function FilterRow({
       )}
       <button
         type="button"
-        onClick={() => toast("Sort options coming soon")}
+        onClick={() => navigate({ to: "/sort" })}
         className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5"
         style={{
           backgroundColor: subtleSurface,
@@ -466,26 +468,26 @@ function AvailableTodayList({
   cardShadow: string;
   cardBorder?: string;
 }) {
-  const [view, setView] = useState<"list" | "map">("list");
+  const navigate = useNavigate();
   return (
     <>
       <div className="flex items-center justify-between px-5 py-3">
         <span style={{ fontFamily: SANS_STACK, fontSize: 12, color: muted }}>
           <strong style={{ color: text, fontWeight: 600 }}>{pros.length} stylists</strong> available today
         </span>
-        <ViewToggle view={view} onChange={setView} subtleSurface={subtleSurface} subtleBorder={subtleBorder} text={text} muted={muted} />
+        <ViewToggle
+          view="list"
+          onChange={(v) => {
+            if (v === "map") navigate({ to: "/map" });
+          }}
+          subtleSurface={subtleSurface}
+          subtleBorder={subtleBorder}
+          text={text}
+          muted={muted}
+        />
       </div>
 
-      {view === "map" ? (
-        <div className="px-5 pb-6">
-          <div
-            className="grid place-items-center rounded-3xl border-2 border-dashed text-center"
-            style={{ borderColor: subtleBorder, color: muted, height: 360, fontFamily: SANS_STACK, fontSize: 13 }}
-          >
-            Map view — coming soon
-          </div>
-        </div>
-      ) : (
+      {(
         <div className="flex flex-col gap-3 px-5 pb-6">
           {pros.length === 0 ? (
             <EmptyState text={text} muted={muted} message="No stylists with open spots today." />

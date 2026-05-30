@@ -12,21 +12,32 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SplashRouteImport } from './routes/splash'
+import { Route as SortRouteImport } from './routes/sort'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as JoinAsProRouteImport } from './routes/join-as-pro'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as BizRouteImport } from './routes/biz'
 import { Route as BiometricEnrollRouteImport } from './routes/biometric-enroll'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SigninIndexRouteImport } from './routes/signin.index'
+import { Route as SafetyIndexRouteImport } from './routes/safety.index'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as FavoritesIndexRouteImport } from './routes/favorites.index'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
+import { Route as SigninGoogleRouteImport } from './routes/signin.google'
+import { Route as SigninAppleRouteImport } from './routes/signin.apple'
 import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
+import { Route as SafetyReportRouteImport } from './routes/safety.report'
+import { Route as SafetyEmergencyContactsRouteImport } from './routes/safety.emergency-contacts'
+import { Route as SafetyDiscreetCallRouteImport } from './routes/safety.discreet-call'
 import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
 import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
 import { Route as ProfileTermsRouteImport } from './routes/profile.terms'
@@ -40,6 +51,7 @@ import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
 import { Route as FavoritesCollectionIdRouteImport } from './routes/favorites.$collectionId'
 import { Route as BookingsBookingIdRouteImport } from './routes/bookings.$bookingId'
+import { Route as BizSigninRouteImport } from './routes/biz.signin'
 import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
 import { Route as ProProIdReviewsRouteImport } from './routes/pro.$proId.reviews'
 import { Route as ProProIdPortfolioRouteImport } from './routes/pro.$proId.portfolio'
@@ -70,6 +82,11 @@ const SplashRoute = SplashRouteImport.update({
   path: '/splash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SortRoute = SortRouteImport.update({
+  id: '/sort',
+  path: '/sort',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -78,6 +95,11 @@ const SignupRoute = SignupRouteImport.update({
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SafetyRoute = SafetyRouteImport.update({
@@ -93,6 +115,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinAsProRoute = JoinAsProRouteImport.update({
@@ -115,6 +142,11 @@ const BookingsRoute = BookingsRouteImport.update({
   path: '/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BizRoute = BizRouteImport.update({
+  id: '/biz',
+  path: '/biz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BiometricEnrollRoute = BiometricEnrollRouteImport.update({
   id: '/biometric-enroll',
   path: '/biometric-enroll',
@@ -124,6 +156,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SigninIndexRoute = SigninIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SigninRoute,
+} as any)
+const SafetyIndexRoute = SafetyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SafetyRoute,
 } as any)
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
   id: '/',
@@ -140,10 +182,35 @@ const BookingsIndexRoute = BookingsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BookingsRoute,
 } as any)
+const SigninGoogleRoute = SigninGoogleRouteImport.update({
+  id: '/google',
+  path: '/google',
+  getParentRoute: () => SigninRoute,
+} as any)
+const SigninAppleRoute = SigninAppleRouteImport.update({
+  id: '/apple',
+  path: '/apple',
+  getParentRoute: () => SigninRoute,
+} as any)
 const SeeAllCategoryRoute = SeeAllCategoryRouteImport.update({
   id: '/see-all/$category',
   path: '/see-all/$category',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyReportRoute = SafetyReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => SafetyRoute,
+} as any)
+const SafetyEmergencyContactsRoute = SafetyEmergencyContactsRouteImport.update({
+  id: '/emergency-contacts',
+  path: '/emergency-contacts',
+  getParentRoute: () => SafetyRoute,
+} as any)
+const SafetyDiscreetCallRoute = SafetyDiscreetCallRouteImport.update({
+  id: '/discreet-call',
+  path: '/discreet-call',
+  getParentRoute: () => SafetyRoute,
 } as any)
 const ProfileTippingRoute = ProfileTippingRouteImport.update({
   id: '/tipping',
@@ -209,6 +276,11 @@ const BookingsBookingIdRoute = BookingsBookingIdRouteImport.update({
   id: '/$bookingId',
   path: '/$bookingId',
   getParentRoute: () => BookingsRoute,
+} as any)
+const BizSigninRoute = BizSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => BizRoute,
 } as any)
 const ProProIdIndexRoute = ProProIdIndexRouteImport.update({
   id: '/',
@@ -288,18 +360,23 @@ const BookingCallBookingIdRoute = BookingCallBookingIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/biz': typeof BizRouteWithChildren
   '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/join-as-pro': typeof JoinAsProRoute
+  '/map': typeof MapRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
-  '/safety': typeof SafetyRoute
-  '/signin': typeof SigninRoute
+  '/safety': typeof SafetyRouteWithChildren
+  '/search': typeof SearchRoute
+  '/signin': typeof SigninRouteWithChildren
   '/signup': typeof SignupRoute
+  '/sort': typeof SortRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/biz/signin': typeof BizSigninRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
@@ -313,10 +390,17 @@ export interface FileRoutesByFullPath {
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
+  '/safety/discreet-call': typeof SafetyDiscreetCallRoute
+  '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
+  '/safety/report': typeof SafetyReportRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/signin/apple': typeof SigninAppleRoute
+  '/signin/google': typeof SigninGoogleRoute
   '/bookings/': typeof BookingsIndexRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/safety/': typeof SafetyIndexRoute
+  '/signin/': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
@@ -335,15 +419,18 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/biz': typeof BizRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/join-as-pro': typeof JoinAsProRoute
+  '/map': typeof MapRoute
   '/notifications': typeof NotificationsRoute
-  '/safety': typeof SafetyRoute
-  '/signin': typeof SigninRoute
+  '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
+  '/sort': typeof SortRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/biz/signin': typeof BizSigninRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
@@ -356,10 +443,17 @@ export interface FileRoutesByTo {
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
+  '/safety/discreet-call': typeof SafetyDiscreetCallRoute
+  '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
+  '/safety/report': typeof SafetyReportRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/signin/apple': typeof SigninAppleRoute
+  '/signin/google': typeof SigninGoogleRoute
   '/bookings': typeof BookingsIndexRoute
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
+  '/safety': typeof SafetyIndexRoute
+  '/signin': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
@@ -379,18 +473,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/biometric-enroll': typeof BiometricEnrollRoute
+  '/biz': typeof BizRouteWithChildren
   '/bookings': typeof BookingsRouteWithChildren
   '/discover': typeof DiscoverRoute
   '/favorites': typeof FavoritesRouteWithChildren
   '/join-as-pro': typeof JoinAsProRoute
+  '/map': typeof MapRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
-  '/safety': typeof SafetyRoute
-  '/signin': typeof SigninRoute
+  '/safety': typeof SafetyRouteWithChildren
+  '/search': typeof SearchRoute
+  '/signin': typeof SigninRouteWithChildren
   '/signup': typeof SignupRoute
+  '/sort': typeof SortRoute
   '/splash': typeof SplashRoute
   '/unlock': typeof UnlockRoute
   '/welcome': typeof WelcomeRoute
+  '/biz/signin': typeof BizSigninRoute
   '/bookings/$bookingId': typeof BookingsBookingIdRoute
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
@@ -404,10 +503,17 @@ export interface FileRoutesById {
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
   '/profile/tipping': typeof ProfileTippingRoute
+  '/safety/discreet-call': typeof SafetyDiscreetCallRoute
+  '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
+  '/safety/report': typeof SafetyReportRoute
   '/see-all/$category': typeof SeeAllCategoryRoute
+  '/signin/apple': typeof SigninAppleRoute
+  '/signin/google': typeof SigninGoogleRoute
   '/bookings/': typeof BookingsIndexRoute
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/safety/': typeof SafetyIndexRoute
+  '/signin/': typeof SigninIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
@@ -428,18 +534,23 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/biometric-enroll'
+    | '/biz'
     | '/bookings'
     | '/discover'
     | '/favorites'
     | '/join-as-pro'
+    | '/map'
     | '/notifications'
     | '/profile'
     | '/safety'
+    | '/search'
     | '/signin'
     | '/signup'
+    | '/sort'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/biz/signin'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/policies/cancellation'
@@ -453,10 +564,17 @@ export interface FileRouteTypes {
     | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
+    | '/safety/discreet-call'
+    | '/safety/emergency-contacts'
+    | '/safety/report'
     | '/see-all/$category'
+    | '/signin/apple'
+    | '/signin/google'
     | '/bookings/'
     | '/favorites/'
     | '/profile/'
+    | '/safety/'
+    | '/signin/'
     | '/booking/call/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
@@ -475,15 +593,18 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/biometric-enroll'
+    | '/biz'
     | '/discover'
     | '/join-as-pro'
+    | '/map'
     | '/notifications'
-    | '/safety'
-    | '/signin'
+    | '/search'
     | '/signup'
+    | '/sort'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/biz/signin'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/policies/cancellation'
@@ -496,10 +617,17 @@ export interface FileRouteTypes {
     | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
+    | '/safety/discreet-call'
+    | '/safety/emergency-contacts'
+    | '/safety/report'
     | '/see-all/$category'
+    | '/signin/apple'
+    | '/signin/google'
     | '/bookings'
     | '/favorites'
     | '/profile'
+    | '/safety'
+    | '/signin'
     | '/booking/call/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
@@ -518,18 +646,23 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/biometric-enroll'
+    | '/biz'
     | '/bookings'
     | '/discover'
     | '/favorites'
     | '/join-as-pro'
+    | '/map'
     | '/notifications'
     | '/profile'
     | '/safety'
+    | '/search'
     | '/signin'
     | '/signup'
+    | '/sort'
     | '/splash'
     | '/unlock'
     | '/welcome'
+    | '/biz/signin'
     | '/bookings/$bookingId'
     | '/favorites/$collectionId'
     | '/policies/cancellation'
@@ -543,10 +676,17 @@ export interface FileRouteTypes {
     | '/profile/terms'
     | '/profile/theme'
     | '/profile/tipping'
+    | '/safety/discreet-call'
+    | '/safety/emergency-contacts'
+    | '/safety/report'
     | '/see-all/$category'
+    | '/signin/apple'
+    | '/signin/google'
     | '/bookings/'
     | '/favorites/'
     | '/profile/'
+    | '/safety/'
+    | '/signin/'
     | '/booking/call/$bookingId'
     | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
@@ -566,15 +706,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BiometricEnrollRoute: typeof BiometricEnrollRoute
+  BizRoute: typeof BizRouteWithChildren
   BookingsRoute: typeof BookingsRouteWithChildren
   DiscoverRoute: typeof DiscoverRoute
   FavoritesRoute: typeof FavoritesRouteWithChildren
   JoinAsProRoute: typeof JoinAsProRoute
+  MapRoute: typeof MapRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
-  SafetyRoute: typeof SafetyRoute
-  SigninRoute: typeof SigninRoute
+  SafetyRoute: typeof SafetyRouteWithChildren
+  SearchRoute: typeof SearchRoute
+  SigninRoute: typeof SigninRouteWithChildren
   SignupRoute: typeof SignupRoute
+  SortRoute: typeof SortRoute
   SplashRoute: typeof SplashRoute
   UnlockRoute: typeof UnlockRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -617,6 +761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sort': {
+      id: '/sort'
+      path: '/sort'
+      fullPath: '/sort'
+      preLoaderRoute: typeof SortRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -629,6 +780,13 @@ declare module '@tanstack/react-router' {
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/safety': {
@@ -650,6 +808,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications'
       preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/join-as-pro': {
@@ -680,6 +845,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biz': {
+      id: '/biz'
+      path: '/biz'
+      fullPath: '/biz'
+      preLoaderRoute: typeof BizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/biometric-enroll': {
       id: '/biometric-enroll'
       path: '/biometric-enroll'
@@ -693,6 +865,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/signin/': {
+      id: '/signin/'
+      path: '/'
+      fullPath: '/signin/'
+      preLoaderRoute: typeof SigninIndexRouteImport
+      parentRoute: typeof SigninRoute
+    }
+    '/safety/': {
+      id: '/safety/'
+      path: '/'
+      fullPath: '/safety/'
+      preLoaderRoute: typeof SafetyIndexRouteImport
+      parentRoute: typeof SafetyRoute
     }
     '/profile/': {
       id: '/profile/'
@@ -715,12 +901,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsIndexRouteImport
       parentRoute: typeof BookingsRoute
     }
+    '/signin/google': {
+      id: '/signin/google'
+      path: '/google'
+      fullPath: '/signin/google'
+      preLoaderRoute: typeof SigninGoogleRouteImport
+      parentRoute: typeof SigninRoute
+    }
+    '/signin/apple': {
+      id: '/signin/apple'
+      path: '/apple'
+      fullPath: '/signin/apple'
+      preLoaderRoute: typeof SigninAppleRouteImport
+      parentRoute: typeof SigninRoute
+    }
     '/see-all/$category': {
       id: '/see-all/$category'
       path: '/see-all/$category'
       fullPath: '/see-all/$category'
       preLoaderRoute: typeof SeeAllCategoryRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/safety/report': {
+      id: '/safety/report'
+      path: '/report'
+      fullPath: '/safety/report'
+      preLoaderRoute: typeof SafetyReportRouteImport
+      parentRoute: typeof SafetyRoute
+    }
+    '/safety/emergency-contacts': {
+      id: '/safety/emergency-contacts'
+      path: '/emergency-contacts'
+      fullPath: '/safety/emergency-contacts'
+      preLoaderRoute: typeof SafetyEmergencyContactsRouteImport
+      parentRoute: typeof SafetyRoute
+    }
+    '/safety/discreet-call': {
+      id: '/safety/discreet-call'
+      path: '/discreet-call'
+      fullPath: '/safety/discreet-call'
+      preLoaderRoute: typeof SafetyDiscreetCallRouteImport
+      parentRoute: typeof SafetyRoute
     }
     '/profile/tipping': {
       id: '/profile/tipping'
@@ -812,6 +1033,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/bookings/$bookingId'
       preLoaderRoute: typeof BookingsBookingIdRouteImport
       parentRoute: typeof BookingsRoute
+    }
+    '/biz/signin': {
+      id: '/biz/signin'
+      path: '/signin'
+      fullPath: '/biz/signin'
+      preLoaderRoute: typeof BizSigninRouteImport
+      parentRoute: typeof BizRoute
     }
     '/pro/$proId/': {
       id: '/pro/$proId/'
@@ -914,6 +1142,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface BizRouteChildren {
+  BizSigninRoute: typeof BizSigninRoute
+}
+
+const BizRouteChildren: BizRouteChildren = {
+  BizSigninRoute: BizSigninRoute,
+}
+
+const BizRouteWithChildren = BizRoute._addFileChildren(BizRouteChildren)
+
 interface BookingsRouteChildren {
   BookingsBookingIdRoute: typeof BookingsBookingIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
@@ -971,6 +1209,38 @@ const ProfileRouteChildren: ProfileRouteChildren = {
 const ProfileRouteWithChildren =
   ProfileRoute._addFileChildren(ProfileRouteChildren)
 
+interface SafetyRouteChildren {
+  SafetyDiscreetCallRoute: typeof SafetyDiscreetCallRoute
+  SafetyEmergencyContactsRoute: typeof SafetyEmergencyContactsRoute
+  SafetyReportRoute: typeof SafetyReportRoute
+  SafetyIndexRoute: typeof SafetyIndexRoute
+}
+
+const SafetyRouteChildren: SafetyRouteChildren = {
+  SafetyDiscreetCallRoute: SafetyDiscreetCallRoute,
+  SafetyEmergencyContactsRoute: SafetyEmergencyContactsRoute,
+  SafetyReportRoute: SafetyReportRoute,
+  SafetyIndexRoute: SafetyIndexRoute,
+}
+
+const SafetyRouteWithChildren =
+  SafetyRoute._addFileChildren(SafetyRouteChildren)
+
+interface SigninRouteChildren {
+  SigninAppleRoute: typeof SigninAppleRoute
+  SigninGoogleRoute: typeof SigninGoogleRoute
+  SigninIndexRoute: typeof SigninIndexRoute
+}
+
+const SigninRouteChildren: SigninRouteChildren = {
+  SigninAppleRoute: SigninAppleRoute,
+  SigninGoogleRoute: SigninGoogleRoute,
+  SigninIndexRoute: SigninIndexRoute,
+}
+
+const SigninRouteWithChildren =
+  SigninRoute._addFileChildren(SigninRouteChildren)
+
 interface ProProIdRouteChildren {
   ProProIdPortfolioRoute: typeof ProProIdPortfolioRoute
   ProProIdReviewsRoute: typeof ProProIdReviewsRoute
@@ -990,15 +1260,19 @@ const ProProIdRouteWithChildren = ProProIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BiometricEnrollRoute: BiometricEnrollRoute,
+  BizRoute: BizRouteWithChildren,
   BookingsRoute: BookingsRouteWithChildren,
   DiscoverRoute: DiscoverRoute,
   FavoritesRoute: FavoritesRouteWithChildren,
   JoinAsProRoute: JoinAsProRoute,
+  MapRoute: MapRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
-  SafetyRoute: SafetyRoute,
-  SigninRoute: SigninRoute,
+  SafetyRoute: SafetyRouteWithChildren,
+  SearchRoute: SearchRoute,
+  SigninRoute: SigninRouteWithChildren,
   SignupRoute: SignupRoute,
+  SortRoute: SortRoute,
   SplashRoute: SplashRoute,
   UnlockRoute: UnlockRoute,
   WelcomeRoute: WelcomeRoute,

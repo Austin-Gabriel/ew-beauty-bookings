@@ -147,7 +147,13 @@ export function NotificationsPage() {
           { text: amara.name.split(" ")[0] ?? amara.name, bold: true },
           { text: "? Leave a review to help other clients." },
         ],
-        ctas: [{ label: `Rate ${amara.name.split(" ")[0]}`, primary: true, onTap: () => toast("Review flow coming soon") }],
+        ctas: [
+          {
+            label: `Rate ${amara.name.split(" ")[0]}`,
+            primary: true,
+            onTap: () => navigate({ to: "/booking/rate/$bookingId", params: { bookingId: "bk-past-amara-apr" } }),
+          },
+        ],
       },
       {
         id: "a7",

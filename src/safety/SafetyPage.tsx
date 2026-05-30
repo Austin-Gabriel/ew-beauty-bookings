@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   ChevronLeft,
@@ -21,6 +21,7 @@ type ToggleState = "on" | "off";
 
 export function SafetyPage() {
   const router = useRouter();
+  const navigate = useNavigate();
   const { isDark, text } = useAuthTheme();
   const surfaceBg = isDark ? "transparent" : "var(--card)";
   const subtleBorder = "var(--border)";
@@ -128,14 +129,32 @@ export function SafetyPage() {
           <RowNav
             icon={UserPlus}
             label="Emergency contacts"
-            desc="2 contacts will be notified if you SOS"
-            onClick={() => toast("Emergency contacts editor coming next")}
+            desc="Trusted people we'll notify when you SOS"
+            onClick={() => navigate({ to: "/safety/emergency-contacts" })}
           />
           <RowNav
             icon={Share2}
             label="Share appointment"
             desc="Send pro's name, ETA, and license to a trusted person"
-            onClick={() => toast("Pick a contact to share with")}
+            onClick={async () => {
+              const url = typeof window !== "undefined" ? window.location.origin : "";
+              const text = "Heads up — I have an Ewà appointment coming up. Live status: " + url + "/safety";
+              if (typeof navigator !== "undefined" && "share" in navigator) {
+                try {
+                  await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share({
+                    title: "Ewà appointment",
+                    text,
+                  });
+                  return;
+                } catch {}
+              }
+              try {
+                await navigator.clipboard.writeText(text);
+                toast("Shareable summary copied");
+              } catch {
+                toast(text);
+              }
+            }}
             last
           />
         </SectionCard>
@@ -154,7 +173,7 @@ export function SafetyPage() {
             icon={PhoneCall}
             label="Discreet support call"
             desc="Connect to Ewà support disguised as a regular call"
-            onClick={() => toast("Discreet call coming next")}
+            onClick={() => navigate({ to: "/safety/discreet-call" })}
             last
           />
         </SectionCard>
@@ -167,7 +186,7 @@ export function SafetyPage() {
             tone="danger"
             label="Report an issue"
             desc="Anonymously flag concerns about a pro"
-            onClick={() => toast("Report flow coming next")}
+            onClick={() => navigate({ to: "/safety/report" })}
             last
           />
         </SectionCard>
