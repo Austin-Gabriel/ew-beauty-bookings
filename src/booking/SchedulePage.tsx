@@ -24,28 +24,6 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
-function startOfMonth(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-function addMonths(d: Date, n: number): Date {
-  return new Date(d.getFullYear(), d.getMonth() + n, 1);
-}
-
-function buildMonthGrid(monthAnchor: Date): Date[] {
-  // Always 6 weeks (42 cells), Sunday-start.
-  const first = startOfMonth(monthAnchor);
-  const offset = first.getDay(); // 0 = Sun
-  const start = new Date(first);
-  start.setDate(first.getDate() - offset);
-  const cells: Date[] = [];
-  for (let i = 0; i < 42; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    cells.push(d);
-  }
-  return cells;
-}
 
 function generateSlots(
   date: Date,
