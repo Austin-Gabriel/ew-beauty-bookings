@@ -79,13 +79,6 @@ function slotToTimestamp(date: Date, timeLabel: string): number {
   return d.getTime();
 }
 
-const DOW_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
-const MONTH_LABELS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-const SHORT_DOW = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-const SHORT_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
