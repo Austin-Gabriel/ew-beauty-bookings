@@ -131,18 +131,10 @@ export function SchedulePage({ proId }: { proId: string }) {
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-  const minMonth = useMemo(() => startOfMonth(today), [today]);
-  const maxMonth = useMemo(() => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + 60);
-    return startOfMonth(d);
-  }, [today]);
 
-  const [monthAnchor, setMonthAnchor] = useState<Date>(() => startOfMonth(today));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  const cells = useMemo(() => buildMonthGrid(monthAnchor), [monthAnchor]);
   const slots = useMemo(
     () => (selectedDate ? generateSlots(selectedDate, schedule) : []),
     [selectedDate, schedule],
@@ -151,7 +143,7 @@ export function SchedulePage({ proId }: { proId: string }) {
   const isDateDisabled = (d: Date) => {
     const day = new Date(d);
     day.setHours(0, 0, 0, 0);
-    if (day <= today) return true;
+    if (day < today) return true;
     const last = new Date(today);
     last.setDate(last.getDate() + 60);
     if (day > last) return true;
@@ -166,8 +158,6 @@ export function SchedulePage({ proId }: { proId: string }) {
     setSelectedTime(null);
   }, [selectedDate]);
 
-  const canPrev = monthAnchor > minMonth;
-  const canNext = monthAnchor < maxMonth;
   const canContinue = !!selectedDate && !!selectedTime;
 
   // Service info (price)
