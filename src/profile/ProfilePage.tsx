@@ -6,7 +6,6 @@ import {
   MapPin,
   CreditCard,
   Bell,
-  Percent,
   Monitor,
   HelpCircle,
   MessageCircle,
@@ -19,12 +18,6 @@ import { useDevState } from "@/dev-state/devState";
 import { useCustomerProfile } from "@/data/customer-store";
 import { AvatarActionSheet } from "./AvatarActionSheet";
 import { ContactSupportSheet } from "./ContactSupportSheet";
-
-function tippingLabel(pref: { type: string; value?: number }): string {
-  if (pref.type === "ask") return "Ask each time";
-  if (pref.type === "custom") return `Default ${pref.value ?? 0}%`;
-  return `Default ${pref.value ?? 0}%`;
-}
 
 function themeModeLabel(mode: string): string {
   if (mode === "system") return "System";
@@ -193,7 +186,7 @@ export function ProfilePage() {
   const [showSignOutSheet, setShowSignOutSheet] = useState(false);
   const [showSupportSheet, setShowSupportSheet] = useState(false);
 
-  const { identity, savedAddresses, paymentMethods, tippingPreference, themePreference } = profile;
+  const { identity, savedAddresses, paymentMethods, themePreference } = profile;
   const hasPhoto = !!identity.avatarPhotoUrl;
 
   const addressCount = savedAddresses.length;
@@ -327,12 +320,6 @@ export function ProfilePage() {
           icon={Bell}
           label="Notifications"
           to="/profile/notifications"
-        />
-        <SettingsRow
-          icon={Percent}
-          label="Tipping preferences"
-          value={tippingLabel(tippingPreference)}
-          to="/profile/tipping"
         />
         <SettingsRow
           icon={Monitor}

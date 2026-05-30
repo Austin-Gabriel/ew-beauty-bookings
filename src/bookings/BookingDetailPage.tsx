@@ -1,63 +1,79 @@
 /**
  * BookingDetailPage — /bookings/[bookingId]
  *
- * Single source of truth: reads from BookingsProvider, formats dates
- * via formatBookingDate. No local copies of state.
+ * Four visually distinct surfaces driven by booking.status:
+ *
+ *   1. On-the-way (enroute / getting-ready / arrived) — dark navy hero,
+ *      live pulsing pill, big ETA / arrival headline, stylist row at the
+ *      bottom of the hero with Message + Call inline. PIN card surfaces
+ *      below the hero ONLY for "enroute" / "arrived" (post-acceptance).
+ *
+ *   2. Confirmed future — light surface-muted top with Confirmed pill,
+ *      stylist row, Message + Call CTA row, then an orange countdown
+ *      card "In 18 hours · Tomorrow at 1:00 PM".
+ *
+ *   3. In progress — green gradient hero with timer + progress bar.
+ *      PIN is gone (no longer needed), payment shifts to "will be
+ *      charged when service completes".
+ *
+ *   4. Completed — light hero with check circle, All done headline,
+ *      Completed-at pill, then an orange "Rate your time" prompt card,
+ *      then details + receipt link + "Book again" CTA.
+ *
+ * Cancelled / declined statuses route to /booking/cancelled/$bookingId
+ * (the trust-recovery surface); pending_pro_approval routes to
+ * /booking/pending/$bookingId. This page is only for live / future /
+ * in-progress / completed.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import {
   ChevronLeft,
+  ChevronRight,
   Clock,
-  MapPin,
-  Scissors,
+  CalendarDays,
   CreditCard,
   FileText,
+  Lock,
+  MapPin,
+  MessageSquare,
+  MoreVertical,
+  Phone,
+  ShieldCheck,
+  Star,
+  XCircle,
 } from "lucide-react";
 import { SANS_STACK } from "@/auth/auth-shell";
-import { useBookings, type BookingStatus } from "@/data/bookings-store";
+import { useBookings, type Booking, type BookingStatus } from "@/data/bookings-store";
 import { MOCK_PROS } from "@/data/mock-pros";
 import { useCustomerProfile } from "@/data/customer-store";
-import { formatBookingDate } from "@/lib/format-booking-date";
 import { CancelSheet } from "@/bookings/CancelSheet";
 
-const ORANGE = "var(--bagel)";
+const ORANGE = "#FF823F";
+const SUCCESS = "#16A34A";
+const PROGRESS_GRADIENT = "linear-gradient(135deg, #15A03A 0%, #0E7A2A 100%)";
 
 /* ------------------------------------------------------------------ */
-/*  Status pill (same logic as BookingsPage — single source)           */
+/*  Status grouping — drives which "mode" to render                    */
 /* ------------------------------------------------------------------ */
 
-function statusPillFor(status: BookingStatus): { text: string; bg: string; fg: string } {
-  const BAGEL_PILL = { bg: "rgba(255,130,63,0.14)", fg: ORANGE };
-  const NEUTRAL_PILL = { bg: "rgba(11,18,32,0.06)", fg: "var(--on-card-muted)" };
+type Mode = "live" | "future" | "in-progress" | "completed";
 
+function modeFor(status: BookingStatus): Mode | null {
   switch (status) {
-    case "searching": return { text: "Searching", ...BAGEL_PILL };
-    case "pending_pro_approval": return { text: "Pending", ...BAGEL_PILL };
-    case "confirmed": return { text: "Confirmed", ...BAGEL_PILL };
-    case "getting-ready": return { text: "Getting ready", ...BAGEL_PILL };
-    case "enroute": return { text: "On the way", ...BAGEL_PILL };
-    case "arrived": return { text: "Arrived", ...BAGEL_PILL };
-    case "in-progress": return { text: "In progress", ...BAGEL_PILL };
-    case "completed": return { text: "Completed", ...NEUTRAL_PILL };
-    case "cancelled": return { text: "Cancelled", ...NEUTRAL_PILL };
-    case "declined": return { text: "Declined", ...NEUTRAL_PILL };
-    default: return { text: String(status), ...NEUTRAL_PILL };
+    case "getting-ready":
+    case "enroute":
+    case "arrived":
+      return "live";
+    case "confirmed":
+      return "future";
+    case "in-progress":
+      return "in-progress";
+    case "completed":
+      return "completed";
+    default:
+      return null;
   }
-}
-
-/* ------------------------------------------------------------------ */
-/*  Edit rules                                                          */
-/* ------------------------------------------------------------------ */
-
-/** Can the customer edit notes for this booking? Only while it's upcoming and not yet in-progress. */
-function canEditNotes(status: BookingStatus): boolean {
-  return ["pending_pro_approval", "confirmed", "getting-ready", "enroute"].includes(status);
-}
-
-/** Can the customer cancel this booking? Any active status before in-progress. */
-function canCancel(status: BookingStatus): boolean {
-  return ["pending_pro_approval", "confirmed", "getting-ready", "enroute", "arrived"].includes(status);
 }
 
 /* ------------------------------------------------------------------ */
@@ -75,6 +91,19 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesValue, setNotesValue] = useState("");
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Reroute statuses that have their own dedicated page.
+  useEffect(() => {
+    if (!booking) return;
+    if (booking.status === "pending_pro_approval") {
+      navigate({ to: "/booking/pending/$bookingId", params: { bookingId } });
+    } else if (booking.status === "cancelled" || booking.status === "declined") {
+      navigate({ to: "/booking/cancelled/$bookingId", params: { bookingId } });
+    } else if (booking.status === "searching") {
+      navigate({ to: "/booking/searching/$bookingId", params: { bookingId } });
+    }
+  }, [booking, bookingId, navigate]);
 
   if (!booking || !pro) {
     return (
@@ -91,472 +120,1008 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
     );
   }
 
-  const status = booking.status;
-  const proFirst = pro.name.split(" ")[0];
-  const pill = statusPillFor(status);
-  const initials = pro.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+  const mode = modeFor(booking.status);
+  if (!mode) {
+    // Status is being routed elsewhere via the effect above — render nothing
+    // for the split-second before navigate fires.
+    return <div className="min-h-screen bg-background" />;
+  }
 
-  // Payment card info
+  const proFirst = pro.name.split(" ")[0] ?? pro.name;
+  const initials = pro.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
   const card = booking.paymentMethodId
     ? profile.paymentMethods.find((c) => c.id === booking.paymentMethodId)
     : profile.paymentMethods.find((c) => c.isDefault) ?? profile.paymentMethods[0];
 
   const servicePrice = booking.service.price;
-  const tipAmount = booking.tipAmount ?? 0;
-  const total = booking.total ?? servicePrice + tipAmount;
+  const bookingFee = 3;
+  const total = booking.total ?? servicePrice + bookingFee + (booking.tipAmount ?? 0);
 
-  // Active = not completed/cancelled/declined
-  const isActive = !["completed", "cancelled", "declined"].includes(status);
-  const isComplete = status === "completed";
-  const isCancelled = status === "cancelled" || status === "declined";
-  const isPending = status === "pending_pro_approval";
+  const isLive = mode === "live";
+  const isInProgress = mode === "in-progress";
+  const isComplete = mode === "completed";
+  const isFuture = mode === "future";
+  const showPin = !!booking.pin && (booking.status === "enroute" || booking.status === "arrived");
+  const canEditNotes = isFuture || booking.status === "getting-ready" || booking.status === "enroute";
 
-  // PIN visible only after pro accepted (confirmed or later, not pending)
-  const showPin = booking.pin && !["searching", "pending_pro_approval"].includes(status) && isActive;
-
-  // Reschedule available for confirmed/scheduled bookings before in-progress
-  const canReschedule = ["confirmed", "getting-ready"].includes(status);
+  const navBarVariant: "dark" | "green" | "light" = isLive ? "dark" : isInProgress ? "green" : "light";
 
   const handleSaveNotes = () => {
     setBookings(
-      bookings.map((b) => b.id === bookingId ? { ...b, notes: notesValue.trim() || undefined } : b)
+      bookings.map((b) => (b.id === bookingId ? { ...b, notes: notesValue.trim() || undefined } : b)),
     );
     setEditingNotes(false);
   };
 
-  const handleStartEditNotes = () => {
-    setNotesValue(booking.notes ?? "");
-    setEditingNotes(true);
-  };
-
   return (
     <div className="flex min-h-screen flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
-      {/* Top bar — back chevron only */}
-      <div className="relative flex h-12 shrink-0 items-center px-4">
-        <button
-          type="button"
-          onClick={() => router.history.back()}
-          className="grid h-9 w-9 place-items-center rounded-full text-foreground"
-        >
-          <ChevronLeft size={20} />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-36">
-        {/* Pro summary card — tappable to open pro profile */}
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
-          className="w-full rounded-2xl bg-card p-4 text-left"
-          style={{ border: "1px solid var(--hairline)" }}
-        >
-          <div className="flex items-center gap-3.5">
-            <div
-              className="grid h-14 w-14 shrink-0 place-items-center rounded-full"
-              style={{
-                backgroundColor: "var(--cream-elevated)",
-                color: "var(--midnight)",
-                fontSize: 18,
-                fontWeight: 700,
-                border: "0.5px solid rgba(6,28,39,0.08)",
-              }}
-            >
-              {initials}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
-                {pro.name}
-              </p>
-              <p className="text-[14px]" style={{ color: "var(--on-card-muted)" }}>
-                {booking.service.name} · {booking.service.durationLabel}
-              </p>
-            </div>
-            <span
-              className="shrink-0 rounded-full"
-              style={{
-                backgroundColor: pill.bg,
-                color: pill.fg,
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                padding: "4px 9px",
-              }}
-            >
-              {pill.text}
-            </span>
-          </div>
-        </button>
-
-        {/* Detail rows */}
-        <div className="mt-3 rounded-2xl bg-card" style={{ border: "1px solid var(--hairline)" }}>
-          {/* When */}
-          <DetailRow
-            icon={<Clock size={18} />}
-            label="When"
-            value={formatBookingDate(booking.when)}
-          />
-          <Hairline />
-
-          {/* Address */}
-          <DetailRow
-            icon={<MapPin size={18} />}
-            label="Address"
-            value={booking.location.label}
-          />
-          <Hairline />
-
-          {/* Service */}
-          <DetailRow
-            icon={<Scissors size={18} />}
-            label="Service"
-            value={`${booking.service.name} · $${servicePrice}`}
-            tabular
-          />
-          <Hairline />
-
-          {/* Payment */}
-          <DetailRow
-            icon={<CreditCard size={18} />}
-            label="Payment"
-            value={card ? `${brandLabel(card.brand)} · ${card.last4}` : "—"}
-            tabular={!!card}
-          />
-          <Hairline />
-
-          {/* Notes — editable */}
-          {editingNotes ? (
-            <div className="px-4 py-3.5">
-              <div className="flex items-center gap-3">
-                <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}><FileText size={18} /></span>
-                <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                  Notes
-                </p>
-              </div>
-              <textarea
-                value={notesValue}
-                onChange={(e) => setNotesValue(e.target.value)}
-                placeholder={`Add notes for ${proFirst}`}
-                rows={3}
-                autoFocus
-                className="mt-2 w-full resize-none rounded-xl border-none px-3 py-2.5 outline-none"
-                style={{
-                  backgroundColor: "var(--surface-elevated)",
-                  color: "var(--foreground)",
-                  fontSize: 14,
-                  fontFamily: SANS_STACK,
-                  lineHeight: 1.5,
-                }}
-              />
-              <div className="mt-2 flex gap-2 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setEditingNotes(false)}
-                  style={{ fontSize: 13, fontWeight: 600, color: "var(--muted-foreground)", background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveNotes}
-                  style={{ fontSize: 13, fontWeight: 600, color: ORANGE, background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={canEditNotes(status) ? handleStartEditNotes : undefined}
-              disabled={!canEditNotes(status)}
-              className="w-full text-left"
-              style={{ background: "none", border: "none", cursor: canEditNotes(status) ? "pointer" : "default" }}
-            >
-              <DetailRow
-                icon={<FileText size={18} />}
-                label="Notes"
-                value={booking.notes || undefined}
-                placeholder={canEditNotes(status) ? `Add notes for ${proFirst}` : "—"}
-                action={canEditNotes(status) ? "Edit" : undefined}
-              />
-            </button>
-          )}
-        </div>
-
-        {/* PIN card */}
-        {showPin && (
-          <div
-            className="mt-3 rounded-2xl bg-card p-4"
-            style={{ border: "1px solid var(--hairline)" }}
-          >
-            <p
-              style={{
-                fontSize: 10,
-                color: "var(--on-card-muted)",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}
-            >
-              Arrival PIN
-            </p>
-            <p
-              className="tabular"
-              style={{
-                fontSize: 28,
-                fontWeight: 700,
-                color: "var(--card-foreground)",
-                letterSpacing: "0.18em",
-                marginTop: 4,
-              }}
-            >
-              {booking.pin}
-            </p>
-            <p style={{ fontSize: 12, color: "var(--on-card-muted)", marginTop: 4 }}>
-              Read this to {proFirst} when they arrive
-            </p>
-          </div>
-        )}
-
-        {/* Total summary card */}
-        {isCancelled ? (
-          /* Cancelled: show refund info instead of price breakdown */
-          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
-            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
-              <span>Service</span>
-              <span className="tabular font-medium" style={{ textDecoration: "line-through", color: "var(--on-card-muted)" }}>
-                ${servicePrice.toFixed(2)}
-              </span>
-            </div>
-            {booking.refundUsd != null && (
-              <div className="mt-2 flex items-center justify-between text-[15px]">
-                <span style={{ color: "var(--card-foreground)" }}>Refund</span>
-                <span className="tabular font-medium" style={{ color: "#16a34a" }}>
-                  ${booking.refundUsd.toFixed(2)}
-                </span>
-              </div>
-            )}
-            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
-            <p style={{ fontSize: 13, color: "var(--on-card-muted)", textAlign: "center", lineHeight: 1.5 }}>
-              {booking.refundUsd
-                ? "Refund processed — may take 5–10 business days."
-                : status === "declined"
-                  ? "This booking was declined by the pro. No charge."
-                  : "This booking was cancelled."}
-            </p>
-          </div>
-        ) : (
-          <div className="mt-3 rounded-2xl bg-card p-4" style={{ border: "1px solid var(--hairline)" }}>
-            <div className="flex items-center justify-between text-[15px]" style={{ color: "var(--card-foreground)" }}>
-              <span>Service</span>
-              <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
-            </div>
-            <div className="mt-2 flex items-center justify-between text-[15px]">
-              <span style={{ color: "var(--card-foreground)" }}>
-                {isComplete ? "Tip" : "Estimated tip"}
-              </span>
-              <span className="tabular font-medium" style={{ color: "var(--card-foreground)" }}>
-                ${tipAmount.toFixed(2)}
-              </span>
-            </div>
-            <div className="my-3" style={{ height: 1, backgroundColor: "var(--hairline)" }} />
-            <div className="flex items-center justify-between">
-              <span className="text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>Total</span>
-              <span className="tabular text-[17px] font-semibold" style={{ color: "var(--card-foreground)" }}>
-                ${total.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Cancel link — visible for any cancellable status */}
-        {canCancel(status) && (
-          <button
-            type="button"
-            onClick={() => setCancelOpen(true)}
-            className="mt-4 w-full text-center"
-            style={{ color: "#DC2626", fontSize: 13, fontWeight: 600, fontFamily: SANS_STACK, background: "none", border: "none", cursor: "pointer" }}
-          >
-            {isPending ? "Cancel request" : "Cancel booking"}
-          </button>
-        )}
-      </div>
-
-      {/* Sticky bottom: active bookings (confirmed+) — Message, Call, Reschedule */}
-      {isActive && !isPending && status !== "searching" && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3"
-              style={{
-                backgroundColor: "var(--surface-elevated)",
-                border: "1px solid var(--hairline)",
-                color: "var(--foreground)",
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              Message
-            </button>
-            {canReschedule ? (
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/booking/reschedule/$bookingId", params: { bookingId } })}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3 transition-transform active:scale-95"
-                style={{
-                  backgroundColor: "var(--bagel)",
-                  color: "var(--bagel-foreground)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              >
-                Reschedule
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-3 transition-transform active:scale-95"
-                style={{
-                  backgroundColor: "var(--bagel)",
-                  color: "var(--bagel-foreground)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                Call
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Pending state: just a "Cancel request" in footer */}
-      {isPending && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
-          <button
-            type="button"
-            onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
-            className="w-full rounded-2xl py-3 text-center transition-transform active:scale-[0.98]"
-            style={{
-              backgroundColor: "var(--surface-elevated)",
-              border: "1px solid var(--hairline)",
-              color: "var(--foreground)",
-              fontSize: 14,
-              fontWeight: 600,
-            }}
-          >
-            Message {proFirst}
-          </button>
-        </div>
-      )}
-
-      {/* Complete state: View receipt + Rate */}
-      {isComplete && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-background px-4 pb-[max(env(safe-area-inset-bottom,0px),12px)] pt-3">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/booking/receipt/$bookingId", params: { bookingId } })}
-              className="inline-flex flex-1 items-center justify-center rounded-2xl py-3"
-              style={{
-                backgroundColor: "var(--surface-elevated)",
-                border: "1px solid var(--hairline)",
-                color: "var(--foreground)",
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              View receipt
-            </button>
-            {!booking.rating && (
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/booking/rate/$bookingId", params: { bookingId } })}
-                className="inline-flex flex-1 items-center justify-center rounded-2xl py-3 transition-transform active:scale-95"
-                style={{
-                  backgroundColor: "var(--bagel)",
-                  color: "var(--bagel-foreground)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              >
-                Rate this booking
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Cancel sheet */}
-      <CancelSheet
-        bookingId={bookingId}
-        open={cancelOpen}
-        onClose={() => setCancelOpen(false)}
+      <TopNav
+        variant={navBarVariant}
+        onBack={() => router.history.back()}
+        onMenu={() => setMenuOpen(true)}
       />
+
+      <div className="flex-1 overflow-y-auto pb-32">
+        {/* ─── HERO ──────────────────────────────────────────────────── */}
+        {isLive && <LiveHero booking={booking} initials={initials} proFirst={proFirst} pro={pro} bookingId={bookingId} navigate={navigate} />}
+        {isFuture && <FutureHero booking={booking} initials={initials} pro={pro} bookingId={bookingId} navigate={navigate} />}
+        {isInProgress && <ProgressHero booking={booking} />}
+        {isComplete && <CompletedHero booking={booking} />}
+
+        {/* ─── PIN (live only, post-accept) ─────────────────────────── */}
+        {showPin && <PinCard pin={booking.pin!} proFirst={proFirst} />}
+
+        {/* ─── Review prompt (completed, not yet rated) ─────────────── */}
+        {isComplete && !booking.rating && (
+          <ReviewPromptCard
+            proFirst={proFirst}
+            onTap={() => navigate({ to: "/booking/rate/$bookingId", params: { bookingId } })}
+          />
+        )}
+
+        {/* ─── Details ───────────────────────────────────────────────── */}
+        <DetailsList
+          booking={booking}
+          pro={pro}
+          proFirst={proFirst}
+          card={card}
+          mode={mode}
+          editingNotes={editingNotes}
+          notesValue={notesValue}
+          canEditNotes={canEditNotes}
+          onEditStart={() => {
+            setNotesValue(booking.notes ?? "");
+            setEditingNotes(true);
+          }}
+          onEditCancel={() => setEditingNotes(false)}
+          onEditSave={handleSaveNotes}
+          onNotesChange={setNotesValue}
+        />
+
+        {/* ─── Cost summary ─────────────────────────────────────────── */}
+        <CostCard
+          servicePrice={servicePrice}
+          bookingFee={bookingFee}
+          totalLabel={isComplete ? "Total paid" : "Total"}
+          total={total}
+        />
+
+        {/* ─── Book again (completed only) ──────────────────────────── */}
+        {isComplete && (
+          <div className="px-5 pt-2">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/pro/$proId", params: { proId: pro.id } })}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 transition-transform active:scale-[0.98]"
+              style={{
+                backgroundColor: ORANGE,
+                color: "#1A0E08",
+                fontSize: 15,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              Book {proFirst} again
+              <ChevronRight size={14} strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <MenuSheet
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        mode={mode}
+        bookingId={bookingId}
+        navigate={navigate}
+        onCancel={() => {
+          setMenuOpen(false);
+          setCancelOpen(true);
+        }}
+      />
+
+      <CancelSheet bookingId={bookingId} open={cancelOpen} onClose={() => setCancelOpen(false)} />
     </div>
   );
 }
 
-/* ── Shared detail row ─────────────────────────────── */
+/* ------------------------------------------------------------------ */
+/*  TopNav                                                              */
+/* ------------------------------------------------------------------ */
+
+function TopNav({
+  variant,
+  onBack,
+  onMenu,
+}: {
+  variant: "dark" | "green" | "light";
+  onBack: () => void;
+  onMenu: () => void;
+}) {
+  const dark = variant !== "light";
+  const bg =
+    variant === "dark" ? "#0B1220" : variant === "green" ? PROGRESS_GRADIENT : "var(--bg, var(--background))";
+  const fg = dark ? "#fff" : "var(--foreground)";
+  const btnBg = dark ? "rgba(255,255,255,0.10)" : "var(--surface-elevated)";
+
+  return (
+    <div
+      className="sticky top-0 z-30 flex items-center gap-3 px-5 py-3.5"
+      style={{ background: bg, borderBottom: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid var(--border)" }}
+    >
+      <button
+        type="button"
+        onClick={onBack}
+        aria-label="Back"
+        className="grid h-9 w-9 place-items-center rounded-full"
+        style={{ backgroundColor: btnBg, color: fg }}
+      >
+        <ChevronLeft size={16} />
+      </button>
+      <h1
+        className="flex-1 text-center"
+        style={{ fontSize: 16, fontWeight: 600, color: fg, letterSpacing: "-0.01em" }}
+      >
+        Your booking
+      </h1>
+      <button
+        type="button"
+        onClick={onMenu}
+        aria-label="Booking options"
+        className="grid h-9 w-9 place-items-center rounded-full"
+        style={{ backgroundColor: btnBg, color: fg }}
+      >
+        <MoreVertical size={15} />
+      </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  LiveHero (on the way / getting ready / arrived)                    */
+/* ------------------------------------------------------------------ */
+
+function LiveHero({
+  booking,
+  initials,
+  proFirst,
+  pro,
+  bookingId,
+  navigate,
+}: {
+  booking: Booking;
+  initials: string;
+  proFirst: string;
+  pro: { name: string; certified: boolean };
+  bookingId: string;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  const status = booking.status;
+  const eta = booking.etaMinutes ?? 12;
+  const headline = status === "arrived" ? "Arrived" : `${eta} min`;
+  const headlineLabel = status === "arrived" ? "Status" : status === "getting-ready" ? "Leaving in" : "Arriving in";
+  const headlineSub =
+    status === "arrived"
+      ? `${proFirst} is at your door — share the PIN below`
+      : status === "getting-ready"
+        ? `${proFirst} is prepping their kit`
+        : `${proFirst} left her last appointment at ${shortTime(Date.now() - 14 * 60 * 1000)}`;
+  const pillText = status === "arrived" ? "Arrived" : status === "getting-ready" ? "Getting ready" : "On the way";
+
+  return (
+    <div
+      className="relative overflow-hidden px-5 pb-6 pt-6"
+      style={{ background: "#0B1220", color: "#fff" }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at 80% 20%, rgba(255,130,63,0.18) 0%, transparent 60%)" }}
+      />
+      <div className="relative">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
+          style={{ backgroundColor: "rgba(255,130,63,0.18)", color: ORANGE, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+        >
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: ORANGE }} />
+          {pillText}
+        </span>
+
+        <div className="mt-5">
+          <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.60)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+            {headlineLabel}
+          </p>
+          <p className="mt-1.5" style={{ fontSize: 44, fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1 }}>
+            {headline}
+          </p>
+          <p className="mt-1.5" style={{ fontSize: 13, color: "rgba(255,255,255,0.70)", lineHeight: 1.45 }}>
+            {headlineSub}
+          </p>
+        </div>
+
+        <div className="mt-5 flex items-center gap-3 border-t pt-4" style={{ borderColor: "rgba(255,255,255,0.10)" }}>
+          <div
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full"
+            style={{
+              background: "linear-gradient(135deg, #FFD9C7 0%, #FF9270 100%)",
+              color: "#7C2D12",
+              fontSize: 15,
+              fontWeight: 700,
+              border: "2px solid rgba(255,255,255,0.15)",
+            }}
+          >
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="inline-flex items-center gap-1.5" style={{ fontSize: 15.5, fontWeight: 700, color: "#fff", letterSpacing: "-0.015em" }}>
+              <span className="truncate">{pro.name}</span>
+              {pro.certified && (
+                <span
+                  aria-hidden
+                  className="inline-grid place-items-center rounded-full"
+                  style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
+                >
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+              )}
+            </p>
+            <p style={{ fontSize: 12.5, color: "rgba(255,255,255,0.65)", marginTop: 2 }}>
+              {booking.service.name} · {booking.service.durationLabel}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
+            aria-label="Message"
+            className="grid h-10 w-10 place-items-center rounded-full"
+            style={{ backgroundColor: "rgba(255,255,255,0.10)", color: "#fff" }}
+          >
+            <MessageSquare size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
+            aria-label="Call"
+            className="grid h-10 w-10 place-items-center rounded-full"
+            style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+          >
+            <Phone size={16} fill="currentColor" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  FutureHero (confirmed future)                                       */
+/* ------------------------------------------------------------------ */
+
+function FutureHero({
+  booking,
+  initials,
+  pro,
+  bookingId,
+  navigate,
+}: {
+  booking: Booking;
+  initials: string;
+  pro: { name: string; certified: boolean };
+  bookingId: string;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  return (
+    <div className="border-b px-5 pb-6 pt-6" style={{ backgroundColor: "var(--surface-elevated)", borderColor: "var(--border)" }}>
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
+        style={{ backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+      >
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        Confirmed
+      </span>
+
+      <div className="mt-4 flex items-center gap-3.5">
+        <div
+          className="grid h-14 w-14 shrink-0 place-items-center rounded-full"
+          style={{
+            background: "linear-gradient(135deg, #FFD9C7 0%, #FF9270 100%)",
+            color: "#7C2D12",
+            fontSize: 18,
+            fontWeight: 700,
+            border: "3px solid #fff",
+            boxShadow: "0 1px 3px rgba(20,25,40,0.06)",
+          }}
+        >
+          {initials}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="inline-flex items-center gap-1.5" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.02em" }}>
+            <span className="truncate">{pro.name}</span>
+            {pro.certified && (
+              <span
+                aria-hidden
+                className="inline-grid place-items-center rounded-full"
+                style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
+              >
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </span>
+            )}
+          </p>
+          <p style={{ fontSize: 12.5, color: "var(--on-card-muted)", marginTop: 2 }}>
+            {booking.service.name} · {booking.service.durationLabel}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex gap-2">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
+          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+        >
+          <MessageSquare size={14} />
+          Message
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
+          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+        >
+          <Phone size={14} />
+          Call
+        </button>
+      </div>
+
+      {/* Countdown card */}
+      <div
+        className="mt-4 flex items-center gap-3 rounded-2xl border px-4 py-3.5"
+        style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
+      >
+        <div
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
+          style={{ backgroundColor: "rgba(255,130,63,0.12)", color: ORANGE }}
+        >
+          <Clock size={16} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p style={{ fontSize: 13.5, fontWeight: 700, color: "var(--card-foreground)" }}>{relativeCountdown(booking.when)}</p>
+          <p style={{ fontSize: 11.5, color: "var(--on-card-muted)", marginTop: 2 }}>{absoluteLabel(booking.when)}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  ProgressHero (in progress)                                          */
+/* ------------------------------------------------------------------ */
+
+function ProgressHero({ booking }: { booking: Booking }) {
+  const startedAt = booking.startedAt ?? booking.when;
+  const durationMin = parseDurationMin(booking.service.durationLabel);
+  const endsAt = startedAt + durationMin * 60_000;
+  const now = Date.now();
+  const remaining = Math.max(0, endsAt - now);
+  const remainingLabel = mmss(remaining);
+  const progressPct = Math.min(100, Math.max(0, ((now - startedAt) / (durationMin * 60_000)) * 100));
+
+  return (
+    <div className="relative overflow-hidden px-5 pb-6 pt-6" style={{ background: PROGRESS_GRADIENT, color: "#fff" }}>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.12) 0%, transparent 60%)" }}
+      />
+      <div className="relative">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
+          style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "#fff", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+        >
+          <span aria-hidden className="ewa-pulse" style={{ width: 6, height: 6, borderRadius: 9999, backgroundColor: "#fff" }} />
+          In progress
+        </span>
+
+        <div className="mt-5">
+          <p style={{ fontSize: 11.5, color: "rgba(255,255,255,0.70)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+            Time remaining
+          </p>
+          <p className="tabular mt-1.5" style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+            {remainingLabel}
+          </p>
+          <p className="mt-1.5" style={{ fontSize: 13, color: "rgba(255,255,255,0.78)", lineHeight: 1.45 }}>
+            Service ends around {shortTime(endsAt)}
+          </p>
+        </div>
+
+        <div className="mt-4 overflow-hidden rounded-full" style={{ height: 6, backgroundColor: "rgba(255,255,255,0.20)" }}>
+          <div className="h-full rounded-full" style={{ width: `${progressPct}%`, backgroundColor: "#fff" }} />
+        </div>
+        <div className="mt-2 flex justify-between" style={{ fontSize: 11, color: "rgba(255,255,255,0.72)", fontWeight: 500 }}>
+          <span>Started {shortTime(startedAt)}</span>
+          <span>Ends {shortTime(endsAt)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  CompletedHero                                                       */
+/* ------------------------------------------------------------------ */
+
+function CompletedHero({ booking }: { booking: Booking }) {
+  const completedAt = booking.startedAt
+    ? booking.startedAt + parseDurationMin(booking.service.durationLabel) * 60_000
+    : booking.when;
+  return (
+    <div className="border-b px-5 pb-5 pt-6 text-center" style={{ borderColor: "var(--border)" }}>
+      <div
+        className="mx-auto grid place-items-center rounded-full"
+        style={{ width: 64, height: 64, backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS }}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <h2 className="mt-3.5" style={{ fontSize: 19, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}>
+        All done
+      </h2>
+      <p className="mt-1" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
+        Hope you loved your {booking.service.name.toLowerCase()}
+      </p>
+      <span
+        className="mt-3.5 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
+        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+      >
+        Completed {todayOrDay(completedAt)} at {shortTime(completedAt)}
+      </span>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  PinCard (visible only enroute / arrived)                            */
+/* ------------------------------------------------------------------ */
+
+function PinCard({ pin, proFirst }: { pin: string; proFirst: string }) {
+  return (
+    <div className="mx-5 mt-4 flex items-center gap-4 rounded-2xl border p-4" style={{ background: "linear-gradient(135deg, #FFF2EC 0%, #FFE6D8 100%)", borderColor: "rgba(255,130,63,0.22)" }}>
+      <div className="min-w-0 flex-1">
+        <p style={{ fontSize: 10.5, color: ORANGE, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          Verify {proFirst} when she arrives
+        </p>
+        <p
+          className="tabular mt-1.5"
+          style={{
+            fontSize: 30,
+            fontWeight: 700,
+            color: "#0B1220",
+            letterSpacing: "0.18em",
+            fontVariantNumeric: "tabular-nums",
+            lineHeight: 1,
+          }}
+        >
+          {pin.split("").join(" ")}
+        </p>
+        <p className="mt-2" style={{ fontSize: 12, color: "#2A3544", lineHeight: 1.45 }}>
+          Read this PIN aloud so {proFirst} can confirm it's you.
+        </p>
+      </div>
+      <div
+        className="grid shrink-0 place-items-center rounded-2xl"
+        style={{ width: 56, height: 56, backgroundColor: "#fff", color: ORANGE, boxShadow: "0 4px 12px rgba(255,130,63,0.12)" }}
+      >
+        <Lock size={26} />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  ReviewPromptCard (completed only)                                   */
+/* ------------------------------------------------------------------ */
+
+function ReviewPromptCard({ proFirst, onTap }: { proFirst: string; onTap: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onTap}
+      className="mx-5 mt-3.5 flex w-[calc(100%-2.5rem)] items-center gap-3 rounded-2xl border p-4 text-left transition-transform active:scale-[0.99]"
+      style={{ backgroundColor: "rgba(255,130,63,0.10)", borderColor: "rgba(255,130,63,0.22)" }}
+    >
+      <div
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
+        style={{ backgroundColor: ORANGE, color: "#1A0E08" }}
+      >
+        <Star size={16} fill="currentColor" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p style={{ fontSize: 13.5, fontWeight: 700, color: "var(--card-foreground)" }}>
+          Rate your time with {proFirst}
+        </p>
+        <p className="mt-0.5" style={{ fontSize: 11.5, color: "var(--card-foreground)", opacity: 0.75 }}>
+          Tell her how it went — and add a tip
+        </p>
+      </div>
+      <ChevronRight size={14} style={{ color: ORANGE }} />
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  DetailsList                                                         */
+/* ------------------------------------------------------------------ */
+
+function DetailsList({
+  booking,
+  pro,
+  proFirst,
+  card,
+  mode,
+  editingNotes,
+  notesValue,
+  canEditNotes,
+  onEditStart,
+  onEditCancel,
+  onEditSave,
+  onNotesChange,
+}: {
+  booking: Booking;
+  pro: { name: string };
+  proFirst: string;
+  card: { brand: string; last4: string } | undefined;
+  mode: Mode;
+  editingNotes: boolean;
+  notesValue: string;
+  canEditNotes: boolean;
+  onEditStart: () => void;
+  onEditCancel: () => void;
+  onEditSave: () => void;
+  onNotesChange: (v: string) => void;
+}) {
+  const showEdit = mode === "future";
+  const whenLabel =
+    mode === "completed"
+      ? `${shortTime(booking.startedAt ?? booking.when)} — ${shortTime((booking.startedAt ?? booking.when) + parseDurationMin(booking.service.durationLabel) * 60_000)}`
+      : mode === "in-progress"
+        ? `Started ${shortTime(booking.startedAt ?? booking.when)}`
+        : mode === "live"
+          ? `Today, ${shortTime(booking.when)}`
+          : null;
+  const whenSub =
+    mode === "future"
+      ? shortTime(booking.when)
+      : mode === "completed"
+        ? `${todayOrDay(booking.when)}`
+        : null;
+
+  // In progress and completed surfaces show the stylist row inline (no top hero stylist row)
+  const showStylistRow = mode === "in-progress" || mode === "completed";
+
+  return (
+    <div className="px-5 pt-5">
+      <ul className="divide-y" style={{ borderColor: "var(--border)" }}>
+        {showStylistRow && (
+          <DetailRow
+            icon={
+              <div
+                className="grid h-9 w-9 place-items-center rounded-xl"
+                style={{ background: "linear-gradient(135deg, #FFD9C7 0%, #FFBBA0 100%)", color: "#7C2D12", fontSize: 12, fontWeight: 700 }}
+              >
+                {initialsOf(pro.name)}
+              </div>
+            }
+            label={mode === "in-progress" ? "Stylist" : "Stylist"}
+            value={pro.name}
+            valueSub={`${booking.service.name} · ${booking.service.durationLabel}`}
+          />
+        )}
+
+        {/* When / Started */}
+        {mode === "future" ? (
+          <DetailRow
+            icon={<CalendarDays size={16} />}
+            label="When"
+            value={dayDateLabel(booking.when)}
+            valueSub={whenSub ?? undefined}
+            action={showEdit ? "Edit" : undefined}
+          />
+        ) : (
+          <DetailRow
+            icon={<CalendarDays size={16} />}
+            label={mode === "in-progress" ? "Started" : mode === "completed" ? "When" : "When"}
+            value={whenLabel ?? ""}
+          />
+        )}
+
+        {/* Address — only for live + future */}
+        {(mode === "live" || mode === "future") && (
+          <DetailRow
+            icon={<MapPin size={16} />}
+            label="Address"
+            value={booking.location.label}
+            valueSub="142 Lafayette Ave, Brooklyn"
+            action={showEdit ? "Edit" : undefined}
+          />
+        )}
+
+        {/* Payment */}
+        <DetailRow
+          icon={<CreditCard size={16} />}
+          label="Payment"
+          value={card ? `${brandLabel(card.brand)}` : "—"}
+          valueSub={
+            card
+              ? mode === "completed"
+                ? `Charged $${(booking.total ?? booking.service.price + 3).toFixed(0)}`
+                : mode === "in-progress"
+                  ? "Will be charged when service completes"
+                  : `Ending in ${card.last4}`
+              : undefined
+          }
+          chevron={mode === "completed"}
+        />
+
+        {/* Notes — only for live + future */}
+        {(mode === "live" || mode === "future") && (
+          editingNotes ? (
+            <li className="py-3.5">
+              <div className="flex items-center gap-3">
+                <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}><FileText size={16} /></span>
+                <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  Note for {proFirst}
+                </p>
+              </div>
+              <textarea
+                value={notesValue}
+                onChange={(e) => onNotesChange(e.target.value)}
+                placeholder={`Add a note for ${proFirst}`}
+                rows={3}
+                autoFocus
+                className="mt-2 w-full resize-none rounded-xl border-none px-3 py-2.5 outline-none"
+                style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)", fontSize: 14, fontFamily: SANS_STACK, lineHeight: 1.5 }}
+              />
+              <div className="mt-2 flex justify-end gap-3">
+                <button type="button" onClick={onEditCancel} style={{ fontSize: 13, fontWeight: 600, color: "var(--muted-foreground)", background: "none", border: "none", fontFamily: SANS_STACK }}>
+                  Cancel
+                </button>
+                <button type="button" onClick={onEditSave} style={{ fontSize: 13, fontWeight: 600, color: ORANGE, background: "none", border: "none", fontFamily: SANS_STACK }}>
+                  Save
+                </button>
+              </div>
+            </li>
+          ) : (
+            <DetailRow
+              icon={<FileText size={16} />}
+              label={`Note for ${proFirst}`}
+              value={booking.notes || (canEditNotes ? "Add a note (optional)" : "—")}
+              valuePlaceholder={!booking.notes}
+              action={canEditNotes ? "Edit" : undefined}
+              onAction={canEditNotes ? onEditStart : undefined}
+            />
+          )
+        )}
+      </ul>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  DetailRow                                                           */
+/* ------------------------------------------------------------------ */
 
 function DetailRow({
   icon,
   label,
   value,
-  placeholder,
-  tabular,
+  valueSub,
+  valuePlaceholder,
   action,
+  onAction,
+  chevron,
 }: {
   icon: React.ReactNode;
   label: string;
-  value?: string;
-  placeholder?: string;
-  tabular?: boolean;
+  value: string;
+  valueSub?: string;
+  valuePlaceholder?: boolean;
   action?: string;
+  onAction?: () => void;
+  chevron?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5">
-      <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}>{icon}</span>
+    <li className="flex items-center gap-3.5 py-3.5">
+      <div
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
+        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+      >
+        {icon}
+      </div>
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <p style={{ fontSize: 10.5, fontWeight: 600, color: "var(--on-card-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {label}
         </p>
         <p
-          className={tabular ? "tabular" : ""}
           style={{
-            fontSize: 15,
-            color: value ? "var(--card-foreground)" : "var(--on-card-muted)",
-            fontWeight: value ? 500 : 400,
-            marginTop: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
+            fontSize: 14.5,
+            fontWeight: valuePlaceholder ? 500 : 600,
+            color: valuePlaceholder ? "var(--on-card-muted)" : "var(--card-foreground)",
+            letterSpacing: "-0.005em",
+            marginTop: 3,
           }}
         >
-          {value || placeholder || "—"}
+          {value}
         </p>
+        {valueSub && (
+          <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--on-card-muted)", fontWeight: 400 }}>
+            {valueSub}
+          </p>
+        )}
       </div>
       {action && (
-        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--bagel)", flexShrink: 0 }}>
+        <button
+          type="button"
+          onClick={onAction}
+          style={{ fontSize: 12.5, fontWeight: 600, color: ORANGE, background: "none", border: "none", cursor: "pointer", fontFamily: SANS_STACK }}
+        >
           {action}
-        </span>
+        </button>
       )}
+      {chevron && !action && <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />}
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  CostCard                                                            */
+/* ------------------------------------------------------------------ */
+
+function CostCard({
+  servicePrice,
+  bookingFee,
+  totalLabel,
+  total,
+}: {
+  servicePrice: number;
+  bookingFee: number;
+  totalLabel: string;
+  total: number;
+}) {
+  return (
+    <div
+      className="mx-5 mt-5 rounded-2xl p-4"
+      style={{ backgroundColor: "var(--surface-elevated)" }}
+    >
+      <div className="flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+        <span>Service</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${servicePrice.toFixed(2)}</span>
+      </div>
+      <div className="mt-2 flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+        <span>Booking fee</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${bookingFee.toFixed(2)}</span>
+      </div>
+      <div className="my-3" style={{ height: 1, backgroundColor: "var(--border)" }} />
+      <div className="flex items-baseline justify-between">
+        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)" }}>{totalLabel}</span>
+        <span className="tabular" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>${total.toFixed(2)}</span>
+      </div>
     </div>
   );
 }
 
-function Hairline() {
-  return <div className="mx-4" style={{ height: 1, backgroundColor: "var(--hairline)" }} />;
+/* ------------------------------------------------------------------ */
+/*  MenuSheet (3-dots → safety, receipt, cancel, etc.)                  */
+/* ------------------------------------------------------------------ */
+
+function MenuSheet({
+  open,
+  onClose,
+  mode,
+  bookingId,
+  navigate,
+  onCancel,
+}: {
+  open: boolean;
+  onClose: () => void;
+  mode: Mode;
+  bookingId: string;
+  navigate: ReturnType<typeof useNavigate>;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+  const canCancel = mode === "future" || mode === "live";
+  return (
+    <div className="fixed inset-0 z-[9998] flex items-end justify-center" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+      <div
+        role="dialog"
+        aria-label="Booking options"
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-[420px] overflow-hidden rounded-t-3xl bg-card"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
+      >
+        <div className="mx-auto mt-2 mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: "rgba(127,127,127,0.2)" }} />
+        <ul>
+          {/* Safety — always available */}
+          <MenuRow
+            icon={<ShieldCheck size={16} />}
+            label="Safety"
+            sub={mode === "live" || mode === "in-progress" ? "SOS, share appointment, live location" : "Verified pros, emergency contacts"}
+            onClick={() => {
+              onClose();
+              navigate({ to: "/safety" });
+            }}
+          />
+          {mode !== "completed" && (
+            <MenuRow
+              icon={<MessageSquare size={16} />}
+              label="Message support"
+              sub="Talk to a person at Ewà"
+              onClick={() => {
+                onClose();
+                navigate({ to: "/profile/help" });
+              }}
+            />
+          )}
+          {mode === "completed" && (
+            <MenuRow
+              icon={<FileText size={16} />}
+              label="View receipt"
+              onClick={() => {
+                onClose();
+                navigate({ to: "/booking/receipt/$bookingId", params: { bookingId } });
+              }}
+            />
+          )}
+          {canCancel && (
+            <MenuRow
+              icon={<XCircle size={16} />}
+              label="Cancel booking"
+              danger
+              onClick={onCancel}
+              last
+            />
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function MenuRow({
+  icon,
+  label,
+  sub,
+  onClick,
+  danger,
+  last,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  sub?: string;
+  onClick: () => void;
+  danger?: boolean;
+  last?: boolean;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors active:bg-muted/30"
+      >
+        <span
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
+          style={danger ? { backgroundColor: "rgba(220,38,38,0.10)", color: "#DC2626" } : { backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+        >
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <p style={{ fontSize: 14, fontWeight: 600, color: danger ? "#DC2626" : "var(--card-foreground)", letterSpacing: "-0.005em" }}>{label}</p>
+          {sub && <p className="mt-0.5" style={{ fontSize: 11.5, color: "var(--on-card-muted)" }}>{sub}</p>}
+        </span>
+      </button>
+      {!last && <div className="ml-[60px] border-b" style={{ borderColor: "var(--border)" }} />}
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                              */
+/* ------------------------------------------------------------------ */
+
+function initialsOf(name: string): string {
+  return name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function shortTime(ts: number): string {
+  const d = new Date(ts);
+  const h = d.getHours();
+  const m = d.getMinutes().toString().padStart(2, "0");
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${m} ${ampm}`;
+}
+
+function dayDateLabel(ts: number): string {
+  const d = new Date(ts);
+  return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+}
+
+function absoluteLabel(ts: number): string {
+  const d = new Date(ts);
+  const isToday = isSameDay(d, new Date());
+  if (isToday) return `Today at ${shortTime(ts)}`;
+  const isTomorrow = isSameDay(d, new Date(Date.now() + 86400000));
+  if (isTomorrow) return `Tomorrow at ${shortTime(ts)}`;
+  return `${d.toLocaleDateString(undefined, { month: "long", day: "numeric" })} at ${shortTime(ts)}`;
+}
+
+function relativeCountdown(ts: number): string {
+  const diff = ts - Date.now();
+  if (diff <= 0) return "Starting soon";
+  const mins = Math.round(diff / 60_000);
+  if (mins < 60) return `In ${mins} min`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `In ${hrs} hour${hrs === 1 ? "" : "s"}`;
+  const days = Math.round(hrs / 24);
+  return `In ${days} day${days === 1 ? "" : "s"}`;
+}
+
+function todayOrDay(ts: number): string {
+  const d = new Date(ts);
+  if (isSameDay(d, new Date())) return "today";
+  return d.toLocaleDateString(undefined, { weekday: "long" }).toLowerCase();
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function parseDurationMin(label: string): number {
+  // Accepts "90 min", "1 hr", "1h 30m", "75 min" — best-effort
+  const lower = label.toLowerCase();
+  const min = lower.match(/(\d+)\s*min/);
+  const hr = lower.match(/(\d+)\s*h(r|our)?/);
+  let total = 0;
+  if (hr) total += parseInt(hr[1] ?? "0", 10) * 60;
+  if (min) total += parseInt(min[1] ?? "0", 10);
+  return total > 0 ? total : 60;
+}
+
+function mmss(ms: number): string {
+  const totalSec = Math.round(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${sec.toString().padStart(2, "0")}`;
 }
 
 function brandLabel(brand: string): string {
