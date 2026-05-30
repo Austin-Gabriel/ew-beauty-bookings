@@ -4,7 +4,7 @@
  */
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Scissors, CalendarDays } from "lucide-react";
+import { ChevronLeft, Scissors, CalendarDays } from "lucide-react";
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { SANS_STACK } from "@/auth/auth-shell";
 
