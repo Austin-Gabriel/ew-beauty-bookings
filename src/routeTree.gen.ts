@@ -14,6 +14,7 @@ import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SplashRouteImport } from './routes/splash'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as JoinAsProRouteImport } from './routes/join-as-pro'
@@ -51,6 +52,7 @@ import { Route as BookingPendingBookingIdRouteImport } from './routes/booking.pe
 import { Route as BookingMessageBookingIdRouteImport } from './routes/booking.message.$bookingId'
 import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
 import { Route as BookingCompleteBookingIdRouteImport } from './routes/booking.complete.$bookingId'
+import { Route as BookingCancelledBookingIdRouteImport } from './routes/booking.cancelled.$bookingId'
 import { Route as BookingCallBookingIdRouteImport } from './routes/booking.call.$bookingId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -76,6 +78,11 @@ const SignupRoute = SignupRouteImport.update({
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -266,6 +273,12 @@ const BookingCompleteBookingIdRoute =
     path: '/booking/complete/$bookingId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BookingCancelledBookingIdRoute =
+  BookingCancelledBookingIdRouteImport.update({
+    id: '/booking/cancelled/$bookingId',
+    path: '/booking/cancelled/$bookingId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BookingCallBookingIdRoute = BookingCallBookingIdRouteImport.update({
   id: '/booking/call/$bookingId',
   path: '/booking/call/$bookingId',
@@ -281,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/safety': typeof SafetyRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -304,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
@@ -323,6 +338,7 @@ export interface FileRoutesByTo {
   '/discover': typeof DiscoverRoute
   '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
+  '/safety': typeof SafetyRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -345,6 +361,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
@@ -368,6 +385,7 @@ export interface FileRoutesById {
   '/join-as-pro': typeof JoinAsProRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/safety': typeof SafetyRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
@@ -391,6 +409,7 @@ export interface FileRoutesById {
   '/favorites/': typeof FavoritesIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
+  '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
   '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
@@ -415,6 +434,7 @@ export interface FileRouteTypes {
     | '/join-as-pro'
     | '/notifications'
     | '/profile'
+    | '/safety'
     | '/signin'
     | '/signup'
     | '/splash'
@@ -438,6 +458,7 @@ export interface FileRouteTypes {
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
+    | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
@@ -457,6 +478,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/join-as-pro'
     | '/notifications'
+    | '/safety'
     | '/signin'
     | '/signup'
     | '/splash'
@@ -479,6 +501,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/profile'
     | '/booking/call/$bookingId'
+    | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
@@ -501,6 +524,7 @@ export interface FileRouteTypes {
     | '/join-as-pro'
     | '/notifications'
     | '/profile'
+    | '/safety'
     | '/signin'
     | '/signup'
     | '/splash'
@@ -524,6 +548,7 @@ export interface FileRouteTypes {
     | '/favorites/'
     | '/profile/'
     | '/booking/call/$bookingId'
+    | '/booking/cancelled/$bookingId'
     | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
@@ -547,6 +572,7 @@ export interface RootRouteChildren {
   JoinAsProRoute: typeof JoinAsProRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
+  SafetyRoute: typeof SafetyRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
@@ -556,6 +582,7 @@ export interface RootRouteChildren {
   ProProIdRoute: typeof ProProIdRouteWithChildren
   SeeAllCategoryRoute: typeof SeeAllCategoryRoute
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
+  BookingCancelledBookingIdRoute: typeof BookingCancelledBookingIdRoute
   BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
   BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
   BookingMessageBookingIdRoute: typeof BookingMessageBookingIdRoute
@@ -602,6 +629,13 @@ declare module '@tanstack/react-router' {
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -863,6 +897,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingCompleteBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/cancelled/$bookingId': {
+      id: '/booking/cancelled/$bookingId'
+      path: '/booking/cancelled/$bookingId'
+      fullPath: '/booking/cancelled/$bookingId'
+      preLoaderRoute: typeof BookingCancelledBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking/call/$bookingId': {
       id: '/booking/call/$bookingId'
       path: '/booking/call/$bookingId'
@@ -955,6 +996,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinAsProRoute: JoinAsProRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRouteWithChildren,
+  SafetyRoute: SafetyRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
@@ -964,6 +1006,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProProIdRoute: ProProIdRouteWithChildren,
   SeeAllCategoryRoute: SeeAllCategoryRoute,
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
+  BookingCancelledBookingIdRoute: BookingCancelledBookingIdRoute,
   BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
   BookingConfirmProIdRoute: BookingConfirmProIdRoute,
   BookingMessageBookingIdRoute: BookingMessageBookingIdRoute,
@@ -977,3 +1020,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

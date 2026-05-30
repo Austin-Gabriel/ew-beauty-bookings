@@ -67,7 +67,16 @@
       "Bash(git checkout *)",
       "Bash(git restore *)",
       "Bash(/usr/bin/tail -5)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(/usr/bin/grep -rn \"coming soon\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(/usr/bin/wc -l)",
+      "Bash(/usr/bin/grep -E \"cancel|safety|review|2fa|security\")",
+      "Bash(/usr/bin/grep -E \"booking|profile\")",
+      "Bash(/usr/bin/head -25 'src/routes/booking.rate.$bookingId.tsx')",
+      "Bash(/usr/bin/wc -l src/auth/SignInFlow.tsx src/pages/Welcome.tsx)",
+      "Bash(/usr/bin/grep -v \"zod-adapter\")",
+      "Bash(/usr/bin/grep -iE \"error|cannot find\" /tmp/vite.log)",
+      "Read(//usr/bin/**)"
     ]
   }
 }

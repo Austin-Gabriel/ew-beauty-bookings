@@ -62,6 +62,15 @@ export type Booking = {
   startedAt?: number;
   /** Refund on cancelled bookings. */
   refundUsd?: number;
+  /** Who triggered the cancellation. Used to switch the cancellation screen
+   *  between "trust-recovery" mode (pro cancelled) and "your cancellation
+   *  confirmed" mode (customer cancelled). */
+  cancelledBy?: "pro" | "customer" | "system";
+  /** Short label for why the booking was cancelled — surfaced on the
+   *  "Pro cancelled" screen. */
+  cancellationReason?: string;
+  /** Optional longer note from the pro, e.g. an apology with context. */
+  cancellationNote?: string;
   /** "scheduled" | "on-demand" */
   bookingType: "scheduled" | "on-demand";
   /** Total price including tip. */
@@ -166,6 +175,10 @@ export const SEED_BOOKINGS: Booking[] = [
     location: { type: "mobile", label: "Your home" },
     status: "cancelled",
     refundUsd: 180,
+    cancelledBy: "pro",
+    cancellationReason: "Family emergency",
+    cancellationNote:
+      "I'm so sorry, my mom was admitted to the hospital this morning. I won't be able to make our appointment today but I'd love to rebook when things settle.",
     bookingType: "scheduled",
     createdAt: now - 56 * day,
   },

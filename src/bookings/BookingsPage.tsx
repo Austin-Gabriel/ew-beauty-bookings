@@ -52,6 +52,10 @@ export function BookingsPage() {
   const goBooking = (b: Booking) => {
     if (b.status === "pending_pro_approval") {
       navigate({ to: "/booking/pending/$bookingId", params: { bookingId: b.id } });
+    } else if (b.status === "cancelled" || b.status === "declined") {
+      // Trust-recovery surface: shows the pro's reason, refund confirmation,
+      // and alternative pros.
+      navigate({ to: "/booking/cancelled/$bookingId", params: { bookingId: b.id } });
     } else {
       navigate({ to: "/bookings/$bookingId", params: { bookingId: b.id } });
     }
