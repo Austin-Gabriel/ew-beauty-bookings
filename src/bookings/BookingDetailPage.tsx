@@ -225,6 +225,28 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
             </button>
           </div>
         )}
+
+        {/* ─── Cancel booking (future + live only, not in-progress / completed) ─ */}
+        {(isFuture || isLive) && (
+          <div className="px-5 pt-5">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/booking/cancel/$bookingId", params: { bookingId } })}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 transition-transform active:scale-[0.98]"
+              style={{
+                backgroundColor: "transparent",
+                border: "1px solid rgba(220,38,38,0.30)",
+                color: "#DC2626",
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: SANS_STACK,
+              }}
+            >
+              <XCircle size={15} />
+              Cancel booking
+            </button>
+          </div>
+        )}
       </div>
 
       <MenuSheet
@@ -590,37 +612,34 @@ function CompletedHero({ booking }: { booking: Booking }) {
     ? booking.startedAt + parseDurationMin(booking.service.durationLabel) * 60_000
     : booking.when;
   return (
-    <div className="px-5 pt-8 text-center">
+    <div className="border-b px-5 pt-6 pb-5 text-center" style={{ borderColor: "var(--border)" }}>
       <div
         className="mx-auto grid place-items-center rounded-full"
-        style={{ width: 78, height: 78, backgroundColor: "rgba(22,163,74,0.14)", color: SUCCESS }}
+        style={{ width: 64, height: 64, backgroundColor: "rgba(22,163,74,0.14)", color: SUCCESS }}
       >
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-      <h2 className="mt-5" style={{ fontSize: 26, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.025em" }}>
+      <h2 className="mt-3.5" style={{ fontSize: 19, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}>
         All done
       </h2>
-      <p className="mt-1.5" style={{ fontSize: 14, color: "var(--muted-foreground)" }}>
+      <p className="mt-1" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
         Hope you loved your {booking.service.name.toLowerCase()}
       </p>
-      <div
-        className="mt-5 border-t border-b py-3"
-        style={{ borderColor: "var(--border)" }}
+      <span
+        className="mt-4 inline-flex items-center rounded-full px-3 py-1.5"
+        style={{
+          backgroundColor: "var(--surface-elevated)",
+          color: "var(--ink-700, var(--card-foreground))",
+          fontSize: 10.5,
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+        }}
       >
-        <span
-          style={{
-            fontSize: 11.5,
-            fontWeight: 700,
-            color: "var(--muted-foreground)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-          }}
-        >
-          Completed {todayOrDay(completedAt)} at {shortTime(completedAt)}
-        </span>
-      </div>
+        Completed {todayOrDay(completedAt)} at {shortTime(completedAt)}
+      </span>
     </div>
   );
 }
