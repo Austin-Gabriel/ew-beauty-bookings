@@ -38,19 +38,11 @@ export function ProProfile({ proId }: { proId: string }) {
 
   const goBook = (serviceName: string) => {
     if (!pro) return;
-    if (intent === "later") {
-      navigate({
-        to: "/booking/schedule/$proId",
-        params: { proId: pro.id },
-        search: { service: serviceName },
-      });
-    } else {
-      navigate({
-        to: "/booking/confirm/$proId",
-        params: { proId: pro.id },
-        search: { service: serviceName, scheduledWhen: 0 },
-      });
-    }
+    navigate({
+      to: "/booking/confirm/$proId",
+      params: { proId: pro.id },
+      search: { service: serviceName, scheduledWhen: 0 },
+    });
   };
 
   const handleBookButton = () => {

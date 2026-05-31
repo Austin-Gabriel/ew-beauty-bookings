@@ -63,7 +63,6 @@ import { Route as ProProIdIndexRouteImport } from './routes/pro.$proId.index'
 import { Route as ProProIdReviewsRouteImport } from './routes/pro.$proId.reviews'
 import { Route as ProProIdPortfolioRouteImport } from './routes/pro.$proId.portfolio'
 import { Route as BookingSearchingBookingIdRouteImport } from './routes/booking.searching.$bookingId'
-import { Route as BookingScheduleProIdRouteImport } from './routes/booking.schedule.$proId'
 import { Route as BookingRescheduleBookingIdRouteImport } from './routes/booking.reschedule.$bookingId'
 import { Route as BookingReceiptBookingIdRouteImport } from './routes/booking.receipt.$bookingId'
 import { Route as BookingRateBookingIdRouteImport } from './routes/booking.rate.$bookingId'
@@ -345,11 +344,6 @@ const BookingSearchingBookingIdRoute =
     path: '/booking/searching/$bookingId',
     getParentRoute: () => rootRouteImport,
   } as any)
-const BookingScheduleProIdRoute = BookingScheduleProIdRouteImport.update({
-  id: '/booking/schedule/$proId',
-  path: '/booking/schedule/$proId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BookingRescheduleBookingIdRoute =
   BookingRescheduleBookingIdRouteImport.update({
     id: '/booking/reschedule/$bookingId',
@@ -458,7 +452,6 @@ export interface FileRoutesByFullPath {
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
-  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId/reviews': typeof ProProIdReviewsRoute
@@ -518,7 +511,6 @@ export interface FileRoutesByTo {
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
-  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId/reviews': typeof ProProIdReviewsRoute
@@ -585,7 +577,6 @@ export interface FileRoutesById {
   '/booking/rate/$bookingId': typeof BookingRateBookingIdRoute
   '/booking/receipt/$bookingId': typeof BookingReceiptBookingIdRoute
   '/booking/reschedule/$bookingId': typeof BookingRescheduleBookingIdRoute
-  '/booking/schedule/$proId': typeof BookingScheduleProIdRoute
   '/booking/searching/$bookingId': typeof BookingSearchingBookingIdRoute
   '/pro/$proId/portfolio': typeof ProProIdPortfolioRoute
   '/pro/$proId/reviews': typeof ProProIdReviewsRoute
@@ -653,7 +644,6 @@ export interface FileRouteTypes {
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
-    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
     | '/pro/$proId/reviews'
@@ -713,7 +703,6 @@ export interface FileRouteTypes {
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
-    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
     | '/pro/$proId/reviews'
@@ -779,7 +768,6 @@ export interface FileRouteTypes {
     | '/booking/rate/$bookingId'
     | '/booking/receipt/$bookingId'
     | '/booking/reschedule/$bookingId'
-    | '/booking/schedule/$proId'
     | '/booking/searching/$bookingId'
     | '/pro/$proId/portfolio'
     | '/pro/$proId/reviews'
@@ -817,7 +805,6 @@ export interface RootRouteChildren {
   BookingRateBookingIdRoute: typeof BookingRateBookingIdRoute
   BookingReceiptBookingIdRoute: typeof BookingReceiptBookingIdRoute
   BookingRescheduleBookingIdRoute: typeof BookingRescheduleBookingIdRoute
-  BookingScheduleProIdRoute: typeof BookingScheduleProIdRoute
   BookingSearchingBookingIdRoute: typeof BookingSearchingBookingIdRoute
 }
 
@@ -1201,13 +1188,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingSearchingBookingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/booking/schedule/$proId': {
-      id: '/booking/schedule/$proId'
-      path: '/booking/schedule/$proId'
-      fullPath: '/booking/schedule/$proId'
-      preLoaderRoute: typeof BookingScheduleProIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/booking/reschedule/$bookingId': {
       id: '/booking/reschedule/$bookingId'
       path: '/booking/reschedule/$bookingId'
@@ -1434,7 +1414,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookingRateBookingIdRoute: BookingRateBookingIdRoute,
   BookingReceiptBookingIdRoute: BookingReceiptBookingIdRoute,
   BookingRescheduleBookingIdRoute: BookingRescheduleBookingIdRoute,
-  BookingScheduleProIdRoute: BookingScheduleProIdRoute,
   BookingSearchingBookingIdRoute: BookingSearchingBookingIdRoute,
 }
 export const routeTree = rootRouteImport

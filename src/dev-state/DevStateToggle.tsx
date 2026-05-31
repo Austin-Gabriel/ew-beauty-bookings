@@ -383,7 +383,7 @@ export function DevStateToggle() {
                   />
                 </Field>
 
-                <Field label="Scheduled flow" hint="/booking/schedule/$proId outcomes">
+                <Field label="Scheduled flow" hint="/booking/confirm/$proId outcomes">
                   <Stacked<ScheduleState>
                     value={state.scheduleState}
                     options={[
