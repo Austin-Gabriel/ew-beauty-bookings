@@ -143,7 +143,10 @@ export function DevBookingsSync() {
     });
 
     if (navigateTo) {
-      navigate({ to: "/booking/complete/$bookingId", params: navigateTo });
+      // When a live service ends, drop the customer into the rate flow first
+      // (image: "How was it?" — stars + optional note + tip). Submitting the
+      // review lands them on the completed booking detail.
+      navigate({ to: "/booking/rate/$bookingId", params: navigateTo });
     }
   }, [state.activeBooking, setBookings, navigate]);
 

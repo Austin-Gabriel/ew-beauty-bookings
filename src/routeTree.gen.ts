@@ -38,14 +38,21 @@ import { Route as SeeAllCategoryRouteImport } from './routes/see-all.$category'
 import { Route as SafetyReportRouteImport } from './routes/safety.report'
 import { Route as SafetyEmergencyContactsRouteImport } from './routes/safety.emergency-contacts'
 import { Route as SafetyDiscreetCallRouteImport } from './routes/safety.discreet-call'
-import { Route as ProfileTippingRouteImport } from './routes/profile.tipping'
 import { Route as ProfileThemeRouteImport } from './routes/profile.theme'
 import { Route as ProfileTermsRouteImport } from './routes/profile.terms'
+import { Route as ProfileSettingsRouteImport } from './routes/profile.settings'
+import { Route as ProfileReferRouteImport } from './routes/profile.refer'
+import { Route as ProfileRatingRouteImport } from './routes/profile.rating'
+import { Route as ProfilePromotionsRouteImport } from './routes/profile.promotions'
 import { Route as ProfilePrivacyRouteImport } from './routes/profile.privacy'
 import { Route as ProfilePaymentMethodsRouteImport } from './routes/profile.payment-methods'
 import { Route as ProfileNotificationsRouteImport } from './routes/profile.notifications'
+import { Route as ProfileLegalRouteImport } from './routes/profile.legal'
+import { Route as ProfileLanguageRouteImport } from './routes/profile.language'
 import { Route as ProfileHelpRouteImport } from './routes/profile.help'
+import { Route as ProfileHairProfileRouteImport } from './routes/profile.hair-profile'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProfileCreditsRouteImport } from './routes/profile.credits'
 import { Route as ProfileAddressesRouteImport } from './routes/profile.addresses'
 import { Route as ProProIdRouteImport } from './routes/pro.$proId'
 import { Route as PoliciesCancellationRouteImport } from './routes/policies.cancellation'
@@ -63,7 +70,6 @@ import { Route as BookingRateBookingIdRouteImport } from './routes/booking.rate.
 import { Route as BookingPendingBookingIdRouteImport } from './routes/booking.pending.$bookingId'
 import { Route as BookingMessageBookingIdRouteImport } from './routes/booking.message.$bookingId'
 import { Route as BookingConfirmProIdRouteImport } from './routes/booking.confirm.$proId'
-import { Route as BookingCompleteBookingIdRouteImport } from './routes/booking.complete.$bookingId'
 import { Route as BookingCancelledBookingIdRouteImport } from './routes/booking.cancelled.$bookingId'
 import { Route as BookingCancelBookingIdRouteImport } from './routes/booking.cancel.$bookingId'
 import { Route as BookingCallBookingIdRouteImport } from './routes/booking.call.$bookingId'
@@ -213,11 +219,6 @@ const SafetyDiscreetCallRoute = SafetyDiscreetCallRouteImport.update({
   path: '/discreet-call',
   getParentRoute: () => SafetyRoute,
 } as any)
-const ProfileTippingRoute = ProfileTippingRouteImport.update({
-  id: '/tipping',
-  path: '/tipping',
-  getParentRoute: () => ProfileRoute,
-} as any)
 const ProfileThemeRoute = ProfileThemeRouteImport.update({
   id: '/theme',
   path: '/theme',
@@ -226,6 +227,26 @@ const ProfileThemeRoute = ProfileThemeRouteImport.update({
 const ProfileTermsRoute = ProfileTermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileSettingsRoute = ProfileSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileReferRoute = ProfileReferRouteImport.update({
+  id: '/refer',
+  path: '/refer',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileRatingRoute = ProfileRatingRouteImport.update({
+  id: '/rating',
+  path: '/rating',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfilePromotionsRoute = ProfilePromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
   getParentRoute: () => ProfileRoute,
 } as any)
 const ProfilePrivacyRoute = ProfilePrivacyRouteImport.update({
@@ -243,14 +264,34 @@ const ProfileNotificationsRoute = ProfileNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfileLegalRoute = ProfileLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileLanguageRoute = ProfileLanguageRouteImport.update({
+  id: '/language',
+  path: '/language',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const ProfileHelpRoute = ProfileHelpRouteImport.update({
   id: '/help',
   path: '/help',
   getParentRoute: () => ProfileRoute,
 } as any)
+const ProfileHairProfileRoute = ProfileHairProfileRouteImport.update({
+  id: '/hair-profile',
+  path: '/hair-profile',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const ProfileEditRoute = ProfileEditRouteImport.update({
   id: '/edit',
   path: '/edit',
+  getParentRoute: () => ProfileRoute,
+} as any)
+const ProfileCreditsRoute = ProfileCreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
   getParentRoute: () => ProfileRoute,
 } as any)
 const ProfileAddressesRoute = ProfileAddressesRouteImport.update({
@@ -340,12 +381,6 @@ const BookingConfirmProIdRoute = BookingConfirmProIdRouteImport.update({
   path: '/booking/confirm/$proId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookingCompleteBookingIdRoute =
-  BookingCompleteBookingIdRouteImport.update({
-    id: '/booking/complete/$bookingId',
-    path: '/booking/complete/$bookingId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const BookingCancelledBookingIdRoute =
   BookingCancelledBookingIdRouteImport.update({
     id: '/booking/cancelled/$bookingId',
@@ -388,14 +423,21 @@ export interface FileRoutesByFullPath {
   '/policies/cancellation': typeof PoliciesCancellationRoute
   '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/credits': typeof ProfileCreditsRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/hair-profile': typeof ProfileHairProfileRoute
   '/profile/help': typeof ProfileHelpRoute
+  '/profile/language': typeof ProfileLanguageRoute
+  '/profile/legal': typeof ProfileLegalRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
   '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/promotions': typeof ProfilePromotionsRoute
+  '/profile/rating': typeof ProfileRatingRoute
+  '/profile/refer': typeof ProfileReferRoute
+  '/profile/settings': typeof ProfileSettingsRoute
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
-  '/profile/tipping': typeof ProfileTippingRoute
   '/safety/discreet-call': typeof SafetyDiscreetCallRoute
   '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
   '/safety/report': typeof SafetyReportRoute
@@ -410,7 +452,6 @@ export interface FileRoutesByFullPath {
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
-  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
@@ -442,14 +483,21 @@ export interface FileRoutesByTo {
   '/favorites/$collectionId': typeof FavoritesCollectionIdRoute
   '/policies/cancellation': typeof PoliciesCancellationRoute
   '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/credits': typeof ProfileCreditsRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/hair-profile': typeof ProfileHairProfileRoute
   '/profile/help': typeof ProfileHelpRoute
+  '/profile/language': typeof ProfileLanguageRoute
+  '/profile/legal': typeof ProfileLegalRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
   '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/promotions': typeof ProfilePromotionsRoute
+  '/profile/rating': typeof ProfileRatingRoute
+  '/profile/refer': typeof ProfileReferRoute
+  '/profile/settings': typeof ProfileSettingsRoute
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
-  '/profile/tipping': typeof ProfileTippingRoute
   '/safety/discreet-call': typeof SafetyDiscreetCallRoute
   '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
   '/safety/report': typeof SafetyReportRoute
@@ -464,7 +512,6 @@ export interface FileRoutesByTo {
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
-  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
@@ -503,14 +550,21 @@ export interface FileRoutesById {
   '/policies/cancellation': typeof PoliciesCancellationRoute
   '/pro/$proId': typeof ProProIdRouteWithChildren
   '/profile/addresses': typeof ProfileAddressesRoute
+  '/profile/credits': typeof ProfileCreditsRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/hair-profile': typeof ProfileHairProfileRoute
   '/profile/help': typeof ProfileHelpRoute
+  '/profile/language': typeof ProfileLanguageRoute
+  '/profile/legal': typeof ProfileLegalRoute
   '/profile/notifications': typeof ProfileNotificationsRoute
   '/profile/payment-methods': typeof ProfilePaymentMethodsRoute
   '/profile/privacy': typeof ProfilePrivacyRoute
+  '/profile/promotions': typeof ProfilePromotionsRoute
+  '/profile/rating': typeof ProfileRatingRoute
+  '/profile/refer': typeof ProfileReferRoute
+  '/profile/settings': typeof ProfileSettingsRoute
   '/profile/terms': typeof ProfileTermsRoute
   '/profile/theme': typeof ProfileThemeRoute
-  '/profile/tipping': typeof ProfileTippingRoute
   '/safety/discreet-call': typeof SafetyDiscreetCallRoute
   '/safety/emergency-contacts': typeof SafetyEmergencyContactsRoute
   '/safety/report': typeof SafetyReportRoute
@@ -525,7 +579,6 @@ export interface FileRoutesById {
   '/booking/call/$bookingId': typeof BookingCallBookingIdRoute
   '/booking/cancel/$bookingId': typeof BookingCancelBookingIdRoute
   '/booking/cancelled/$bookingId': typeof BookingCancelledBookingIdRoute
-  '/booking/complete/$bookingId': typeof BookingCompleteBookingIdRoute
   '/booking/confirm/$proId': typeof BookingConfirmProIdRoute
   '/booking/message/$bookingId': typeof BookingMessageBookingIdRoute
   '/booking/pending/$bookingId': typeof BookingPendingBookingIdRoute
@@ -565,14 +618,21 @@ export interface FileRouteTypes {
     | '/policies/cancellation'
     | '/pro/$proId'
     | '/profile/addresses'
+    | '/profile/credits'
     | '/profile/edit'
+    | '/profile/hair-profile'
     | '/profile/help'
+    | '/profile/language'
+    | '/profile/legal'
     | '/profile/notifications'
     | '/profile/payment-methods'
     | '/profile/privacy'
+    | '/profile/promotions'
+    | '/profile/rating'
+    | '/profile/refer'
+    | '/profile/settings'
     | '/profile/terms'
     | '/profile/theme'
-    | '/profile/tipping'
     | '/safety/discreet-call'
     | '/safety/emergency-contacts'
     | '/safety/report'
@@ -587,7 +647,6 @@ export interface FileRouteTypes {
     | '/booking/call/$bookingId'
     | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
-    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/pending/$bookingId'
@@ -619,14 +678,21 @@ export interface FileRouteTypes {
     | '/favorites/$collectionId'
     | '/policies/cancellation'
     | '/profile/addresses'
+    | '/profile/credits'
     | '/profile/edit'
+    | '/profile/hair-profile'
     | '/profile/help'
+    | '/profile/language'
+    | '/profile/legal'
     | '/profile/notifications'
     | '/profile/payment-methods'
     | '/profile/privacy'
+    | '/profile/promotions'
+    | '/profile/rating'
+    | '/profile/refer'
+    | '/profile/settings'
     | '/profile/terms'
     | '/profile/theme'
-    | '/profile/tipping'
     | '/safety/discreet-call'
     | '/safety/emergency-contacts'
     | '/safety/report'
@@ -641,7 +707,6 @@ export interface FileRouteTypes {
     | '/booking/call/$bookingId'
     | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
-    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/pending/$bookingId'
@@ -679,14 +744,21 @@ export interface FileRouteTypes {
     | '/policies/cancellation'
     | '/pro/$proId'
     | '/profile/addresses'
+    | '/profile/credits'
     | '/profile/edit'
+    | '/profile/hair-profile'
     | '/profile/help'
+    | '/profile/language'
+    | '/profile/legal'
     | '/profile/notifications'
     | '/profile/payment-methods'
     | '/profile/privacy'
+    | '/profile/promotions'
+    | '/profile/rating'
+    | '/profile/refer'
+    | '/profile/settings'
     | '/profile/terms'
     | '/profile/theme'
-    | '/profile/tipping'
     | '/safety/discreet-call'
     | '/safety/emergency-contacts'
     | '/safety/report'
@@ -701,7 +773,6 @@ export interface FileRouteTypes {
     | '/booking/call/$bookingId'
     | '/booking/cancel/$bookingId'
     | '/booking/cancelled/$bookingId'
-    | '/booking/complete/$bookingId'
     | '/booking/confirm/$proId'
     | '/booking/message/$bookingId'
     | '/booking/pending/$bookingId'
@@ -740,7 +811,6 @@ export interface RootRouteChildren {
   BookingCallBookingIdRoute: typeof BookingCallBookingIdRoute
   BookingCancelBookingIdRoute: typeof BookingCancelBookingIdRoute
   BookingCancelledBookingIdRoute: typeof BookingCancelledBookingIdRoute
-  BookingCompleteBookingIdRoute: typeof BookingCompleteBookingIdRoute
   BookingConfirmProIdRoute: typeof BookingConfirmProIdRoute
   BookingMessageBookingIdRoute: typeof BookingMessageBookingIdRoute
   BookingPendingBookingIdRoute: typeof BookingPendingBookingIdRoute
@@ -956,13 +1026,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SafetyDiscreetCallRouteImport
       parentRoute: typeof SafetyRoute
     }
-    '/profile/tipping': {
-      id: '/profile/tipping'
-      path: '/tipping'
-      fullPath: '/profile/tipping'
-      preLoaderRoute: typeof ProfileTippingRouteImport
-      parentRoute: typeof ProfileRoute
-    }
     '/profile/theme': {
       id: '/profile/theme'
       path: '/theme'
@@ -975,6 +1038,34 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/profile/terms'
       preLoaderRoute: typeof ProfileTermsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/settings': {
+      id: '/profile/settings'
+      path: '/settings'
+      fullPath: '/profile/settings'
+      preLoaderRoute: typeof ProfileSettingsRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/refer': {
+      id: '/profile/refer'
+      path: '/refer'
+      fullPath: '/profile/refer'
+      preLoaderRoute: typeof ProfileReferRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/rating': {
+      id: '/profile/rating'
+      path: '/rating'
+      fullPath: '/profile/rating'
+      preLoaderRoute: typeof ProfileRatingRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/promotions': {
+      id: '/profile/promotions'
+      path: '/promotions'
+      fullPath: '/profile/promotions'
+      preLoaderRoute: typeof ProfilePromotionsRouteImport
       parentRoute: typeof ProfileRoute
     }
     '/profile/privacy': {
@@ -998,6 +1089,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileNotificationsRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/legal': {
+      id: '/profile/legal'
+      path: '/legal'
+      fullPath: '/profile/legal'
+      preLoaderRoute: typeof ProfileLegalRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/language': {
+      id: '/profile/language'
+      path: '/language'
+      fullPath: '/profile/language'
+      preLoaderRoute: typeof ProfileLanguageRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/profile/help': {
       id: '/profile/help'
       path: '/help'
@@ -1005,11 +1110,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileHelpRouteImport
       parentRoute: typeof ProfileRoute
     }
+    '/profile/hair-profile': {
+      id: '/profile/hair-profile'
+      path: '/hair-profile'
+      fullPath: '/profile/hair-profile'
+      preLoaderRoute: typeof ProfileHairProfileRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/profile/edit': {
       id: '/profile/edit'
       path: '/edit'
       fullPath: '/profile/edit'
       preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof ProfileRoute
+    }
+    '/profile/credits': {
+      id: '/profile/credits'
+      path: '/credits'
+      fullPath: '/profile/credits'
+      preLoaderRoute: typeof ProfileCreditsRouteImport
       parentRoute: typeof ProfileRoute
     }
     '/profile/addresses': {
@@ -1131,13 +1250,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmProIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/booking/complete/$bookingId': {
-      id: '/booking/complete/$bookingId'
-      path: '/booking/complete/$bookingId'
-      fullPath: '/booking/complete/$bookingId'
-      preLoaderRoute: typeof BookingCompleteBookingIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/booking/cancelled/$bookingId': {
       id: '/booking/cancelled/$bookingId'
       path: '/booking/cancelled/$bookingId'
@@ -1202,27 +1314,41 @@ const FavoritesRouteWithChildren = FavoritesRoute._addFileChildren(
 
 interface ProfileRouteChildren {
   ProfileAddressesRoute: typeof ProfileAddressesRoute
+  ProfileCreditsRoute: typeof ProfileCreditsRoute
   ProfileEditRoute: typeof ProfileEditRoute
+  ProfileHairProfileRoute: typeof ProfileHairProfileRoute
   ProfileHelpRoute: typeof ProfileHelpRoute
+  ProfileLanguageRoute: typeof ProfileLanguageRoute
+  ProfileLegalRoute: typeof ProfileLegalRoute
   ProfileNotificationsRoute: typeof ProfileNotificationsRoute
   ProfilePaymentMethodsRoute: typeof ProfilePaymentMethodsRoute
   ProfilePrivacyRoute: typeof ProfilePrivacyRoute
+  ProfilePromotionsRoute: typeof ProfilePromotionsRoute
+  ProfileRatingRoute: typeof ProfileRatingRoute
+  ProfileReferRoute: typeof ProfileReferRoute
+  ProfileSettingsRoute: typeof ProfileSettingsRoute
   ProfileTermsRoute: typeof ProfileTermsRoute
   ProfileThemeRoute: typeof ProfileThemeRoute
-  ProfileTippingRoute: typeof ProfileTippingRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const ProfileRouteChildren: ProfileRouteChildren = {
   ProfileAddressesRoute: ProfileAddressesRoute,
+  ProfileCreditsRoute: ProfileCreditsRoute,
   ProfileEditRoute: ProfileEditRoute,
+  ProfileHairProfileRoute: ProfileHairProfileRoute,
   ProfileHelpRoute: ProfileHelpRoute,
+  ProfileLanguageRoute: ProfileLanguageRoute,
+  ProfileLegalRoute: ProfileLegalRoute,
   ProfileNotificationsRoute: ProfileNotificationsRoute,
   ProfilePaymentMethodsRoute: ProfilePaymentMethodsRoute,
   ProfilePrivacyRoute: ProfilePrivacyRoute,
+  ProfilePromotionsRoute: ProfilePromotionsRoute,
+  ProfileRatingRoute: ProfileRatingRoute,
+  ProfileReferRoute: ProfileReferRoute,
+  ProfileSettingsRoute: ProfileSettingsRoute,
   ProfileTermsRoute: ProfileTermsRoute,
   ProfileThemeRoute: ProfileThemeRoute,
-  ProfileTippingRoute: ProfileTippingRoute,
   ProfileIndexRoute: ProfileIndexRoute,
 }
 
@@ -1302,7 +1428,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookingCallBookingIdRoute: BookingCallBookingIdRoute,
   BookingCancelBookingIdRoute: BookingCancelBookingIdRoute,
   BookingCancelledBookingIdRoute: BookingCancelledBookingIdRoute,
-  BookingCompleteBookingIdRoute: BookingCompleteBookingIdRoute,
   BookingConfirmProIdRoute: BookingConfirmProIdRoute,
   BookingMessageBookingIdRoute: BookingMessageBookingIdRoute,
   BookingPendingBookingIdRoute: BookingPendingBookingIdRoute,

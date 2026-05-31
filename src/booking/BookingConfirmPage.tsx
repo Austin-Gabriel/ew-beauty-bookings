@@ -120,12 +120,8 @@ export function BookingConfirmPage({
 
   const selectedService = pro.services[selectedServiceIdx] ?? pro.services[0];
 
-  // Tipping logic
-  const tipPref = profile.tippingPreference;
-  const tipPct = tipPref.type === "ask" ? null : tipPref.value ?? 20;
+  // Tips are added after service on the rate page — never at checkout.
   const servicePrice = selectedService?.priceFrom ?? 0;
-  const tipAmount = tipPct != null ? (servicePrice * tipPct) / 100 : null;
-  const total = tipAmount != null ? servicePrice + tipAmount : servicePrice;
 
   const canConfirm = !!selectedAddress && !!selectedCard && !confirming;
 
@@ -155,8 +151,8 @@ export function BookingConfirmPage({
             ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
             : { type: "mobile", label: "Your home" },
           bookingType: "scheduled",
-          total,
-          tipAmount: tipAmount ?? undefined,
+          total: servicePrice,
+          tipAmount: undefined,
           addressId: selectedAddress?.id,
           paymentMethodId: selectedCard?.id,
           when: scheduledWhen,
@@ -180,8 +176,8 @@ export function BookingConfirmPage({
             ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
             : { type: "mobile", label: "Your home" },
           bookingType: "scheduled",
-          total,
-          tipAmount: tipAmount ?? undefined,
+          total: servicePrice,
+          tipAmount: undefined,
           addressId: selectedAddress?.id,
           paymentMethodId: selectedCard?.id,
           when: scheduledWhen,
@@ -203,8 +199,8 @@ export function BookingConfirmPage({
             ? { type: "mobile", label: selectedAddress.label || selectedAddress.street }
             : { type: "mobile", label: "Your home" },
           bookingType: "on-demand",
-          total,
-          tipAmount: tipAmount ?? undefined,
+          total: servicePrice,
+          tipAmount: undefined,
           addressId: selectedAddress?.id,
           paymentMethodId: selectedCard?.id,
           notes: notes.trim() || undefined,
@@ -341,33 +337,18 @@ export function BookingConfirmPage({
             <span>Service</span>
             <span className="tabular font-medium">${servicePrice.toFixed(2)}</span>
           </div>
-          <div className="mt-2 flex items-center justify-between text-[15px]">
-            {tipPct != null ? (
-              <>
-                <span className="text-card-foreground">
-                  Estimated tip ({tipPct}%)
-                </span>
-                <span className="tabular font-medium text-card-foreground">
-                  ${tipAmount!.toFixed(2)}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-on-card-muted">
-                  Tip — added after service
-                </span>
-                <span />
-              </>
-            )}
+          <div className="mt-2 flex items-center justify-between text-[13px]">
+            <span className="text-on-card-muted">Tip — add after service</span>
+            <span />
           </div>
           <div
             className="my-3"
             style={{ height: 1, backgroundColor: "var(--hairline)" }}
           />
           <div className="flex items-center justify-between">
-            <span className="text-[17px] font-semibold text-card-foreground">Total</span>
+            <span className="text-[17px] font-semibold text-card-foreground">Total today</span>
             <span className="tabular text-[17px] font-semibold text-card-foreground">
-              ${total.toFixed(2)}
+              ${servicePrice.toFixed(2)}
             </span>
           </div>
         </div>
