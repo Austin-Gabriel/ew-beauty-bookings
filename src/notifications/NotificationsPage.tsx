@@ -523,7 +523,7 @@ function ActivityItem({
                   fontWeight: 600,
                   fontFamily: SANS_STACK,
                   backgroundColor: c.primary ? ORANGE : "transparent",
-                  color: c.primary ? "#1A0E08" : text,
+                  color: c.primary ? "#1A0E08" : cardText,
                   border: c.primary ? "none" : `1px solid ${subtleBorder}`,
                 }}
               >
