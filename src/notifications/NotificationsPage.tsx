@@ -5,6 +5,9 @@ import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useDevState } from "@/dev-state/devState";
 import { MOCK_PROS } from "@/data/mock-pros";
+import { usePromos, LOYALTY_CYCLE, LOYALTY_DISCOUNT_PCT, WELCOME_DISCOUNT_PCT } from "@/promos/store";
+import { Lock, Check } from "lucide-react";
+
 
 const ORANGE = "#FF823F";
 const DANGER = "#DC2626";
