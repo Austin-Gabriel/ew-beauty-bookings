@@ -456,7 +456,7 @@ function FutureHero({
     <div className="border-b px-5 pb-6 pt-6" style={{ backgroundColor: "var(--surface-elevated)", borderColor: "var(--border)" }}>
       <span
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
-        style={{ backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+        style={{ backgroundColor: "rgba(255,130,63,0.14)", color: "var(--bagel)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
       >
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
@@ -483,13 +483,13 @@ function FutureHero({
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="inline-flex items-center gap-1.5" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.02em" }}>
+          <p className="inline-flex items-center gap-1.5" style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}>
             <span className="truncate">{pro.name}</span>
             {pro.certified && (
               <span
                 aria-hidden
                 className="inline-grid place-items-center rounded-full"
-                style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
+                style={{ width: 14, height: 14, backgroundColor: ORANGE, color: "#1A0E08" }}
               >
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
@@ -497,11 +497,11 @@ function FutureHero({
               </span>
             )}
           </p>
-          <p style={{ fontSize: 12.5, color: "var(--on-card-muted)", marginTop: 2 }}>
+          <p style={{ fontSize: 12.5, color: "var(--muted-foreground)", marginTop: 2 }}>
             {booking.service.name} · {booking.service.durationLabel}
           </p>
         </div>
-        <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />
+        <ChevronRight size={14} style={{ color: "var(--muted-foreground)" }} />
       </button>
 
       <div className="mt-4 flex gap-2">
@@ -509,7 +509,7 @@ function FutureHero({
           type="button"
           onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
-          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", color: "var(--card-foreground)", fontSize: 13, fontWeight: 600 }}
         >
           <MessageSquare size={14} />
           Message
@@ -518,7 +518,7 @@ function FutureHero({
           type="button"
           onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
-          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", color: "var(--card-foreground)", fontSize: 13, fontWeight: 600 }}
         >
           <Phone size={14} />
           Call
@@ -842,8 +842,8 @@ function DetailsList({
           editingNotes ? (
             <li className="py-3.5">
               <div className="flex items-center gap-3">
-                <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}><FileText size={16} /></span>
-                <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <span style={{ color: "var(--muted-foreground)", flexShrink: 0 }}><FileText size={16} /></span>
+                <p style={{ fontSize: 11, color: "var(--muted-foreground)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Note for {proFirst}
                 </p>
               </div>
@@ -910,19 +910,19 @@ function DetailRow({
     <>
       <div
         className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
-        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)" }}
       >
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 10.5, fontWeight: 600, color: "var(--on-card-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        <p style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {label}
         </p>
         <p
           style={{
             fontSize: 14.5,
             fontWeight: valuePlaceholder ? 500 : 600,
-            color: valuePlaceholder ? "var(--on-card-muted)" : "var(--card-foreground)",
+            color: valuePlaceholder ? "var(--muted-foreground)" : "var(--foreground)",
             letterSpacing: "-0.005em",
             marginTop: 3,
           }}
@@ -930,7 +930,7 @@ function DetailRow({
           {value}
         </p>
         {valueSub && (
-          <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--on-card-muted)", fontWeight: 400 }}>
+          <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--muted-foreground)", fontWeight: 400 }}>
             {valueSub}
           </p>
         )}
@@ -947,7 +947,7 @@ function DetailRow({
           {action}
         </button>
       )}
-      {chevron && !action && <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />}
+      {chevron && !action && <ChevronRight size={14} style={{ color: "var(--muted-foreground)" }} />}
     </>
   );
 
@@ -988,18 +988,18 @@ function CostCard({
       className="mx-5 mt-5 rounded-2xl p-4"
       style={{ backgroundColor: "var(--surface-elevated)" }}
     >
-      <div className="flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+      <div className="flex items-baseline justify-between" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
         <span>Service</span>
-        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${servicePrice.toFixed(2)}</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--foreground)" }}>${servicePrice.toFixed(2)}</span>
       </div>
-      <div className="mt-2 flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+      <div className="mt-2 flex items-baseline justify-between" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
         <span>Booking fee</span>
-        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${bookingFee.toFixed(2)}</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--foreground)" }}>${bookingFee.toFixed(2)}</span>
       </div>
       <div className="my-3" style={{ height: 1, backgroundColor: "var(--border)" }} />
       <div className="flex items-baseline justify-between">
-        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)" }}>{totalLabel}</span>
-        <span className="tabular" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>${total.toFixed(2)}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--foreground)" }}>{totalLabel}</span>
+        <span className="tabular" style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.015em" }}>${total.toFixed(2)}</span>
       </div>
     </div>
   );

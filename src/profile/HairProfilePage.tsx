@@ -95,11 +95,11 @@ export function HairProfilePage() {
           onClick={() => router.history.back()}
           aria-label="Back"
           className="grid h-9 w-9 place-items-center rounded-full"
-          style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)" }}
+          style={{ backgroundColor: "rgba(11,28,39,0.06)", color: "var(--card-foreground)" }}
         >
           <ChevronLeft size={16} />
         </button>
-        <h1 className="flex-1 text-center" style={{ fontSize: 16, fontWeight: 600, color: "var(--foreground)", letterSpacing: "-0.01em" }}>
+        <h1 className="flex-1 text-center" style={{ fontSize: 16, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
           Hair profile
         </h1>
         <span className="w-9" />
@@ -108,7 +108,7 @@ export function HairProfilePage() {
       <div className="flex-1 overflow-y-auto px-5 pt-5 pb-32">
         <div className="flex items-start gap-3 rounded-2xl px-4 py-3.5" style={{ backgroundColor: "rgba(255,130,63,0.10)" }}>
           <Sparkles size={16} style={{ color: ORANGE, marginTop: 1, flexShrink: 0 }} />
-          <p style={{ fontSize: 12.5, color: "var(--card-foreground)", lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12.5, color: "var(--foreground)", lineHeight: 1.5 }}>
             Stylists see this before your appointment so they can show up with the right products and a plan.
           </p>
         </div>
@@ -142,7 +142,7 @@ export function HairProfilePage() {
                   style={{
                     backgroundColor: active ? ORANGE : "var(--surface-elevated)",
                     borderColor: active ? ORANGE : "var(--border)",
-                    color: active ? "#1A0E08" : "var(--card-foreground)",
+                    color: active ? "#1A0E08" : "var(--foreground)",
                     fontSize: 12.5,
                     fontWeight: active ? 600 : 500,
                     fontFamily: SANS_STACK,
@@ -257,7 +257,7 @@ function ChipRow({
             style={{
               backgroundColor: active ? ORANGE : "var(--surface-elevated)",
               borderColor: active ? ORANGE : "var(--border)",
-              color: active ? "#1A0E08" : "var(--card-foreground)",
+              color: active ? "#1A0E08" : "var(--foreground)",
               fontSize: 12.5,
               fontWeight: active ? 600 : 500,
               fontFamily: SANS_STACK,
