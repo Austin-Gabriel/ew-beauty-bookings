@@ -60,6 +60,8 @@ export function NotificationsPage() {
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const router = useRouter();
+  const promos = usePromos();
+
 
   const muted = "var(--muted-foreground)";
   const subtleSurface = "var(--surface-elevated)";
