@@ -432,18 +432,22 @@ function ActivityItem({
   isDark: boolean;
   subtleBorder: string;
 }) {
-  // Unread bg — soft accent in light mode, faint accent wash on dark
-  const unreadBg = isDark ? "rgba(255,130,63,0.10)" : "#FFF2EC";
-  const rowBg = a.unread ? unreadBg : "transparent";
+  // Unread bg — soft accent wash; otherwise plain white card surface
+  const unreadBg = "#FFF2EC";
+  const rowBg = a.unread ? unreadBg : "var(--card)";
+  const cardText = "var(--card-foreground)";
+  const cardMuted = "var(--on-card-muted)";
 
   return (
     <button
       type="button"
       onClick={onTap}
-      className="relative flex w-full items-start gap-3 px-5 py-3 text-left transition-colors"
+      className="relative flex w-full items-start gap-3 px-4 py-3 text-left transition-transform active:scale-[0.99]"
       style={{
         backgroundColor: rowBg,
-        borderBottom: `1px solid ${subtleBorder}`,
+        border: `1px solid ${subtleBorder}`,
+        borderRadius: 16,
+        boxShadow: "0 1px 2px rgba(11,28,39,0.04)",
         fontFamily: SANS_STACK,
       }}
     >
@@ -453,8 +457,7 @@ function ActivityItem({
           style={{
             position: "absolute",
             left: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
+            top: 12,
             width: 6,
             height: 6,
             borderRadius: 9999,
@@ -466,7 +469,7 @@ function ActivityItem({
       <ActivityAvatar a={a} unread={a.unread} isDark={isDark} />
 
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 13.5, color: text, lineHeight: 1.45 }}>
+        <p style={{ fontSize: 13.5, color: cardText, lineHeight: 1.45 }}>
           {a.body.map((seg, i) => (
             <span
               key={i}
@@ -482,7 +485,7 @@ function ActivityItem({
 
         <div
           className="mt-1.5 flex flex-wrap items-center gap-2"
-          style={{ fontSize: 11.5, color: muted }}
+          style={{ fontSize: 11.5, color: cardMuted }}
         >
           {a.label && (
             <span
