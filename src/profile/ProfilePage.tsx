@@ -127,7 +127,7 @@ export function ProfilePage() {
           onClick={() => navigate({ to: "/profile/settings" })}
           aria-label="Settings"
           className="grid h-9 w-9 place-items-center rounded-full"
-          style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+          style={{ backgroundColor: "rgba(11,28,39,0.06)", color: "var(--card-foreground)" }}
         >
           <Settings size={15} />
         </button>
