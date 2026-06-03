@@ -113,13 +113,22 @@ export function ProfilePage() {
     <div className="flex min-h-full flex-col bg-background" style={{ fontFamily: SANS_STACK }}>
       {/* STICKY HEADER ----------------------------------------------------- */}
       <header
-        className="sticky top-0 z-30 flex items-center justify-between border-b px-5 py-3.5"
+        className="sticky top-0 z-30 flex items-center justify-between px-5 pt-5 pb-4"
         style={{
-          backgroundColor: "var(--card)",
-          borderColor: "var(--border)",
+          backgroundColor: "var(--background)",
+          borderBottom: "1px solid var(--border)",
+          fontFamily: SANS_STACK,
         }}
       >
-        <h1 style={{ fontSize: 17, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
+        <h1
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            letterSpacing: "-0.025em",
+            color: "var(--foreground)",
+            margin: 0,
+          }}
+        >
           Account
         </h1>
         <button
@@ -127,11 +136,12 @@ export function ProfilePage() {
           onClick={() => navigate({ to: "/profile/settings" })}
           aria-label="Settings"
           className="grid h-9 w-9 place-items-center rounded-full"
-          style={{ backgroundColor: "rgba(11,28,39,0.06)", color: "var(--card-foreground)" }}
+          style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)" }}
         >
           <Settings size={15} />
         </button>
       </header>
+
 
       {/* IDENTITY HERO ----------------------------------------------------- */}
       <div className="px-5 pt-6 pb-5 text-center">
