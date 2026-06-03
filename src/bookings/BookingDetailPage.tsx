@@ -255,10 +255,6 @@ export function BookingDetailPage({ bookingId }: { bookingId: string }) {
         mode={mode}
         bookingId={bookingId}
         navigate={navigate}
-        onCancel={() => {
-          setMenuOpen(false);
-          navigate({ to: "/booking/cancel/$bookingId", params: { bookingId } });
-        }}
       />
     </div>
   );
@@ -1011,7 +1007,7 @@ function CostCard({
 }
 
 /* ------------------------------------------------------------------ */
-/*  MenuSheet (3-dots → safety, receipt, cancel, etc.)                  */
+/*  MenuSheet — Safety sheet (shield → share location, support, 911)    */
 /* ------------------------------------------------------------------ */
 
 function MenuSheet({
@@ -1020,109 +1016,93 @@ function MenuSheet({
   mode,
   bookingId,
   navigate,
-  onCancel,
 }: {
   open: boolean;
   onClose: () => void;
   mode: Mode;
   bookingId: string;
   navigate: ReturnType<typeof useNavigate>;
-  onCancel: () => void;
 }) {
   if (!open) return null;
-  const canCancel = mode === "future" || mode === "live";
+  void mode;
+  void bookingId;
   return (
     <div className="fixed inset-0 z-[9998] flex items-end justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
       <div
         role="dialog"
-        aria-label="Booking options"
+        aria-label="Safety"
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-[420px] overflow-hidden rounded-t-3xl bg-card"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}
       >
-        <div className="mx-auto mt-2 mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: "rgba(127,127,127,0.2)" }} />
-        <ul>
-          {/* Safety — always available */}
-          <MenuRow
-            icon={<ShieldCheck size={16} />}
-            label="Safety"
-            sub={mode === "live" || mode === "in-progress" ? "SOS, share appointment, live location" : "Verified pros, emergency contacts"}
+        <div className="mx-auto mt-2 mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: "rgba(127,127,127,0.2)" }} />
+        <div className="px-6 pb-2">
+          <div className="flex items-center gap-2">
+            <Shield size={18} style={{ color: "var(--card-foreground)" }} />
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>Safety</h2>
+          </div>
+          <p className="mt-1.5" style={{ fontSize: 13, color: "var(--on-card-muted)", lineHeight: 1.4 }}>
+            Tools to keep you safe on every booking.
+          </p>
+        </div>
+        <ul className="mt-3 px-2">
+          <SafetyRow
+            label="Share my location"
+            sub="Live share with your emergency contact"
             onClick={() => {
               onClose();
               navigate({ to: "/safety" });
             }}
           />
-          {mode !== "completed" && (
-            <MenuRow
-              icon={<MessageSquare size={16} />}
-              label="Message support"
-              sub="Talk to a person at Ewà"
-              onClick={() => {
-                onClose();
-                navigate({ to: "/profile/help" });
-              }}
-            />
-          )}
-          {mode === "completed" && (
-            <MenuRow
-              icon={<FileText size={16} />}
-              label="View receipt"
-              onClick={() => {
-                onClose();
-                navigate({ to: "/booking/receipt/$bookingId", params: { bookingId } });
-              }}
-            />
-          )}
-          {canCancel && (
-            <MenuRow
-              icon={<XCircle size={16} />}
-              label="Cancel booking"
-              danger
-              onClick={onCancel}
-              last
-            />
-          )}
+          <SafetyRow
+            label="Message Ewà support"
+            sub="Urgent chat with our team"
+            onClick={() => {
+              onClose();
+              navigate({ to: "/profile/help" });
+            }}
+          />
+          <SafetyRow
+            label="Call 911"
+            sub="For immediate emergencies only"
+            danger
+            onClick={() => {
+              onClose();
+              if (typeof window !== "undefined") window.location.href = "tel:911";
+            }}
+          />
         </ul>
       </div>
     </div>
   );
 }
 
-function MenuRow({
-  icon,
+function SafetyRow({
   label,
   sub,
   onClick,
   danger,
-  last,
 }: {
-  icon: React.ReactNode;
   label: string;
-  sub?: string;
+  sub: string;
   onClick: () => void;
   danger?: boolean;
-  last?: boolean;
 }) {
   return (
     <li>
       <button
         type="button"
         onClick={onClick}
-        className="flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors active:bg-muted/30"
+        className="block w-full rounded-2xl px-4 py-3.5 text-left transition-colors active:bg-muted/30"
       >
-        <span
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
-          style={danger ? { backgroundColor: "rgba(220,38,38,0.10)", color: "#DC2626" } : { backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
-        >
-          {icon}
-        </span>
-        <span className="min-w-0 flex-1">
-          <p style={{ fontSize: 14, fontWeight: 600, color: danger ? "#DC2626" : "var(--card-foreground)", letterSpacing: "-0.005em" }}>{label}</p>
-          {sub && <p className="mt-0.5" style={{ fontSize: 11.5, color: "var(--on-card-muted)" }}>{sub}</p>}
-        </span>
+        <p style={{ fontSize: 15, fontWeight: 600, color: danger ? "#DC2626" : "var(--card-foreground)", letterSpacing: "-0.005em" }}>
+          {label}
+        </p>
+        <p className="mt-1" style={{ fontSize: 12.5, color: danger ? "rgba(220,38,38,0.70)" : "var(--on-card-muted)", lineHeight: 1.4 }}>
+          {sub}
+        </p>
       </button>
-      {!last && <div className="ml-[60px] border-b" style={{ borderColor: "var(--border)" }} />}
     </li>
   );
 }
