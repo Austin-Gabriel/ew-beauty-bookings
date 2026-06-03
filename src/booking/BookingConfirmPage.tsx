@@ -45,6 +45,8 @@ export function BookingConfirmPage({
   const navigate = useNavigate();
   const { profile, addAddress, addCard } = useCustomerProfile();
   const { createBooking, updateBookingStatus } = useBookings();
+  const { hasPendingReward, pendingDiscountPct, consumeReward } = usePromos();
+
 
   const addresses = profile.savedAddresses;
   const cards = profile.paymentMethods;
