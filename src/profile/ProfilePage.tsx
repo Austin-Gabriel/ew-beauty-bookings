@@ -13,7 +13,7 @@ import {
   Settings,
   Star,
   Info,
-  Tag,
+  
   Gift,
   Sparkles,
   MapPin,
