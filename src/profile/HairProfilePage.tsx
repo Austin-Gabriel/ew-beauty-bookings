@@ -257,7 +257,7 @@ function ChipRow({
             style={{
               backgroundColor: active ? ORANGE : "var(--surface-elevated)",
               borderColor: active ? ORANGE : "var(--border)",
-              color: active ? "#1A0E08" : "var(--card-foreground)",
+              color: active ? "#1A0E08" : "var(--foreground)",
               fontSize: 12.5,
               fontWeight: active ? 600 : 500,
               fontFamily: SANS_STACK,
