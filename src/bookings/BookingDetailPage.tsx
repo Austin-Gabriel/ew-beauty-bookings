@@ -39,7 +39,7 @@ import {
   MessageSquare,
   Shield,
   Phone,
-  ShieldCheck,
+  Shield,
   Star,
   XCircle,
 } from "lucide-react";
