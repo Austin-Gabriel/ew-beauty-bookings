@@ -254,8 +254,34 @@ export function NotificationsPage() {
       </header>
 
       <div className="px-5 pt-4" style={{ fontFamily: SANS_STACK, color: text }}>
+        {/* Promotions --------------------------------------------------- */}
+        {promos.cardType !== "none" && (
+          <section className="mt-2">
+            <p
+              className="pl-1"
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 11.5,
+                fontWeight: 700,
+                color: muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 10,
+              }}
+            >
+              Promotions
+            </p>
+            {promos.cardType === "welcome" && <WelcomeCard />}
+            {promos.cardType === "loyalty" && (
+              <LoyaltyCard progress={promos.loyaltyProgress} />
+            )}
+            {promos.cardType === "reward" && <RewardReadyCard />}
+          </section>
+        )}
+
         {/* Recent activity ---------------------------------------------- */}
         {activities.length > 0 && (
+
           <section className="-mx-5 mt-4">
             <div className="px-5">
               <SectionHeader title="Recent activity" subtitle="Updates from your bookings and pros" />
