@@ -39,7 +39,6 @@ import {
   MessageSquare,
   Shield,
   Phone,
-  Shield,
   Star,
   XCircle,
 } from "lucide-react";
