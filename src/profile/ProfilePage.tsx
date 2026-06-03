@@ -119,7 +119,7 @@ export function ProfilePage() {
           borderColor: "var(--border)",
         }}
       >
-        <h1 style={{ fontSize: 17, fontWeight: 600, color: "var(--foreground)", letterSpacing: "-0.01em" }}>
+        <h1 style={{ fontSize: 17, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
           Account
         </h1>
         <button
@@ -228,15 +228,6 @@ export function ProfilePage() {
         className="flex gap-2.5 overflow-x-auto px-5 pb-5"
         style={{ scrollbarWidth: "none" }}
       >
-        <QuickCard
-          icon={Tag}
-          iconBg="linear-gradient(135deg, #FF823F 0%, #FF9F66 100%)"
-          iconColor="#fff"
-          badge="3 new"
-          title="Promotions"
-          subHead={<><span style={{ color: ORANGE, fontWeight: 600 }}>5 offers</span> available</>}
-          onClick={() => navigate({ to: "/profile/promotions" })}
-        />
         <QuickCard
           icon={Gift}
           iconBg="linear-gradient(135deg, #6B3520 0%, #C97744 100%)"
