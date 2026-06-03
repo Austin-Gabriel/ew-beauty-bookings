@@ -483,13 +483,13 @@ function FutureHero({
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="inline-flex items-center gap-1.5" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.02em" }}>
+          <p className="inline-flex items-center gap-1.5" style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.02em" }}>
             <span className="truncate">{pro.name}</span>
             {pro.certified && (
               <span
                 aria-hidden
                 className="inline-grid place-items-center rounded-full"
-                style={{ width: 14, height: 14, backgroundColor: SUCCESS, color: "#fff" }}
+                style={{ width: 14, height: 14, backgroundColor: ORANGE, color: "#1A0E08" }}
               >
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
@@ -497,11 +497,11 @@ function FutureHero({
               </span>
             )}
           </p>
-          <p style={{ fontSize: 12.5, color: "var(--on-card-muted)", marginTop: 2 }}>
+          <p style={{ fontSize: 12.5, color: "var(--muted-foreground)", marginTop: 2 }}>
             {booking.service.name} · {booking.service.durationLabel}
           </p>
         </div>
-        <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />
+        <ChevronRight size={14} style={{ color: "var(--muted-foreground)" }} />
       </button>
 
       <div className="mt-4 flex gap-2">
