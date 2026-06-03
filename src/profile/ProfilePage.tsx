@@ -547,7 +547,7 @@ function SettingsRow({
       >
         <span
           className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
-          style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+          style={{ backgroundColor: "rgba(11,28,39,0.06)", color: "var(--card-foreground)" }}
         >
           <Icon size={14} />
         </span>
