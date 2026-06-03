@@ -403,14 +403,14 @@ function groupByBucket(activities: Activity[]): { label: string; items: Activity
   const today = startOfDay(now);
   const yesterday = today - 24 * 60 * 60 * 1000;
   const weekAgo = today - 7 * 24 * 60 * 60 * 1000;
-  const buckets: Record<string, Activity[]> = { Today: [], Yesterday: [], "This week": [], Earlier: [] };
+  const buckets: Record<string, Activity[]> = { Today: [], Yesterday: [], "This week": [] };
   for (const a of activities) {
     if (a.ts >= today) buckets.Today!.push(a);
     else if (a.ts >= yesterday) buckets.Yesterday!.push(a);
     else if (a.ts >= weekAgo) buckets["This week"]!.push(a);
-    else buckets.Earlier!.push(a);
+    // anything older is dropped — "Earlier" bucket removed per brief
   }
-  return (["Today", "Yesterday", "This week", "Earlier"] as const)
+  return (["Today", "Yesterday", "This week"] as const)
     .map((label) => ({ label, items: buckets[label]! }))
     .filter((b) => b.items.length > 0);
 }
