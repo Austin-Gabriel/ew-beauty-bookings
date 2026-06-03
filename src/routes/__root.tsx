@@ -104,14 +104,17 @@ function RootComponent() {
     <DevStateProvider>
       <CustomerProfileProvider>
         <BookingsProvider>
-          <BookIntentProvider>
-            <DevCustomerSync />
-            <DevBookingsSync />
-            <Outlet />
-            <DevStateToggle />
-            <Toaster />
-          </BookIntentProvider>
+          <PromosProvider>
+            <BookIntentProvider>
+              <DevCustomerSync />
+              <DevBookingsSync />
+              <Outlet />
+              <DevStateToggle />
+              <Toaster />
+            </BookIntentProvider>
+          </PromosProvider>
         </BookingsProvider>
+
       </CustomerProfileProvider>
     </DevStateProvider>
   );
