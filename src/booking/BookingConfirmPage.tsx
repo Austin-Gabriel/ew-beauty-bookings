@@ -20,7 +20,9 @@ import {
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
 import { useBookings } from "@/data/bookings-store";
+import { usePromos } from "@/promos/store";
 import { SANS_STACK } from "@/auth/auth-shell";
+
 
 const ORANGE = "#FF823F";
 const BOOKING_FEE = 3;
