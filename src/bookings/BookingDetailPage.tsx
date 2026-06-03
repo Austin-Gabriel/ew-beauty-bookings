@@ -37,7 +37,7 @@ import {
   Lock,
   MapPin,
   MessageSquare,
-  MoreVertical,
+  Shield,
   Phone,
   ShieldCheck,
   Star,
@@ -306,11 +306,11 @@ function TopNav({
       <button
         type="button"
         onClick={onMenu}
-        aria-label="Booking options"
+        aria-label="Safety"
         className="grid h-9 w-9 place-items-center rounded-full"
         style={{ backgroundColor: btnBg, color: fg }}
       >
-        <MoreVertical size={15} />
+        <Shield size={15} />
       </button>
     </div>
   );
