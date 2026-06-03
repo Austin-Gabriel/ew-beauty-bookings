@@ -398,6 +398,17 @@ export function BookingConfirmPage({
                 </span>
               </div>
             )}
+            {hasPendingReward && (
+              <div className="mt-2 flex items-baseline justify-between">
+                <span style={{ fontSize: 13, color: "var(--bagel)", fontWeight: 600 }}>
+                  Reward — {pendingDiscountPct}% off
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bagel)" }}>
+                  −${rewardDiscountValue.toFixed(2)}
+                </span>
+              </div>
+            )}
+
             <div className="mt-2 flex items-baseline justify-between">
               <span style={{ fontSize: 13, color: "var(--card-foreground)" }}>Booking fee</span>
               <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)" }}>
