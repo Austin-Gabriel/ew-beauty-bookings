@@ -60,7 +60,12 @@ export const Route = createRootRoute({
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e1b6ca4e-a18f-49e1-873f-a2042f6676f0/id-preview-93e6ecb9--f8e7024a-6570-468e-a917-02928fc3389e.lovable.app-1777452817828.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e1b6ca4e-a18f-49e1-873f-a2042f6676f0/id-preview-93e6ecb9--f8e7024a-6570-468e-a917-02928fc3389e.lovable.app-1777452817828.png" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&display=swap" },
+      { rel: "stylesheet", href: appCss },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
