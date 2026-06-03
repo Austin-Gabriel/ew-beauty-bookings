@@ -910,19 +910,19 @@ function DetailRow({
     <>
       <div
         className="grid h-9 w-9 shrink-0 place-items-center rounded-xl"
-        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--card-foreground)" }}
+        style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)" }}
       >
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 10.5, fontWeight: 600, color: "var(--on-card-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        <p style={{ fontSize: 10.5, fontWeight: 600, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {label}
         </p>
         <p
           style={{
             fontSize: 14.5,
             fontWeight: valuePlaceholder ? 500 : 600,
-            color: valuePlaceholder ? "var(--on-card-muted)" : "var(--card-foreground)",
+            color: valuePlaceholder ? "var(--muted-foreground)" : "var(--foreground)",
             letterSpacing: "-0.005em",
             marginTop: 3,
           }}
@@ -930,7 +930,7 @@ function DetailRow({
           {value}
         </p>
         {valueSub && (
-          <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--on-card-muted)", fontWeight: 400 }}>
+          <p className="mt-0.5" style={{ fontSize: 12.5, color: "var(--muted-foreground)", fontWeight: 400 }}>
             {valueSub}
           </p>
         )}
@@ -947,7 +947,7 @@ function DetailRow({
           {action}
         </button>
       )}
-      {chevron && !action && <ChevronRight size={14} style={{ color: "var(--on-card-muted)" }} />}
+      {chevron && !action && <ChevronRight size={14} style={{ color: "var(--muted-foreground)" }} />}
     </>
   );
 
