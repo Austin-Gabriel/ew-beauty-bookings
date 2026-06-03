@@ -988,18 +988,18 @@ function CostCard({
       className="mx-5 mt-5 rounded-2xl p-4"
       style={{ backgroundColor: "var(--surface-elevated)" }}
     >
-      <div className="flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+      <div className="flex items-baseline justify-between" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
         <span>Service</span>
-        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${servicePrice.toFixed(2)}</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--foreground)" }}>${servicePrice.toFixed(2)}</span>
       </div>
-      <div className="mt-2 flex items-baseline justify-between" style={{ fontSize: 13, color: "#2A3544" }}>
+      <div className="mt-2 flex items-baseline justify-between" style={{ fontSize: 13, color: "var(--muted-foreground)" }}>
         <span>Booking fee</span>
-        <span className="tabular" style={{ fontWeight: 600, color: "var(--card-foreground)" }}>${bookingFee.toFixed(2)}</span>
+        <span className="tabular" style={{ fontWeight: 600, color: "var(--foreground)" }}>${bookingFee.toFixed(2)}</span>
       </div>
       <div className="my-3" style={{ height: 1, backgroundColor: "var(--border)" }} />
       <div className="flex items-baseline justify-between">
-        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--card-foreground)" }}>{totalLabel}</span>
-        <span className="tabular" style={{ fontSize: 17, fontWeight: 700, color: "var(--card-foreground)", letterSpacing: "-0.015em" }}>${total.toFixed(2)}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--foreground)" }}>{totalLabel}</span>
+        <span className="tabular" style={{ fontSize: 17, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.015em" }}>${total.toFixed(2)}</span>
       </div>
     </div>
   );
