@@ -301,7 +301,7 @@ export function NotificationsPage() {
                 >
                   {bucket.label}
                 </div>
-                <ul>
+                <ul className="flex flex-col gap-2.5 px-5">
                   {bucket.items.map((a) => (
                     <li key={a.id}>
                       <ActivityItem
@@ -403,14 +403,14 @@ function groupByBucket(activities: Activity[]): { label: string; items: Activity
   const today = startOfDay(now);
   const yesterday = today - 24 * 60 * 60 * 1000;
   const weekAgo = today - 7 * 24 * 60 * 60 * 1000;
-  const buckets: Record<string, Activity[]> = { Today: [], Yesterday: [], "This week": [], Earlier: [] };
+  const buckets: Record<string, Activity[]> = { Today: [], Yesterday: [], "This week": [] };
   for (const a of activities) {
     if (a.ts >= today) buckets.Today!.push(a);
     else if (a.ts >= yesterday) buckets.Yesterday!.push(a);
     else if (a.ts >= weekAgo) buckets["This week"]!.push(a);
-    else buckets.Earlier!.push(a);
+    // anything older is dropped — "Earlier" bucket removed per brief
   }
-  return (["Today", "Yesterday", "This week", "Earlier"] as const)
+  return (["Today", "Yesterday", "This week"] as const)
     .map((label) => ({ label, items: buckets[label]! }))
     .filter((b) => b.items.length > 0);
 }
@@ -432,18 +432,22 @@ function ActivityItem({
   isDark: boolean;
   subtleBorder: string;
 }) {
-  // Unread bg — soft accent in light mode, faint accent wash on dark
-  const unreadBg = isDark ? "rgba(255,130,63,0.10)" : "#FFF2EC";
-  const rowBg = a.unread ? unreadBg : "transparent";
+  // Unread bg — soft accent wash; otherwise plain white card surface
+  const unreadBg = "#FFF2EC";
+  const rowBg = a.unread ? unreadBg : "var(--card)";
+  const cardText = "var(--card-foreground)";
+  const cardMuted = "var(--on-card-muted)";
 
   return (
     <button
       type="button"
       onClick={onTap}
-      className="relative flex w-full items-start gap-3 px-5 py-3 text-left transition-colors"
+      className="relative flex w-full items-start gap-3 px-4 py-3 text-left transition-transform active:scale-[0.99]"
       style={{
         backgroundColor: rowBg,
-        borderBottom: `1px solid ${subtleBorder}`,
+        border: `1px solid ${subtleBorder}`,
+        borderRadius: 16,
+        boxShadow: "0 1px 2px rgba(11,28,39,0.04)",
         fontFamily: SANS_STACK,
       }}
     >
@@ -453,8 +457,7 @@ function ActivityItem({
           style={{
             position: "absolute",
             left: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
+            top: 12,
             width: 6,
             height: 6,
             borderRadius: 9999,
@@ -466,7 +469,7 @@ function ActivityItem({
       <ActivityAvatar a={a} unread={a.unread} isDark={isDark} />
 
       <div className="min-w-0 flex-1">
-        <p style={{ fontSize: 13.5, color: text, lineHeight: 1.45 }}>
+        <p style={{ fontSize: 13.5, color: cardText, lineHeight: 1.45 }}>
           {a.body.map((seg, i) => (
             <span
               key={i}
@@ -482,7 +485,7 @@ function ActivityItem({
 
         <div
           className="mt-1.5 flex flex-wrap items-center gap-2"
-          style={{ fontSize: 11.5, color: muted }}
+          style={{ fontSize: 11.5, color: cardMuted }}
         >
           {a.label && (
             <span
@@ -520,7 +523,7 @@ function ActivityItem({
                   fontWeight: 600,
                   fontFamily: SANS_STACK,
                   backgroundColor: c.primary ? ORANGE : "transparent",
-                  color: c.primary ? "#1A0E08" : text,
+                  color: c.primary ? "#1A0E08" : cardText,
                   border: c.primary ? "none" : `1px solid ${subtleBorder}`,
                 }}
               >
