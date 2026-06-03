@@ -95,11 +95,11 @@ export function HairProfilePage() {
           onClick={() => router.history.back()}
           aria-label="Back"
           className="grid h-9 w-9 place-items-center rounded-full"
-          style={{ backgroundColor: "var(--surface-elevated)", color: "var(--foreground)" }}
+          style={{ backgroundColor: "rgba(11,28,39,0.06)", color: "var(--card-foreground)" }}
         >
           <ChevronLeft size={16} />
         </button>
-        <h1 className="flex-1 text-center" style={{ fontSize: 16, fontWeight: 600, color: "var(--foreground)", letterSpacing: "-0.01em" }}>
+        <h1 className="flex-1 text-center" style={{ fontSize: 16, fontWeight: 600, color: "var(--card-foreground)", letterSpacing: "-0.01em" }}>
           Hair profile
         </h1>
         <span className="w-9" />
