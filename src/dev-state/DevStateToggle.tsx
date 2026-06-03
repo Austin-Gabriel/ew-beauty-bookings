@@ -13,7 +13,10 @@ import {
   type BookingConfirmState,
   type SearchingStage,
   type ScheduleState,
+  type PromoCardOverride,
+  type CompletedBookingsOverride,
 } from "./devState";
+
 
 const POS_KEY = "ewa.devstate.pos.v1";
 const BUTTON_SIZE = 36; // h-9
