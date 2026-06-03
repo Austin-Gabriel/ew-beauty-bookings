@@ -301,7 +301,7 @@ export function NotificationsPage() {
                 >
                   {bucket.label}
                 </div>
-                <ul>
+                <ul className="flex flex-col gap-2.5 px-5">
                   {bucket.items.map((a) => (
                     <li key={a.id}>
                       <ActivityItem
