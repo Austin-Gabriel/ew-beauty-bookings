@@ -108,7 +108,7 @@ export function HairProfilePage() {
       <div className="flex-1 overflow-y-auto px-5 pt-5 pb-32">
         <div className="flex items-start gap-3 rounded-2xl px-4 py-3.5" style={{ backgroundColor: "rgba(255,130,63,0.10)" }}>
           <Sparkles size={16} style={{ color: ORANGE, marginTop: 1, flexShrink: 0 }} />
-          <p style={{ fontSize: 12.5, color: "var(--card-foreground)", lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12.5, color: "var(--foreground)", lineHeight: 1.5 }}>
             Stylists see this before your appointment so they can show up with the right products and a plan.
           </p>
         </div>
