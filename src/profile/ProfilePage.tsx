@@ -193,7 +193,7 @@ export function ProfilePage() {
           className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
           style={{
             backgroundColor: "var(--surface-elevated)",
-            color: "var(--card-foreground)",
+            color: "var(--foreground)",
           }}
         >
           <Star size={12} fill="#F5A623" style={{ color: "#F5A623" }} />
