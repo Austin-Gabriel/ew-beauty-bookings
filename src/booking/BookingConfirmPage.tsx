@@ -135,14 +135,12 @@ export function BookingConfirmPage({
 
   // Pricing
   const promoDiscount = appliedPromo?.discount ?? 0;
-  const rewardDiscount = hasPendingReward
-    ? Math.round(servicePrice * pendingDiscountPct) / 100 * 1 // keep cents
-    : 0;
   const rewardDiscountValue = hasPendingReward
     ? Math.round(servicePrice * pendingDiscountPct) / 100
     : 0;
   const subtotal = Math.max(0, servicePrice - promoDiscount - rewardDiscountValue);
   const total = subtotal + BOOKING_FEE;
+
 
 
   const canConfirm = !!selectedAddress && !!selectedCard && !!scheduledWhen && !confirming;
