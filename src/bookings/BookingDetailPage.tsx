@@ -509,7 +509,7 @@ function FutureHero({
           type="button"
           onClick={() => navigate({ to: "/booking/message/$bookingId", params: { bookingId } })}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
-          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", color: "var(--card-foreground)", fontSize: 13, fontWeight: 600 }}
         >
           <MessageSquare size={14} />
           Message
@@ -518,7 +518,7 @@ function FutureHero({
           type="button"
           onClick={() => navigate({ to: "/booking/call/$bookingId", params: { bookingId } })}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5"
-          style={{ backgroundColor: "#fff", border: "1px solid var(--border)", color: "var(--foreground)", fontSize: 13, fontWeight: 600 }}
+          style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", color: "var(--card-foreground)", fontSize: 13, fontWeight: 600 }}
         >
           <Phone size={14} />
           Call
