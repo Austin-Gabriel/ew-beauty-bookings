@@ -842,8 +842,8 @@ function DetailsList({
           editingNotes ? (
             <li className="py-3.5">
               <div className="flex items-center gap-3">
-                <span style={{ color: "var(--on-card-muted)", flexShrink: 0 }}><FileText size={16} /></span>
-                <p style={{ fontSize: 11, color: "var(--on-card-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                <span style={{ color: "var(--muted-foreground)", flexShrink: 0 }}><FileText size={16} /></span>
+                <p style={{ fontSize: 11, color: "var(--muted-foreground)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                   Note for {proFirst}
                 </p>
               </div>
