@@ -148,7 +148,9 @@ export function BookingConfirmPage({
   const handleConfirm = () => {
     if (!pro || !selectedService || !scheduledWhen) return;
     setConfirming(true);
+    if (hasPendingReward) consumeReward();
     window.setTimeout(() => {
+
       if (!pro.autoAccept) {
         const newId = createBooking({
           proId,
