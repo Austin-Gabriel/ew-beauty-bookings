@@ -456,7 +456,7 @@ function FutureHero({
     <div className="border-b px-5 pb-6 pt-6" style={{ backgroundColor: "var(--surface-elevated)", borderColor: "var(--border)" }}>
       <span
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5"
-        style={{ backgroundColor: "rgba(22,163,74,0.12)", color: SUCCESS, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
+        style={{ backgroundColor: "rgba(255,130,63,0.14)", color: "var(--bagel)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}
       >
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
