@@ -7,8 +7,10 @@ import { Toaster } from "../components/ui/sonner";
 import { CustomerProfileProvider } from "../data/customer-store";
 import { BookingsProvider } from "../data/bookings-store";
 import { BookIntentProvider } from "../booking/book-intent";
+import { PromosProvider } from "../promos/store";
 import { DevCustomerSync } from "../dev-state/DevCustomerSync";
 import { DevBookingsSync } from "../dev-state/DevBookingsSync";
+
 
 function NotFoundComponent() {
   return (
@@ -102,14 +104,17 @@ function RootComponent() {
     <DevStateProvider>
       <CustomerProfileProvider>
         <BookingsProvider>
-          <BookIntentProvider>
-            <DevCustomerSync />
-            <DevBookingsSync />
-            <Outlet />
-            <DevStateToggle />
-            <Toaster />
-          </BookIntentProvider>
+          <PromosProvider>
+            <BookIntentProvider>
+              <DevCustomerSync />
+              <DevBookingsSync />
+              <Outlet />
+              <DevStateToggle />
+              <Toaster />
+            </BookIntentProvider>
+          </PromosProvider>
         </BookingsProvider>
+
       </CustomerProfileProvider>
     </DevStateProvider>
   );

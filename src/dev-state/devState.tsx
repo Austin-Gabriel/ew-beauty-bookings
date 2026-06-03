@@ -92,6 +92,12 @@ export type ScheduleState =
   | "pro-declined"
   | "24h-timeout";
 
+/** Promo card override on /notifications. "auto" = derive from real state. */
+export type PromoCardOverride = "auto" | "welcome" | "loyalty" | "reward" | "none";
+
+/** Completed-booking count override — drives loyalty math. */
+export type CompletedBookingsOverride = "auto" | "0" | "1" | "3" | "5" | "12";
+
 export type DevState = {
   themeMode: ThemeMode;
   userState: UserState;
@@ -110,6 +116,9 @@ export type DevState = {
   bookingConfirmState: BookingConfirmState;
   searchingStage: SearchingStage;
   scheduleState: ScheduleState;
+  promoCard: PromoCardOverride;
+  loyaltyCount: number;
+  completedBookingsOverride: CompletedBookingsOverride;
 };
 
 const DEFAULTS: DevState = {
@@ -130,7 +139,11 @@ const DEFAULTS: DevState = {
   bookingConfirmState: "default",
   searchingStage: "searching",
   scheduleState: "none",
+  promoCard: "auto",
+  loyaltyCount: 3,
+  completedBookingsOverride: "auto",
 };
+
 
 const STORAGE_KEY = "ewa.devstate.v1";
 

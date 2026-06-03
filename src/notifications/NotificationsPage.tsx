@@ -5,6 +5,9 @@ import { AppShell } from "@/home/AppShell";
 import { useAuthTheme, SANS_STACK } from "@/auth/auth-shell";
 import { useDevState } from "@/dev-state/devState";
 import { MOCK_PROS } from "@/data/mock-pros";
+import { usePromos, LOYALTY_CYCLE, LOYALTY_DISCOUNT_PCT, WELCOME_DISCOUNT_PCT } from "@/promos/store";
+import { Lock, Check } from "lucide-react";
+
 
 const ORANGE = "#FF823F";
 const DANGER = "#DC2626";
@@ -57,6 +60,8 @@ export function NotificationsPage() {
   const { isDark, text } = useAuthTheme();
   const navigate = useNavigate();
   const router = useRouter();
+  const promos = usePromos();
+
 
   const muted = "var(--muted-foreground)";
   const subtleSurface = "var(--surface-elevated)";
@@ -249,8 +254,34 @@ export function NotificationsPage() {
       </header>
 
       <div className="px-5 pt-4" style={{ fontFamily: SANS_STACK, color: text }}>
+        {/* Promotions --------------------------------------------------- */}
+        {promos.cardType !== "none" && (
+          <section className="mt-2">
+            <p
+              className="pl-1"
+              style={{
+                fontFamily: SANS_STACK,
+                fontSize: 11.5,
+                fontWeight: 700,
+                color: muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 10,
+              }}
+            >
+              Promotions
+            </p>
+            {promos.cardType === "welcome" && <WelcomeCard />}
+            {promos.cardType === "loyalty" && (
+              <LoyaltyCard progress={promos.loyaltyProgress} />
+            )}
+            {promos.cardType === "reward" && <RewardReadyCard />}
+          </section>
+        )}
+
         {/* Recent activity ---------------------------------------------- */}
         {activities.length > 0 && (
+
           <section className="-mx-5 mt-4">
             <div className="px-5">
               <SectionHeader title="Recent activity" subtitle="Updates from your bookings and pros" />
@@ -630,4 +661,196 @@ function StatusBadge({ kind, ringColor }: { kind: StatusBadgeKind; ringColor: st
 
 // Suppress unused-warning for INK_900 if not consumed elsewhere
 const __INK = INK_900;
+
+/* ───────── Promotion cards ───────── */
+
+function WelcomeCard() {
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl px-5 py-5"
+      style={{
+        backgroundColor: "var(--bagel)",
+        color: "var(--bagel-foreground)",
+        fontFamily: SANS_STACK,
+      }}
+    >
+      <p
+        style={{
+          fontSize: 10.5,
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "var(--bagel-foreground)",
+          opacity: 0.85,
+        }}
+      >
+        Welcome offer
+      </p>
+      <h3
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
+          color: "var(--bagel-foreground)",
+          marginTop: 6,
+          lineHeight: 1.15,
+        }}
+      >
+        {WELCOME_DISCOUNT_PCT}% off your first booking
+      </h3>
+      <p
+        style={{
+          fontSize: 14,
+          color: "var(--bagel-foreground)",
+          opacity: 0.88,
+          marginTop: 6,
+          lineHeight: 1.45,
+        }}
+      >
+        Welcome to Ewà. Your first booking is on us.
+      </p>
+      <div
+        className="mt-4 inline-flex items-center gap-1.5"
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "var(--bagel-foreground)",
+          opacity: 0.85,
+        }}
+      >
+        <Lock size={11} />
+        <span>Auto-applied</span>
+      </div>
+    </div>
+  );
+}
+
+function LoyaltyCard({ progress }: { progress: number }) {
+  const pct = Math.max(0, Math.min(LOYALTY_CYCLE, progress)) / LOYALTY_CYCLE;
+  return (
+    <div
+      className="rounded-2xl border px-5 py-5 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        borderColor: "var(--border)",
+        fontFamily: SANS_STACK,
+      }}
+    >
+      <p
+        style={{
+          fontSize: 10.5,
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "var(--on-card-muted)",
+        }}
+      >
+        Earn a reward
+      </p>
+      <h3
+        style={{
+          fontSize: 18,
+          fontWeight: 700,
+          letterSpacing: "-0.01em",
+          color: "var(--card-foreground)",
+          marginTop: 6,
+          lineHeight: 1.2,
+        }}
+      >
+        {LOYALTY_DISCOUNT_PCT}% off your next booking
+      </h3>
+      <p
+        style={{
+          fontSize: 13.5,
+          color: "var(--on-card-muted)",
+          marginTop: 6,
+          lineHeight: 1.45,
+        }}
+      >
+        Complete {LOYALTY_CYCLE} bookings to earn this reward.
+      </p>
+
+      {/* Progress bar */}
+      <div
+        className="mt-4 h-1.5 w-full overflow-hidden rounded-full"
+        style={{ backgroundColor: "var(--muted)" }}
+      >
+        <div
+          style={{
+            width: `${pct * 100}%`,
+            height: "100%",
+            backgroundColor: "var(--bagel)",
+            borderRadius: 9999,
+            transition: "width 300ms ease",
+          }}
+        />
+      </div>
+      <p
+        className="tabular mt-2 text-right"
+        style={{ fontSize: 12, color: "var(--on-card-muted)", fontVariantNumeric: "tabular-nums" }}
+      >
+        {progress} of {LOYALTY_CYCLE} completed
+      </p>
+    </div>
+  );
+}
+
+function RewardReadyCard() {
+  return (
+    <div
+      className="relative rounded-2xl border px-5 py-5 shadow-sm"
+      style={{
+        backgroundColor: "var(--card)",
+        borderColor: "var(--border)",
+        fontFamily: SANS_STACK,
+      }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p
+            style={{
+              fontSize: 10.5,
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--bagel)",
+            }}
+          >
+            Reward ready
+          </p>
+          <h3
+            style={{
+              fontSize: 18,
+              fontWeight: 700,
+              letterSpacing: "-0.01em",
+              color: "var(--card-foreground)",
+              marginTop: 6,
+              lineHeight: 1.2,
+            }}
+          >
+            {LOYALTY_DISCOUNT_PCT}% off your next booking
+          </h3>
+          <p
+            style={{
+              fontSize: 13.5,
+              color: "var(--on-card-muted)",
+              marginTop: 6,
+              lineHeight: 1.45,
+            }}
+          >
+            You'll get this discount automatically when you book next.
+          </p>
+        </div>
+        <span
+          aria-hidden
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full"
+          style={{ backgroundColor: "var(--bagel)", color: "var(--bagel-foreground)" }}
+        >
+          <Check size={18} strokeWidth={3} />
+        </span>
+      </div>
+    </div>
+  );
+}
+
 void __INK;

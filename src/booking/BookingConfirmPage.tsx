@@ -20,7 +20,9 @@ import {
 import { MOCK_PROS, PRO_SCHEDULES, type ProSchedule } from "@/data/mock-pros";
 import { useCustomerProfile, genId, type Address, type PaymentCard } from "@/data/customer-store";
 import { useBookings } from "@/data/bookings-store";
+import { usePromos } from "@/promos/store";
 import { SANS_STACK } from "@/auth/auth-shell";
+
 
 const ORANGE = "#FF823F";
 const BOOKING_FEE = 3;
@@ -43,6 +45,8 @@ export function BookingConfirmPage({
   const navigate = useNavigate();
   const { profile, addAddress, addCard } = useCustomerProfile();
   const { createBooking, updateBookingStatus } = useBookings();
+  const { hasPendingReward, pendingDiscountPct, consumeReward } = usePromos();
+
 
   const addresses = profile.savedAddresses;
   const cards = profile.paymentMethods;
@@ -131,15 +135,22 @@ export function BookingConfirmPage({
 
   // Pricing
   const promoDiscount = appliedPromo?.discount ?? 0;
-  const subtotal = Math.max(0, servicePrice - promoDiscount);
+  const rewardDiscountValue = hasPendingReward
+    ? Math.round(servicePrice * pendingDiscountPct) / 100
+    : 0;
+  const subtotal = Math.max(0, servicePrice - promoDiscount - rewardDiscountValue);
   const total = subtotal + BOOKING_FEE;
+
+
 
   const canConfirm = !!selectedAddress && !!selectedCard && !!scheduledWhen && !confirming;
 
   const handleConfirm = () => {
     if (!pro || !selectedService || !scheduledWhen) return;
     setConfirming(true);
+    if (hasPendingReward) consumeReward();
     window.setTimeout(() => {
+
       if (!pro.autoAccept) {
         const newId = createBooking({
           proId,
@@ -389,6 +400,17 @@ export function BookingConfirmPage({
                 </span>
               </div>
             )}
+            {hasPendingReward && (
+              <div className="mt-2 flex items-baseline justify-between">
+                <span style={{ fontSize: 13, color: "var(--bagel)", fontWeight: 600 }}>
+                  Reward — {pendingDiscountPct}% off
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bagel)" }}>
+                  −${rewardDiscountValue.toFixed(2)}
+                </span>
+              </div>
+            )}
+
             <div className="mt-2 flex items-baseline justify-between">
               <span style={{ fontSize: 13, color: "var(--card-foreground)" }}>Booking fee</span>
               <span style={{ fontSize: 14, fontWeight: 600, color: "var(--card-foreground)" }}>

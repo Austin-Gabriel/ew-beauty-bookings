@@ -13,7 +13,10 @@ import {
   type BookingConfirmState,
   type SearchingStage,
   type ScheduleState,
+  type PromoCardOverride,
+  type CompletedBookingsOverride,
 } from "./devState";
+
 
 const POS_KEY = "ewa.devstate.pos.v1";
 const BUTTON_SIZE = 36; // h-9
@@ -333,7 +336,74 @@ export function DevStateToggle() {
                 </Field>
               </DevSection>
 
+              {/* ====================== PROMOTIONS ====================== */}
+              <DevSection
+                label="Promotions"
+                sub="Notifications promo cards + reward on booking confirm"
+              >
+                <Field
+                  label="Promo card"
+                  hint={
+                    state.promoCard === "auto"
+                      ? "Auto from completed-bookings count"
+                      : `Forced: ${state.promoCard}`
+                  }
+                >
+                  <Stacked<PromoCardOverride>
+                    value={state.promoCard}
+                    options={[
+                      { value: "auto", label: "Auto (from bookings)" },
+                      { value: "welcome", label: "Welcome (15% off first)" },
+                      { value: "loyalty", label: "Loyalty progress" },
+                      { value: "reward", label: "Reward earned (10% off)" },
+                      { value: "none", label: "None — hide section" },
+                    ]}
+                    onChange={(v) => set("promoCard", v)}
+                  />
+                </Field>
+
+                {state.promoCard === "loyalty" && (
+                  <Field label="Loyalty count" hint={`${state.loyaltyCount} of 5 completed`}>
+                    <Segmented<string>
+                      value={String(state.loyaltyCount)}
+                      options={[
+                        { value: "0", label: "0" },
+                        { value: "1", label: "1" },
+                        { value: "2", label: "2" },
+                        { value: "3", label: "3" },
+                        { value: "4", label: "4" },
+                        { value: "5", label: "5" },
+                      ]}
+                      onChange={(v) => set("loyaltyCount", parseInt(v, 10))}
+                    />
+                  </Field>
+                )}
+
+                <Field
+                  label="Completed bookings"
+                  hint={
+                    state.completedBookingsOverride === "auto"
+                      ? "Auto from bookings store"
+                      : `Forced: ${state.completedBookingsOverride}`
+                  }
+                >
+                  <Segmented<CompletedBookingsOverride>
+                    value={state.completedBookingsOverride}
+                    options={[
+                      { value: "auto", label: "Auto" },
+                      { value: "0", label: "0" },
+                      { value: "1", label: "1" },
+                      { value: "3", label: "3" },
+                      { value: "5", label: "5" },
+                      { value: "12", label: "12" },
+                    ]}
+                    onChange={(v) => set("completedBookingsOverride", v)}
+                  />
+                </Field>
+              </DevSection>
+
               {/* ====================== FAVORITES ====================== */}
+
               <DevSection label="Favorites tab" sub="Volume of saved stylists + collections">
                 <Field
                   label="Seed"
